@@ -47,7 +47,7 @@
             <!-- Hero Buttons -->
             <div class="mt-8 flex flex-wrap gap-4">
 
-                <a href="#pets"
+                <a href="{{ route('pets.index') }}"
                    class="rounded-full bg-orange-500 px-7 py-3
                           font-semibold text-white
                           shadow-md transition
@@ -322,7 +322,7 @@
         <!-- View All Button -->
         <div class="mt-12 text-center">
 
-            <a href="#"
+            <a href="{{ route('pets.index') }}"
                class="inline-block rounded-full border
                       border-orange-500 px-7 py-3
                       font-semibold text-orange-500

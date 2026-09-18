@@ -93,7 +93,7 @@
                 </a>
 
                 <a href="#pets"
-                   class="text-gray-600">
+                class="font-medium text-gray-600 hover:text-orange-500">
                     Available Pets
                 </a>
 
@@ -176,8 +176,8 @@
                         Home
                     </a>
 
-                    <a href="#pets"
-                       class="hover:text-orange-400">
+                    <a href="{{ route('pets.index') }}"
+                    class="font-medium text-gray-600 hover:text-orange-500">
                         Available Pets
                     </a>
 
