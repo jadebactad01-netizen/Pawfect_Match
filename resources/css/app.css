@@ -1,9 +1,53 @@
+/* Import Tailwind CSS */
 @import 'tailwindcss';
+
+
+/*
+|--------------------------------------------------------------------------
+| Files Tailwind Should Scan
+|--------------------------------------------------------------------------
+*/
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+
+/*
+|--------------------------------------------------------------------------
+| Pawfect Match Theme
+|--------------------------------------------------------------------------
+*/
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /*
+     * Main font used throughout the website.
+     */
+    --font-sans: 'Instrument Sans',
+                 ui-sans-serif,
+                 system-ui,
+                 sans-serif,
+                 'Apple Color Emoji',
+                 'Segoe UI Emoji',
+                 'Noto Color Emoji';
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Simple Global Styles
+|--------------------------------------------------------------------------
+*/
+
+/* Smooth scrolling when clicking navbar links */
+html {
+    scroll-behavior: smooth;
+}
+
+
+/* Default website font */
+body {
+    font-family: var(--font-sans);
 }
