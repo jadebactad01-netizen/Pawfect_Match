@@ -212,7 +212,7 @@
 
                         <!-- Button -->
 
-                        <a href="#"
+                        <a href="{{ route('pets.show', $pet['id']) }}"
                            class="mt-6 inline-block
                                   rounded-full bg-orange-500
                                   px-6 py-2.5 font-semibold
