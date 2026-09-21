@@ -38,8 +38,7 @@ Route::get('/pets/{pet}', [PetController::class, 'show'])
 |--------------------------------------------------------------------------
 |
 | These routes are for shelter pet management.
-| Authentication will be added later.
-|
+| Only Admin/Super Administrators can access
 */
 Route::middleware('admin')->group(function () {
 
