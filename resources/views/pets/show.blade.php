@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $pet['name'] . ' - Pawfect Match')
+@section('title', $pet->name . ' - Pawfect Match')
 
 
 @section('content')
@@ -44,7 +44,7 @@
                         justify-center rounded-3xl
                         bg-orange-100 text-9xl">
 
-                {{ $pet['emoji'] }}
+                {{ $pet->emoji }}
 
             </div>
 
@@ -71,7 +71,7 @@
             <h1 class="mt-4 text-4xl font-bold text-gray-900
                        sm:text-5xl">
 
-                {{ $pet['name'] }}
+                {{ $pet->name }}
 
             </h1>
 
@@ -101,7 +101,7 @@
                     </p>
 
                     <p class="mt-1 font-bold text-gray-900">
-                        {{ $pet['type'] }}
+                        {{ $pet->type }}
                     </p>
 
                 </div>
@@ -116,7 +116,7 @@
                     </p>
 
                     <p class="mt-1 font-bold text-gray-900">
-                        {{ $pet['sex'] }}
+                        {{ $pet->sex }}
                     </p>
 
                 </div>
@@ -131,7 +131,7 @@
                     </p>
 
                     <p class="mt-1 font-bold text-gray-900">
-                        {{ $pet['age'] }}
+                        {{ $pet->age }}
                     </p>
 
                 </div>
@@ -146,7 +146,7 @@
                     </p>
 
                     <p class="mt-1 font-bold text-green-600">
-                        {{ $pet['status'] }}
+                        {{ $pet->status }}
                     </p>
 
                 </div>
@@ -228,7 +228,7 @@
 
             <p class="mt-5 leading-8 text-gray-600">
 
-                {{ $pet['description'] }}
+                {{ $pet->description }}
 
             </p>
 

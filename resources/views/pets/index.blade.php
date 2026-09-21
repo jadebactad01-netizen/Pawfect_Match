@@ -150,7 +150,7 @@
                                 justify-center bg-orange-100
                                 text-8xl">
 
-                        {{ $pet['emoji'] }}
+                        {{ $pet->emoji }}
 
                     </div>
 
@@ -169,7 +169,7 @@
                             <h2 class="text-2xl font-bold
                                        text-gray-900">
 
-                                {{ $pet['name'] }}
+                                {{ $pet->name }}
 
                             </h2>
 
@@ -178,7 +178,7 @@
                                          px-3 py-1 text-xs
                                          font-semibold text-green-700">
 
-                                {{ $pet['status'] }}
+                                {{ $pet->status }}
 
                             </span>
 
@@ -190,11 +190,11 @@
 
                         <p class="mt-2 text-sm text-gray-500">
 
-                            {{ $pet['type'] }}
+                            {{ $pet->type }}
                             •
-                            {{ $pet['sex'] }}
+                            {{ $pet->sex }}
                             •
-                            {{ $pet['age'] }}
+                            {{ $pet->age }}
 
                         </p>
 
@@ -204,7 +204,7 @@
 
                         <p class="mt-4 leading-7 text-gray-600">
 
-                            {{ $pet['description'] }}
+                            {{ $pet->description }}
 
                         </p>
 
@@ -212,7 +212,7 @@
 
                         <!-- Button -->
 
-                        <a href="{{ route('pets.show', $pet['id']) }}"
+                        <a href="{{ route('pets.show', $pet) }}"
                            class="mt-6 inline-block
                                   rounded-full bg-orange-500
                                   px-6 py-2.5 font-semibold
