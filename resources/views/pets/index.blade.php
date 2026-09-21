@@ -71,17 +71,17 @@
             -->
             <div class="flex flex-wrap gap-2">
 
-                <button
+                <a href="{{ route('pets.index') }}"
                     class="rounded-full bg-orange-500
                            px-5 py-2 text-sm font-semibold
                            text-white">
 
                     All
 
-                </button>
+                </a>
 
 
-                <button
+                <a href="{{ route('pets.index', ['type' => 'Dog']) }}"
                     class="rounded-full border border-gray-300
                            px-5 py-2 text-sm font-semibold
                            text-gray-600
@@ -90,10 +90,10 @@
 
                     Dogs
 
-                </button>
+                </a>
 
 
-                <button
+                <a href="{{ route('pets.index', ['type' => 'Cat']) }}"
                     class="rounded-full border border-gray-300
                            px-5 py-2 text-sm font-semibold
                            text-gray-600
@@ -102,7 +102,7 @@
 
                     Cats
 
-                </button>
+                </a>
 
             </div>
 
@@ -132,7 +132,7 @@
         <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
 
 
-            @foreach ($pets as $pet)
+            @forelse ($pets as $pet)
 
 
                 <!-- PET CARD -->
@@ -229,7 +229,38 @@
                 </div>
 
 
-            @endforeach
+            @empty
+
+                <div class="sm:col-span-2 lg:col-span-3
+                            rounded-2xl bg-orange-50
+                            px-6 py-16 text-center">
+
+                    <div class="text-5xl">
+                        🐾
+                    </div>
+
+                    <h2 class="mt-4 text-2xl font-bold text-gray-900">
+                        No Pets Found
+                    </h2>
+
+                    <p class="mt-3 text-gray-600">
+                        There are currently no available pets
+                        matching this filter.
+                    </p>
+
+                    <a href="{{ route('pets.index') }}"
+                    class="mt-6 inline-block rounded-full
+                            bg-orange-500 px-6 py-3
+                            font-semibold text-white
+                            hover:bg-orange-600">
+
+                        View All Pets
+
+                    </a>
+
+                </div>
+
+            @endforelse
 
 
         </div>
