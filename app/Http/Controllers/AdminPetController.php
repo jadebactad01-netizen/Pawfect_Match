@@ -49,4 +49,49 @@ class AdminPetController extends Controller
             ->route('admin.pets.manage')
             ->with('success', 'Pet added successfully.');
     }
+    /**
+     * Show the form for editing a pet.
+     */
+    public function edit(Pet $pet)
+    {
+        return view('admin.pets.edit', compact('pet'));
+    }
+
+
+    /**
+     * Update an existing pet.
+     */
+    public function update(Request $request, Pet $pet)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'type' => ['required', 'in:Dog,Cat'],
+            'sex' => ['required', 'in:Male,Female'],
+            'age' => ['required', 'string', 'max:255'],
+            'status' => ['required', 'in:Available,Unavailable'],
+            'description' => ['nullable', 'string'],
+        ]);
+
+
+        $pet->update($validated);
+
+
+        return redirect()
+            ->route('admin.pets.manage')
+            ->with('success', 'Pet updated successfully.');
+    }
+
+
+    /**
+     * Delete a pet.
+     */
+    public function destroy(Pet $pet)
+    {
+        $pet->delete();
+
+
+        return redirect()
+            ->route('admin.pets.manage')
+            ->with('success', 'Pet deleted successfully.');
+    }
 }

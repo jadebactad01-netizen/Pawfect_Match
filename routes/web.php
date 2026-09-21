@@ -29,7 +29,6 @@ Route::get('/', function () {
 Route::get('/pets', [PetController::class, 'index'])
     ->name('pets.index');
 
-
 Route::get('/pets/{pet}', [PetController::class, 'show'])
     ->name('pets.show');
 
@@ -46,10 +45,17 @@ Route::get('/pets/{pet}', [PetController::class, 'show'])
 Route::get('/admin/pets', [AdminPetController::class, 'manage'])
     ->name('admin.pets.manage');
 
-
 Route::get('/admin/pets/add', [AdminPetController::class, 'add'])
     ->name('admin.pets.add');
 
-
 Route::post('/admin/pets', [AdminPetController::class, 'store'])
     ->name('admin.pets.store');
+
+Route::get('/admin/pets/{pet}/edit', [AdminPetController::class, 'edit'])
+    ->name('admin.pets.edit');
+
+Route::put('/admin/pets/{pet}', [AdminPetController::class, 'update'])
+    ->name('admin.pets.update');
+
+Route::delete('/admin/pets/{pet}', [AdminPetController::class, 'destroy'])
+    ->name('admin.pets.destroy');

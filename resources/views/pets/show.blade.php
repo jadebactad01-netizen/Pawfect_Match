@@ -57,9 +57,11 @@
 
 
             <!-- Status -->
-            <span class="inline-block rounded-full bg-green-100
-                         px-4 py-2 text-sm font-semibold
-                         text-green-700">
+            <span class="inline-block rounded-full
+                        px-4 py-2 text-sm font-semibold
+                        {{ $pet->status === 'Available'
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-red-100 text-red-700' }}">
 
                 {{ $pet->status }}
 
@@ -145,9 +147,14 @@
                         Adoption Status
                     </p>
 
-                    <p class="mt-1 font-bold text-green-600">
-                        {{ $pet->status }}
-                    </p>
+                <p class="mt-1 font-bold
+                        {{ $pet->status === 'Available'
+                            ? 'text-green-600'
+                            : 'text-red-600' }}">
+
+                    {{ $pet->status }}
+
+                </p>
 
                 </div>
 
