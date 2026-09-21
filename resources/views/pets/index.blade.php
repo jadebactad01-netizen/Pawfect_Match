@@ -62,43 +62,41 @@
 
             </p>
 
-
-            <!--
-                These buttons are visual only for now.
-
-                We will make the filters actually work
-                in a later step.
-            -->
             <div class="flex flex-wrap gap-2">
 
+                <!-- ALL PETS -->
                 <a href="{{ route('pets.index') }}"
-                    class="rounded-full bg-orange-500
-                           px-5 py-2 text-sm font-semibold
-                           text-white">
+                class="rounded-full px-5 py-2
+                        text-sm font-semibold
+                        {{ !$type
+                                ? 'bg-orange-500 text-white'
+                                : 'border border-gray-300 text-gray-600 hover:border-orange-500 hover:text-orange-500' }}">
 
                     All
 
                 </a>
 
 
+                <!-- DOGS -->
                 <a href="{{ route('pets.index', ['type' => 'Dog']) }}"
-                    class="rounded-full border border-gray-300
-                           px-5 py-2 text-sm font-semibold
-                           text-gray-600
-                           hover:border-orange-500
-                           hover:text-orange-500">
+                class="rounded-full px-5 py-2
+                        text-sm font-semibold
+                        {{ $type === 'Dog'
+                                ? 'bg-orange-500 text-white'
+                                : 'border border-gray-300 text-gray-600 hover:border-orange-500 hover:text-orange-500' }}">
 
                     Dogs
 
                 </a>
 
 
+                <!-- CATS -->
                 <a href="{{ route('pets.index', ['type' => 'Cat']) }}"
-                    class="rounded-full border border-gray-300
-                           px-5 py-2 text-sm font-semibold
-                           text-gray-600
-                           hover:border-orange-500
-                           hover:text-orange-500">
+                class="rounded-full px-5 py-2
+                        text-sm font-semibold
+                        {{ $type === 'Cat'
+                                ? 'bg-orange-500 text-white'
+                                : 'border border-gray-300 text-gray-600 hover:border-orange-500 hover:text-orange-500' }}">
 
                     Cats
 
