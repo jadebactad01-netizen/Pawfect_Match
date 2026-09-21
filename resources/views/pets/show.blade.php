@@ -61,7 +61,7 @@
                          px-4 py-2 text-sm font-semibold
                          text-green-700">
 
-                {{ $pet['status'] }}
+                {{ $pet->status }}
 
             </span>
 
@@ -80,7 +80,7 @@
             <!-- Short Description -->
             <p class="mt-5 text-lg leading-8 text-gray-600">
 
-                {{ $pet['description'] }}
+                {{ $pet->description }}
 
             </p>
 
@@ -223,7 +223,7 @@
             </p>
 
             <h2 class="mt-2 text-3xl font-bold text-gray-900">
-                About {{ $pet['name'] }}
+                About {{ $pet->name }}
             </h2>
 
             <p class="mt-5 leading-8 text-gray-600">
@@ -255,7 +255,7 @@
 
         <h2 class="mt-5 text-3xl font-bold text-gray-900">
 
-            Could {{ $pet['name'] }} Be Your Pawfect Match?
+            Could {{ $pet->name }} Be Your Pawfect Match?
 
         </h2>
 
