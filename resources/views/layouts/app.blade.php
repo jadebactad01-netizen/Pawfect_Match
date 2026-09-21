@@ -54,17 +54,48 @@
                     About Us
                 </a>
 
-                <a href="#"
-                   class="rounded-full border border-orange-500 px-5 py-2
-                          font-medium text-orange-500 hover:bg-orange-50">
-                    Log In
-                </a>
+                @guest
 
-                <a href="#"
-                   class="rounded-full bg-orange-500 px-5 py-2
-                          font-medium text-white hover:bg-orange-600">
-                    Register
-                </a>
+                    <a href="{{ route('login') }}"
+                    class="font-semibold text-gray-700 hover:text-orange-500">
+                        Login
+                    </a>
+
+                    <a href="{{ route('register') }}"
+                    class="rounded-full bg-orange-500
+                            px-5 py-2 font-semibold text-white
+                            hover:bg-orange-600">
+                        Register
+                    </a>
+
+                @endguest
+
+
+                @auth
+
+                    <span class="font-semibold text-gray-700">
+                        {{ auth()->user()->name }}
+                    </span>
+
+                    @if (in_array(auth()->user()->role, ['admin', 'super_admin']))
+
+                        <a href="{{ route('admin.pets.manage') }}"
+                        class="font-semibold text-orange-500">
+                            Manage Pets
+                        </a>
+
+                    @endif
+
+                    <form action="{{ url('/logout') }}" method="POST">
+                        @csrf
+
+                        <button type="submit"
+                                class="font-semibold text-red-500 hover:text-red-600">
+                            Logout
+                        </button>
+                    </form>
+
+                @endauth
 
             </div>
 
@@ -107,16 +138,48 @@
                     About Us
                 </a>
 
-                <a href="#"
-                   class="text-gray-600">
-                    Log In
-                </a>
+                @guest
 
-                <a href="#"
-                   class="rounded-lg bg-orange-500 px-4 py-2
-                          text-center font-medium text-white">
-                    Register
-                </a>
+                    <a href="{{ route('login') }}"
+                    class="font-semibold text-gray-700 hover:text-orange-500">
+                        Login
+                    </a>
+
+                    <a href="{{ route('register') }}"
+                    class="rounded-full bg-orange-500
+                            px-5 py-2 font-semibold text-white
+                            hover:bg-orange-600">
+                        Register
+                    </a>
+
+                @endguest
+
+
+                @auth
+
+                    <span class="font-semibold text-gray-700">
+                        {{ auth()->user()->name }}
+                    </span>
+
+                    @if (in_array(auth()->user()->role, ['admin', 'super_admin']))
+
+                        <a href="{{ route('admin.pets.manage') }}"
+                        class="font-semibold text-orange-500">
+                            Manage Pets
+                        </a>
+
+                    @endif
+
+                    <form action="{{ url('/logout') }}" method="POST">
+                        @csrf
+
+                        <button type="submit"
+                                class="font-semibold text-red-500 hover:text-red-600">
+                            Logout
+                        </button>
+                    </form>
+
+                @endauth
 
             </div>
 
