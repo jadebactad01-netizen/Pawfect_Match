@@ -49,6 +49,7 @@ class AdminPetController extends Controller
             ->route('admin.pets.manage')
             ->with('success', 'Pet added successfully.');
     }
+    
     /**
      * Show the form for editing a pet.
      */

@@ -41,21 +41,24 @@ Route::get('/pets/{pet}', [PetController::class, 'show'])
 | Authentication will be added later.
 |
 */
+Route::middleware('admin')->group(function () {
 
-Route::get('/admin/pets', [AdminPetController::class, 'manage'])
-    ->name('admin.pets.manage');
+    Route::get('/admin/pets', [AdminPetController::class, 'manage'])
+        ->name('admin.pets.manage');
 
-Route::get('/admin/pets/add', [AdminPetController::class, 'add'])
-    ->name('admin.pets.add');
+    Route::get('/admin/pets/add', [AdminPetController::class, 'add'])
+        ->name('admin.pets.add');
 
-Route::post('/admin/pets', [AdminPetController::class, 'store'])
-    ->name('admin.pets.store');
+    Route::post('/admin/pets', [AdminPetController::class, 'store'])
+        ->name('admin.pets.store');
 
-Route::get('/admin/pets/{pet}/edit', [AdminPetController::class, 'edit'])
-    ->name('admin.pets.edit');
+    Route::get('/admin/pets/{pet}/edit', [AdminPetController::class, 'edit'])
+        ->name('admin.pets.edit');
 
-Route::put('/admin/pets/{pet}', [AdminPetController::class, 'update'])
-    ->name('admin.pets.update');
+    Route::put('/admin/pets/{pet}', [AdminPetController::class, 'update'])
+        ->name('admin.pets.update');
 
-Route::delete('/admin/pets/{pet}', [AdminPetController::class, 'destroy'])
-    ->name('admin.pets.destroy');
+    Route::delete('/admin/pets/{pet}', [AdminPetController::class, 'destroy'])
+        ->name('admin.pets.destroy');
+
+});
