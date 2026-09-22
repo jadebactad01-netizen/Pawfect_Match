@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminPetController;
+use App\Http\Controllers\AdopterProfileController;
 use App\Http\Controllers\PetController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +32,26 @@ Route::get('/pets', [PetController::class, 'index'])
 
 Route::get('/pets/{pet}', [PetController::class, 'show'])
     ->name('pets.show');
+
+    
+    /*
+|--------------------------------------------------------------------------
+| ADOPTER PROFILE ROUTES
+|--------------------------------------------------------------------------
+|
+| Logged-in users can view and update their own adopter profile.
+|
+*/
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/profile', [AdopterProfileController::class, 'edit'])
+        ->name('profile.edit');
+
+    Route::put('/profile', [AdopterProfileController::class, 'update'])
+        ->name('profile.update');
+
+});
 
 /*
 |--------------------------------------------------------------------------

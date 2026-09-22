@@ -77,6 +77,13 @@
                         {{ auth()->user()->name }}
                     </span>
 
+                    @if (auth()->user()->role === 'adopter')
+                        <a href="{{ route('profile.edit') }}"
+                        class="font-semibold text-gray-700 hover:text-orange-500">
+                            My Profile
+                        </a>
+                    @endif
+
                     @if (in_array(auth()->user()->role, ['admin', 'super_admin']))
 
                         <a href="{{ route('admin.pets.manage') }}"
@@ -160,6 +167,13 @@
                     <span class="font-semibold text-gray-700">
                         {{ auth()->user()->name }}
                     </span>
+
+                    @if (auth()->user()->role === 'adopter')
+                        <a href="{{ route('profile.edit') }}"
+                        class="font-semibold text-gray-700 hover:text-orange-500">
+                            My Profile
+                        </a>
+                    @endif
 
                     @if (in_array(auth()->user()->role, ['admin', 'super_admin']))
 
