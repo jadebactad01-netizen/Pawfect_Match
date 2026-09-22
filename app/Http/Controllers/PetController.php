@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pet;
+use App\Services\CompatibilityService;
 use Illuminate\Http\Request;
 
 class PetController extends Controller
@@ -52,8 +53,29 @@ class PetController extends Controller
     /**
      * Display one pet.
      */
-    public function show(Pet $pet)
-    {
-        return view('pets.show', compact('pet'));
+    public function show(
+        Request $request,
+        Pet $pet,
+        CompatibilityService $compatibilityService
+    ) {
+        $compatibility = null;
+        $profile = null;
+
+        if ($request->user() && $request->user()->role === 'adopter') {
+            $profile = $request->user()->adopterProfile;
+
+            if ($profile) {
+                $compatibility = $compatibilityService->calculate(
+                    $profile,
+                    $pet
+                );
+            }
+        }
+
+        return view('pets.show', compact(
+            'pet',
+            'profile',
+            'compatibility'
+        ));
     }
 }
