@@ -39,6 +39,13 @@ class AdminPetController extends Controller
             'age' => ['required', 'string', 'max:255'],
             'status' => ['required', 'in:Available,Unavailable'],
             'description' => ['nullable', 'string'],
+
+            'care_requirement' => ['required', 'in:Low,Moderate,High'],
+            'time_requirement' => ['required', 'in:Low,Moderate,High'],
+            'household_compatibility' => ['required', 'in:Living alone,Adults only,Family with children,Any'],
+            'living_environment' => ['required', 'in:House,Apartment,Other,Any'],
+            'experience_requirement' => ['required', 'in:None,Some,Experienced'],
+            'activity_level' => ['required', 'in:Low,Moderate,High'],
         ]);
 
 
@@ -71,6 +78,13 @@ class AdminPetController extends Controller
             'age' => ['required', 'string', 'max:255'],
             'status' => ['required', 'in:Available,Unavailable'],
             'description' => ['nullable', 'string'],
+
+            'care_requirement' => ['required', 'in:Low,Moderate,High'],
+            'time_requirement' => ['required', 'in:Low,Moderate,High'],
+            'household_compatibility' => ['required', 'in:Living alone,Adults only,Family with children,Any'],
+            'living_environment' => ['required', 'in:House,Apartment,Other,Any'],
+            'experience_requirement' => ['required', 'in:None,Some,Experienced'],
+            'activity_level' => ['required', 'in:Low,Moderate,High'],
         ]);
 
 

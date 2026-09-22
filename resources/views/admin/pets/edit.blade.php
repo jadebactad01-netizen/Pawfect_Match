@@ -237,6 +237,243 @@
 
                 </div>
 
+                <!-- COMPATIBILITY REQUIREMENTS -->
+
+                <div class="border-t border-gray-200 pt-8">
+
+                    <h2 class="text-xl font-bold text-gray-900">
+                        Compatibility Requirements
+                    </h2>
+
+                    <p class="mt-2 text-sm text-gray-500">
+                        Update the adopter and home requirements for this pet.
+                    </p>
+
+                </div>
+
+
+                <div class="grid gap-6 sm:grid-cols-2">
+
+                    <!-- CARE REQUIREMENT -->
+
+                    <div>
+                        <label for="care_requirement"
+                            class="font-semibold text-gray-700">
+                            Care Requirement
+                        </label>
+
+                        <select id="care_requirement"
+                                name="care_requirement"
+                                required
+                                class="mt-2 w-full rounded-xl
+                                    border border-gray-300 px-4 py-3">
+
+                            <option value="">Select requirement</option>
+
+                            <option value="Low"
+                                @selected(old('care_requirement', $pet->care_requirement) === 'Low')>
+                                Low
+                            </option>
+
+                            <option value="Moderate"
+                                @selected(old('care_requirement', $pet->care_requirement) === 'Moderate')>
+                                Moderate
+                            </option>
+
+                            <option value="High"
+                                @selected(old('care_requirement', $pet->care_requirement) === 'High')>
+                                High
+                            </option>
+
+                        </select>
+                    </div>
+
+
+                    <!-- TIME REQUIREMENT -->
+
+                    <div>
+                        <label for="time_requirement"
+                            class="font-semibold text-gray-700">
+                            Time Requirement
+                        </label>
+
+                        <select id="time_requirement"
+                                name="time_requirement"
+                                required
+                                class="mt-2 w-full rounded-xl
+                                    border border-gray-300 px-4 py-3">
+
+                            <option value="">Select requirement</option>
+
+                            <option value="Low"
+                                @selected(old('time_requirement', $pet->time_requirement) === 'Low')>
+                                Low
+                            </option>
+
+                            <option value="Moderate"
+                                @selected(old('time_requirement', $pet->time_requirement) === 'Moderate')>
+                                Moderate
+                            </option>
+
+                            <option value="High"
+                                @selected(old('time_requirement', $pet->time_requirement) === 'High')>
+                                High
+                            </option>
+
+                        </select>
+                    </div>
+
+
+                    <!-- HOUSEHOLD COMPATIBILITY -->
+
+                    <div>
+                        <label for="household_compatibility"
+                            class="font-semibold text-gray-700">
+                            Household Compatibility
+                        </label>
+
+                        <select id="household_compatibility"
+                                name="household_compatibility"
+                                required
+                                class="mt-2 w-full rounded-xl
+                                    border border-gray-300 px-4 py-3">
+
+                            <option value="">Select household</option>
+
+                            <option value="Living alone"
+                                @selected(old('household_compatibility', $pet->household_compatibility) === 'Living alone')>
+                                Living alone
+                            </option>
+
+                            <option value="Adults only"
+                                @selected(old('household_compatibility', $pet->household_compatibility) === 'Adults only')>
+                                Adults only
+                            </option>
+
+                            <option value="Family with children"
+                                @selected(old('household_compatibility', $pet->household_compatibility) === 'Family with children')>
+                                Family with children
+                            </option>
+
+                            <option value="Any"
+                                @selected(old('household_compatibility', $pet->household_compatibility) === 'Any')>
+                                Any household
+                            </option>
+
+                        </select>
+                    </div>
+
+
+                    <!-- LIVING ENVIRONMENT -->
+
+                    <div>
+                        <label for="living_environment"
+                            class="font-semibold text-gray-700">
+                            Living Environment
+                        </label>
+
+                        <select id="living_environment"
+                                name="living_environment"
+                                required
+                                class="mt-2 w-full rounded-xl
+                                    border border-gray-300 px-4 py-3">
+
+                            <option value="">Select environment</option>
+
+                            <option value="House"
+                                @selected(old('living_environment', $pet->living_environment) === 'House')>
+                                House
+                            </option>
+
+                            <option value="Apartment"
+                                @selected(old('living_environment', $pet->living_environment) === 'Apartment')>
+                                Apartment
+                            </option>
+
+                            <option value="Other"
+                                @selected(old('living_environment', $pet->living_environment) === 'Other')>
+                                Other
+                            </option>
+
+                            <option value="Any"
+                                @selected(old('living_environment', $pet->living_environment) === 'Any')>
+                                Any environment
+                            </option>
+
+                        </select>
+                    </div>
+
+
+                    <!-- EXPERIENCE REQUIREMENT -->
+
+                    <div>
+                        <label for="experience_requirement"
+                            class="font-semibold text-gray-700">
+                            Pet Care Experience Required
+                        </label>
+
+                        <select id="experience_requirement"
+                                name="experience_requirement"
+                                required
+                                class="mt-2 w-full rounded-xl
+                                    border border-gray-300 px-4 py-3">
+
+                            <option value="">Select requirement</option>
+
+                            <option value="None"
+                                @selected(old('experience_requirement', $pet->experience_requirement) === 'None')>
+                                No experience required
+                            </option>
+
+                            <option value="Some"
+                                @selected(old('experience_requirement', $pet->experience_requirement) === 'Some')>
+                                Some experience
+                            </option>
+
+                            <option value="Experienced"
+                                @selected(old('experience_requirement', $pet->experience_requirement) === 'Experienced')>
+                                Experienced adopter
+                            </option>
+
+                        </select>
+                    </div>
+
+
+                    <!-- ACTIVITY LEVEL -->
+
+                    <div>
+                        <label for="activity_level"
+                            class="font-semibold text-gray-700">
+                            Activity Level
+                        </label>
+
+                        <select id="activity_level"
+                                name="activity_level"
+                                required
+                                class="mt-2 w-full rounded-xl
+                                    border border-gray-300 px-4 py-3">
+
+                            <option value="">Select activity level</option>
+
+                            <option value="Low"
+                                @selected(old('activity_level', $pet->activity_level) === 'Low')>
+                                Low
+                            </option>
+
+                            <option value="Moderate"
+                                @selected(old('activity_level', $pet->activity_level) === 'Moderate')>
+                                Moderate
+                            </option>
+
+                            <option value="High"
+                                @selected(old('activity_level', $pet->activity_level) === 'High')>
+                                High
+                            </option>
+
+                        </select>
+                    </div>
+
+                </div>
 
 
                 <!-- SAVE BUTTON -->
