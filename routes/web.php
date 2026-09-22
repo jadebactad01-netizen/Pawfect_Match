@@ -33,7 +33,6 @@ Route::get('/pets', [PetController::class, 'index'])
 Route::get('/pets/{pet}', [PetController::class, 'show'])
     ->name('pets.show');
 
-    
     /*
 |--------------------------------------------------------------------------
 | ADOPTER PROFILE ROUTES
