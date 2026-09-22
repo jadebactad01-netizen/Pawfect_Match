@@ -14,6 +14,13 @@ use Illuminate\Database\Eloquent\Model;
     'status',
     'description',
     'emoji',
+
+    'care_requirement',
+    'time_requirement',
+    'household_compatibility',
+    'living_environment',
+    'experience_requirement',
+    'activity_level',
 ])]
 class Pet extends Model
 {
