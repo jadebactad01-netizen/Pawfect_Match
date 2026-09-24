@@ -10,15 +10,25 @@ class AdminAdoptionApplicationController extends Controller
     /**
      * Show all adoption applications.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $applications = AdoptionApplication::with(['user', 'pet'])
+        $status = $request->query('status');
+
+        // Start the query and load the applicant and pet.
+        $query = AdoptionApplication::with(['user', 'pet']);
+
+        // Filter only when a valid status was selected.
+        if (in_array($status, ['Pending', 'Approved', 'Rejected'])) {
+            $query->where('status', $status);
+        }
+
+        $applications = $query
             ->latest()
             ->get();
 
         return view(
             'admin.applications.index',
-            compact('applications')
+            compact('applications', 'status')
         );
     }
 

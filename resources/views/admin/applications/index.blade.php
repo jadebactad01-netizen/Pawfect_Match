@@ -28,6 +28,67 @@
 
         </div>
 
+        {{-- Status filters --}}
+        <div class="mt-8 flex flex-wrap gap-3">
+
+            {{-- All --}}
+            <a href="{{ route('admin.applications.index') }}"
+            class="rounded-full px-5 py-2 text-sm font-semibold
+                    {{ ! in_array($status, ['Pending', 'Approved', 'Rejected'])
+                            ? 'bg-orange-500 text-white'
+                            : 'bg-white text-gray-700 hover:bg-gray-100' }}">
+
+                All
+
+            </a>
+
+
+            {{-- Pending --}}
+            <a href="{{ route(
+                    'admin.applications.index',
+                    ['status' => 'Pending']
+                ) }}"
+            class="rounded-full px-5 py-2 text-sm font-semibold
+                    {{ $status === 'Pending'
+                            ? 'bg-yellow-500 text-white'
+                            : 'bg-white text-gray-700 hover:bg-yellow-50' }}">
+
+                Pending
+
+            </a>
+
+
+            {{-- Approved --}}
+            <a href="{{ route(
+                    'admin.applications.index',
+                    ['status' => 'Approved']
+                ) }}"
+            class="rounded-full px-5 py-2 text-sm font-semibold
+                    {{ $status === 'Approved'
+                            ? 'bg-green-500 text-white'
+                            : 'bg-white text-gray-700 hover:bg-green-50' }}">
+
+                Approved
+
+            </a>
+
+
+            {{-- Rejected --}}
+            <a href="{{ route(
+                    'admin.applications.index',
+                    ['status' => 'Rejected']
+                ) }}"
+            class="rounded-full px-5 py-2 text-sm font-semibold
+                    {{ $status === 'Rejected'
+                            ? 'bg-red-500 text-white'
+                            : 'bg-white text-gray-700 hover:bg-red-50' }}">
+
+                Rejected
+
+            </a>
+
+        </div>
+
 
         @if ($applications->isEmpty())
 
@@ -38,13 +99,33 @@
                     🐾
                 </div>
 
-                <h2 class="mt-4 text-xl font-bold text-gray-900">
-                    No Applications Yet
-                </h2>
+                @if (in_array($status, ['Pending', 'Approved', 'Rejected']))
 
-                <p class="mt-2 text-gray-600">
-                    Submitted adoption applications will appear here.
-                </p>
+                    <h2 class="mt-4 text-xl font-bold text-gray-900">
+                        No {{ $status }} Applications
+                    </h2>
+
+                    <p class="mt-2 text-gray-600">
+                        There are currently no applications with this status.
+                    </p>
+
+                    <a href="{{ route('admin.applications.index') }}"
+                    class="mt-5 inline-block font-semibold
+                            text-orange-500 hover:text-orange-600">
+                        View All Applications
+                    </a>
+
+                @else
+
+                    <h2 class="mt-4 text-xl font-bold text-gray-900">
+                        No Applications Yet
+                    </h2>
+
+                    <p class="mt-2 text-gray-600">
+                        Submitted adoption applications will appear here.
+                    </p>
+
+                @endif
 
             </div>
 
