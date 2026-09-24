@@ -10,12 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'user_id',
     'phone_number',
     'address',
-    'living_environment',
-    'household',
-    'available_time',
-    'pet_care_experience',
-    'activity_level',
-    'care_ability',
 ])]
 class AdopterProfile extends Model
 {

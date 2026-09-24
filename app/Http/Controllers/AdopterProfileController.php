@@ -22,15 +22,17 @@ class AdopterProfileController extends Controller
     public function update(Request $request)
     {
         $validated = $request->validate([
-            'phone_number' => ['nullable', 'string', 'max:20'],
-            'address' => ['nullable', 'string', 'max:255'],
+            'phone_number' => [
+                'nullable',
+                'string',
+                'max:20',
+            ],
 
-            'living_environment' => ['required', 'in:House,Apartment,Other'],
-            'household' => ['required', 'in:Living alone,Adults only,Family with children'],
-            'available_time' => ['required', 'in:Low,Moderate,High'],
-            'pet_care_experience' => ['required', 'in:None,Some,Experienced'],
-            'activity_level' => ['required', 'in:Low,Moderate,High'],
-            'care_ability' => ['required', 'in:Limited,Moderate,High'],
+            'address' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
         ]);
 
         $request->user()->adopterProfile()->updateOrCreate(

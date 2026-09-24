@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pet;
-use App\Services\CompatibilityService;
 use Illuminate\Http\Request;
 
 class PetController extends Controller
@@ -49,29 +48,17 @@ class PetController extends Controller
         return view('pets.index', compact('pets', 'type'));
     }
 
-
     /**
      * Display one pet.
      */
-    public function show(
-        Request $request,
-        Pet $pet,
-        CompatibilityService $compatibilityService
-    ) {
-        $compatibility = null;
+    public function show(Request $request, Pet $pet)
+    {
         $profile = null;
         $existingApplication = null;
 
         if ($request->user() && $request->user()->role === 'adopter') {
 
             $profile = $request->user()->adopterProfile;
-
-            if ($profile) {
-                $compatibility = $compatibilityService->calculate(
-                    $profile,
-                    $pet
-                );
-            }
 
             // Check whether this adopter already applied for this pet.
             $existingApplication = $request->user()
@@ -83,7 +70,6 @@ class PetController extends Controller
         return view('pets.show', compact(
             'pet',
             'profile',
-            'compatibility',
             'existingApplication'
         ));
     }
