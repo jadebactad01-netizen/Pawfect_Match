@@ -210,42 +210,14 @@
 
                     @if ($profile)
 
-                        @if ($existingApplication)
+                        <a href="#compatibility-result"
+                        class="rounded-full bg-orange-500 px-7 py-3
+                                font-semibold text-white
+                                hover:bg-orange-600">
 
-                            <a href="{{ route('adoption-applications.index') }}"
-                            class="rounded-full border px-7 py-3 font-semibold
+                            View Compatibility
 
-                                @if ($existingApplication->status === 'Approved')
-                                    border-green-300 bg-green-50
-                                    text-green-700 hover:bg-green-100
-
-                                @elseif ($existingApplication->status === 'Rejected')
-                                    border-red-300 bg-red-50
-                                    text-red-700 hover:bg-red-100
-
-                                @else
-                                    border-yellow-300 bg-yellow-50
-                                    text-yellow-700 hover:bg-yellow-100
-                                @endif
-                            ">
-
-                                Already Applied
-                                ({{ $existingApplication->status }})
-
-                            </a>
-
-                        @else
-
-                            <a href="{{ route('adoption-applications.create', $pet) }}"
-                            class="rounded-full border border-orange-500
-                                    bg-white px-7 py-3 font-semibold
-                                    text-orange-500 hover:bg-orange-50">
-
-                                Apply for Adoption
-
-                            </a>
-
-                        @endif
+                        </a>
 
                     @else
 
@@ -281,12 +253,42 @@
 
                         @if ($profile)
 
-                            <a href="{{ route('adoption-applications.create', $pet) }}"
-                            class="rounded-full border border-orange-500
-                                    bg-white px-7 py-3 font-semibold
-                                    text-orange-500 hover:bg-orange-50">
-                                Apply for Adoption
+                        @if ($existingApplication)
+
+                            <a href="{{ route('adoption-applications.index') }}"
+                            class="rounded-full border px-7 py-3 font-semibold
+
+                                @if ($existingApplication->status === 'Approved')
+                                    border-green-300 bg-green-50
+                                    text-green-700 hover:bg-green-100
+
+                                @elseif ($existingApplication->status === 'Rejected')
+                                    border-red-300 bg-red-50
+                                    text-red-700 hover:bg-red-100
+
+                                @else
+                                    border-yellow-300 bg-yellow-50
+                                    text-yellow-700 hover:bg-yellow-100
+                                @endif
+                            ">
+
+                                Already Applied
+                                ({{ $existingApplication->status }})
+
                             </a>
+
+                            @else
+
+                                <a href="{{ route('adoption-applications.create', $pet) }}"
+                                class="rounded-full border border-orange-500
+                                        bg-white px-7 py-3 font-semibold
+                                        text-orange-500 hover:bg-orange-50">
+
+                                    Apply for Adoption
+
+                                </a>
+
+                            @endif
 
                         @else
 
