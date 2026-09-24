@@ -10,6 +10,26 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'user_id',
     'pet_id',
     'status',
+
+    'age',
+    'home_phone',
+    'work_phone',
+    'mobile_number',
+
+    'reference_name',
+    'reference_relationship',
+    'reference_phone',
+
+    'shelter_source',
+    'shelter_source_other',
+
+    'animal_preference',
+    'animal_preference_other',
+    'preferred_breed',
+    'preferred_size',
+    'preferred_age',
+
+    'evaluator_notes',
 ])]
 class AdoptionApplication extends Model
 {
