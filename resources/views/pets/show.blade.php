@@ -271,8 +271,8 @@
             <!-- Explanation -->
             <p class="mt-4 text-sm text-gray-500">
 
-            You will need an adopter account before submitting
-            an adoption application.
+                You will need an adopter account before submitting
+                an adoption application.
             
             </p>
 

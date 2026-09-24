@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable([
     'user_id',
@@ -47,5 +48,13 @@ class AdoptionApplication extends Model
     public function pet(): BelongsTo
     {
         return $this->belongsTo(Pet::class);
+    }
+
+    /**
+     * Compatibility assessment for this application.
+     */
+    public function compatibilityAssessment(): HasOne
+    {
+        return $this->hasOne(CompatibilityAssessment::class);
     }
 }
