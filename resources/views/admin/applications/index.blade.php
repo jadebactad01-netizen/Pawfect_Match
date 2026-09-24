@@ -38,7 +38,7 @@
                             ? 'bg-orange-500 text-white'
                             : 'bg-white text-gray-700 hover:bg-gray-100' }}">
 
-                All
+                All ({{ $allCount }})
 
             </a>
 
@@ -53,7 +53,7 @@
                             ? 'bg-yellow-500 text-white'
                             : 'bg-white text-gray-700 hover:bg-yellow-50' }}">
 
-                Pending
+                Pending ({{ $pendingCount }})
 
             </a>
 
@@ -68,7 +68,7 @@
                             ? 'bg-green-500 text-white'
                             : 'bg-white text-gray-700 hover:bg-green-50' }}">
 
-                Approved
+                Approved ({{ $approvedCount }})
 
             </a>
 
@@ -83,7 +83,7 @@
                             ? 'bg-red-500 text-white'
                             : 'bg-white text-gray-700 hover:bg-red-50' }}">
 
-                Rejected
+                Rejected ({{ $rejectedCount }})
 
             </a>
 

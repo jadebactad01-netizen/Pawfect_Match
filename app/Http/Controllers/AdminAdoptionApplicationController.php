@@ -14,10 +14,29 @@ class AdminAdoptionApplicationController extends Controller
     {
         $status = $request->query('status');
 
-        // Start the query and load the applicant and pet.
+        // Count all applications by status.
+        $allCount = AdoptionApplication::count();
+
+        $pendingCount = AdoptionApplication::where(
+            'status',
+            'Pending'
+        )->count();
+
+        $approvedCount = AdoptionApplication::where(
+            'status',
+            'Approved'
+        )->count();
+
+        $rejectedCount = AdoptionApplication::where(
+            'status',
+            'Rejected'
+        )->count();
+
+
+        // Start the applications query.
         $query = AdoptionApplication::with(['user', 'pet']);
 
-        // Filter only when a valid status was selected.
+        // Apply the selected filter.
         if (in_array($status, ['Pending', 'Approved', 'Rejected'])) {
             $query->where('status', $status);
         }
@@ -26,9 +45,17 @@ class AdminAdoptionApplicationController extends Controller
             ->latest()
             ->get();
 
+
         return view(
             'admin.applications.index',
-            compact('applications', 'status')
+            compact(
+                'applications',
+                'status',
+                'allCount',
+                'pendingCount',
+                'approvedCount',
+                'rejectedCount'
+            )
         );
     }
 
