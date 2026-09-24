@@ -118,22 +118,26 @@ class CompatibilityService
         return 0;
     }
 
-
     /**
      * Score values that need an exact match.
+     *
+     * If the pet accepts Any, every adopter gets full points.
      */
     private function exactScore(
         string $adopterValue,
         string $petRequirement,
         int $maxPoints
     ): int {
+        if ($petRequirement === 'Any') {
+            return $maxPoints;
+        }
+
         if ($adopterValue === $petRequirement) {
             return $maxPoints;
         }
 
         return 0;
     }
-
 
     /**
      * Score pet-care experience.
