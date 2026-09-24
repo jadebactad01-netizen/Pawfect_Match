@@ -1,0 +1,130 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\AdoptionApplication;
+use App\Models\CompatibilityAssessment;
+use App\Services\CompatibilityService;
+use Illuminate\Http\Request;
+
+class CompatibilityAssessmentController extends Controller
+{
+    /**
+     * Show the compatibility assessment.
+     */
+    public function create(
+        Request $request,
+        AdoptionApplication $application
+    ) {
+        // Make sure the application belongs to
+        // the logged-in adopter.
+        if ($application->user_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        // Prevent another assessment if one already exists.
+        if ($application->compatibilityAssessment) {
+            return redirect()
+                ->route('adoption-applications.index')
+                ->with(
+                    'error',
+                    'You already completed the compatibility assessment.'
+                );
+        }
+
+        $application->load('pet');
+
+        return view(
+            'compatibility-assessments.create',
+            compact('application')
+        );
+    }
+
+    /**
+     * Save the assessment and calculate compatibility.
+     */
+    public function store(
+        Request $request,
+        AdoptionApplication $application,
+        CompatibilityService $compatibilityService
+    ) {
+        // Make sure this application belongs to the adopter.
+        if ($application->user_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        // Prevent duplicate assessments.
+        if ($application->compatibilityAssessment) {
+            return redirect()
+                ->route('adoption-applications.index')
+                ->with(
+                    'error',
+                    'You already completed the compatibility assessment.'
+                );
+        }
+
+
+        $validated = $request->validate([
+            'care_ability' => [
+                'required',
+                'in:Limited,Moderate,High',
+            ],
+
+            'available_time' => [
+                'required',
+                'in:Low,Moderate,High',
+            ],
+
+            'household_compatibility' => [
+                'required',
+                'in:Living alone,Adults only,Family with children',
+            ],
+
+            'living_environment' => [
+                'required',
+                'in:House,Apartment,Other',
+            ],
+
+            'pet_care_experience' => [
+                'required',
+                'in:None,Some,Experienced',
+            ],
+
+            'activity_level' => [
+                'required',
+                'in:Low,Moderate,High',
+            ],
+        ]);
+
+
+        // First save the adopter's answers.
+        $assessment = CompatibilityAssessment::create([
+            'adoption_application_id' => $application->id,
+
+            ...$validated,
+        ]);
+
+
+        // Load the pet being applied for.
+        $application->load('pet');
+
+
+        // Calculate the compatibility score.
+        $result = $compatibilityService->calculate(
+            $assessment,
+            $application->pet
+        );
+
+
+        // Save the calculated result.
+        $assessment->update($result);
+
+
+        return redirect()
+            ->route('adoption-applications.index')
+            ->with(
+                'success',
+                'Your adoption application and compatibility assessment were submitted successfully.'
+            );
+    }
+}

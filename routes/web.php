@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminPetController;
 use App\Http\Controllers\AdopterProfileController;
 use App\Http\Controllers\AdminAdoptionApplicationController;
 use App\Http\Controllers\AdoptionApplicationController;
+use App\Http\Controllers\CompatibilityAssessmentController;
 use App\Http\Controllers\PetController;
 use Illuminate\Support\Facades\Route;
 
@@ -66,6 +67,16 @@ Route::middleware('auth')->group(function () {
         '/pets/{pet}/apply',
         [AdoptionApplicationController::class, 'store']
     )->name('adoption-applications.store');
+
+    Route::get(
+        '/applications/{application}/compatibility-assessment',
+        [CompatibilityAssessmentController::class, 'create']
+    )->name('compatibility-assessments.create');
+
+    Route::post(
+        '/applications/{application}/compatibility-assessment',
+        [CompatibilityAssessmentController::class, 'store']
+    )->name('compatibility-assessments.store');
 
 });
 

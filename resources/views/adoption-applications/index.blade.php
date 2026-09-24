@@ -153,6 +153,30 @@
 
                         </div>
 
+                        @if ($application->compatibilityAssessment)
+
+                            <div class="mt-5 rounded-xl bg-orange-50 p-4">
+
+                                <p class="text-sm text-gray-500">
+                                    Compatibility with {{ $application->pet->name }}
+                                </p>
+
+                                <div class="mt-2 flex flex-wrap items-center gap-3">
+
+                                    <span class="text-2xl font-bold text-orange-500">
+                                        {{ $application->compatibilityAssessment->total_score }}%
+                                    </span>
+
+                                    <span class="font-semibold text-gray-800">
+                                        {{ $application->compatibilityAssessment->classification }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        @endif
+
 
                         {{-- Status explanation --}}
                         <div class="mt-5 rounded-xl p-4

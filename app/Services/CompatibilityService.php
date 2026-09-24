@@ -2,140 +2,56 @@
 
 namespace App\Services;
 
-use App\Models\AdopterProfile;
+use App\Models\CompatibilityAssessment;
 use App\Models\Pet;
 
 class CompatibilityService
 {
     /**
-     * Calculate the compatibility between an adopter and a pet.
+     * Calculate compatibility between an assessment and a pet.
      */
-    public function calculate(AdopterProfile $profile, Pet $pet): array
-    {
-        $factors = [];
+    public function calculate(
+        CompatibilityAssessment $assessment,
+        Pet $pet
+    ): array {
+        $careScore = $this->levelScore(
+            $assessment->care_ability,
+            $pet->care_requirement,
+            25
+        );
 
-        // 1. Care Ability - 25 points
-        $careLevels = [
-            'Limited' => 1,
-            'Moderate' => 2,
-            'High' => 3,
-        ];
+        $timeScore = $this->levelScore(
+            $assessment->available_time,
+            $pet->time_requirement,
+            20
+        );
 
-        $careRequirements = [
-            'Low' => 1,
-            'Moderate' => 2,
-            'High' => 3,
-        ];
+        $householdScore = $this->exactScore(
+            $assessment->household_compatibility,
+            $pet->household_compatibility,
+            20
+        );
 
-        $careScore = 0;
+        $environmentScore = $this->exactScore(
+            $assessment->living_environment,
+            $pet->living_environment,
+            15
+        );
 
-        if (
-            isset($careLevels[$profile->care_ability]) &&
-            isset($careRequirements[$pet->care_requirement]) &&
-            $careLevels[$profile->care_ability] >= $careRequirements[$pet->care_requirement]
-        ) {
-            $careScore = 25;
-        }
+        $experienceScore = $this->experienceScore(
+            $assessment->pet_care_experience,
+            $pet->experience_requirement,
+            10
+        );
 
-        $factors['care_ability'] = [
-            'score' => $careScore,
-            'possible' => 25,
-        ];
-
-
-        // 2. Available Time - 20 points
-        $timeLevels = [
-            'Low' => 1,
-            'Moderate' => 2,
-            'High' => 3,
-        ];
-
-        $timeScore = 0;
-
-        if (
-            isset($timeLevels[$profile->available_time]) &&
-            isset($timeLevels[$pet->time_requirement]) &&
-            $timeLevels[$profile->available_time] >= $timeLevels[$pet->time_requirement]
-        ) {
-            $timeScore = 20;
-        }
-
-        $factors['available_time'] = [
-            'score' => $timeScore,
-            'possible' => 20,
-        ];
+        $activityScore = $this->levelScore(
+            $assessment->activity_level,
+            $pet->activity_level,
+            10
+        );
 
 
-        // 3. Household Compatibility - 20 points
-        $householdScore = 0;
-
-        if (
-            $pet->household_compatibility === 'Any' ||
-            $profile->household === $pet->household_compatibility
-        ) {
-            $householdScore = 20;
-        }
-
-        $factors['household_compatibility'] = [
-            'score' => $householdScore,
-            'possible' => 20,
-        ];
-
-
-        // 4. Living Environment - 15 points
-        $environmentScore = 0;
-
-        if (
-            $pet->living_environment === 'Any' ||
-            $profile->living_environment === $pet->living_environment
-        ) {
-            $environmentScore = 15;
-        }
-
-        $factors['living_environment'] = [
-            'score' => $environmentScore,
-            'possible' => 15,
-        ];
-
-
-        // 5. Pet Care Experience - 10 points
-        $experienceLevels = [
-            'None' => 1,
-            'Some' => 2,
-            'Experienced' => 3,
-        ];
-
-        $experienceScore = 0;
-
-        if (
-            isset($experienceLevels[$profile->pet_care_experience]) &&
-            isset($experienceLevels[$pet->experience_requirement]) &&
-            $experienceLevels[$profile->pet_care_experience] >= $experienceLevels[$pet->experience_requirement]
-        ) {
-            $experienceScore = 10;
-        }
-
-        $factors['pet_care_experience'] = [
-            'score' => $experienceScore,
-            'possible' => 10,
-        ];
-
-
-        // 6. Activity Level - 10 points
-        $activityScore = 0;
-
-        if ($profile->activity_level === $pet->activity_level) {
-            $activityScore = 10;
-        }
-
-        $factors['activity_level'] = [
-            'score' => $activityScore,
-            'possible' => 10,
-        ];
-
-
-        // Add all earned points.
-        $earnedPoints =
+        $totalScore =
             $careScore +
             $timeScore +
             $householdScore +
@@ -143,35 +59,107 @@ class CompatibilityService
             $experienceScore +
             $activityScore;
 
-        $possiblePoints = 100;
 
-        // Compatibility percentage:
-        // earned points / possible points × 100
-        $score = (int) round(
-            ($earnedPoints / $possiblePoints) * 100
-        );
+        if ($totalScore >= 80) {
+            $classification = 'Highly Compatible';
+        } elseif ($totalScore >= 60) {
+            $classification = 'Moderately Compatible';
+        } else {
+            $classification = 'Low Compatibility';
+        }
+
 
         return [
-            'score' => $score,
-            'classification' => $this->classification($score),
-            'factors' => $factors,
+            'care_score' => $careScore,
+            'time_score' => $timeScore,
+            'household_score' => $householdScore,
+            'environment_score' => $environmentScore,
+            'experience_score' => $experienceScore,
+            'activity_score' => $activityScore,
+
+            'total_score' => $totalScore,
+            'classification' => $classification,
         ];
     }
 
 
     /**
-     * Convert the percentage into a compatibility classification.
+     * Score Low / Moderate / High values.
+     *
+     * Full match or higher ability = full points.
+     * One level below = partial points.
+     * Two levels below = zero.
      */
-    private function classification(int $score): string
-    {
-        if ($score >= 80) {
-            return 'Highly Compatible';
+    private function levelScore(
+        string $adopterValue,
+        string $petRequirement,
+        int $maxPoints
+    ): int {
+        $levels = [
+            'Low' => 1,
+            'Moderate' => 2,
+            'High' => 3,
+
+            // Care uses different words but same levels.
+            'Limited' => 1,
+        ];
+
+        $adopterLevel = $levels[$adopterValue] ?? 0;
+        $petLevel = $levels[$petRequirement] ?? 0;
+
+        if ($adopterLevel >= $petLevel) {
+            return $maxPoints;
         }
 
-        if ($score >= 60) {
-            return 'Moderately Compatible';
+        if ($adopterLevel === $petLevel - 1) {
+            return (int) round($maxPoints * 0.5);
         }
 
-        return 'Low Compatibility';
+        return 0;
+    }
+
+
+    /**
+     * Score values that need an exact match.
+     */
+    private function exactScore(
+        string $adopterValue,
+        string $petRequirement,
+        int $maxPoints
+    ): int {
+        if ($adopterValue === $petRequirement) {
+            return $maxPoints;
+        }
+
+        return 0;
+    }
+
+
+    /**
+     * Score pet-care experience.
+     */
+    private function experienceScore(
+        string $adopterValue,
+        string $petRequirement,
+        int $maxPoints
+    ): int {
+        $levels = [
+            'None' => 1,
+            'Some' => 2,
+            'Experienced' => 3,
+        ];
+
+        $adopterLevel = $levels[$adopterValue] ?? 0;
+        $petLevel = $levels[$petRequirement] ?? 0;
+
+        if ($adopterLevel >= $petLevel) {
+            return $maxPoints;
+        }
+
+        if ($adopterLevel === $petLevel - 1) {
+            return (int) round($maxPoints * 0.5);
+        }
+
+        return 0;
     }
 }

@@ -21,7 +21,10 @@ class AdoptionApplicationController extends Controller
         }
 
         $applications = $user->adoptionApplications()
-            ->with('pet')
+            ->with([
+                'pet',
+                'compatibilityAssessment',
+            ])
             ->latest()
             ->get();
 
@@ -172,7 +175,7 @@ class AdoptionApplicationController extends Controller
                 ->withInput();
         }
 
-        AdoptionApplication::create([
+        $application = AdoptionApplication::create([
             'user_id' => $user->id,
             'pet_id' => $pet->id,
             'status' => 'Pending',
@@ -181,10 +184,6 @@ class AdoptionApplicationController extends Controller
         ]);
 
         return redirect()
-            ->route('pets.show', $pet)
-            ->with(
-                'success',
-                'Your adoption application has been submitted successfully.'
-            );
-    }
+            ->route('compatibility-assessments.create', $application);
+            }
 }

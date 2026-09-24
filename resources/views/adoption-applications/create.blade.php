@@ -578,7 +578,7 @@
                            px-8 py-3 font-semibold text-white
                            hover:bg-orange-600"
                 >
-                    Submit Application
+                    Continue to Compatibility Assessment
                 </button>
 
             </div>
