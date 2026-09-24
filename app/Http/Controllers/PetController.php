@@ -60,8 +60,10 @@ class PetController extends Controller
     ) {
         $compatibility = null;
         $profile = null;
+        $existingApplication = null;
 
         if ($request->user() && $request->user()->role === 'adopter') {
+
             $profile = $request->user()->adopterProfile;
 
             if ($profile) {
@@ -70,12 +72,19 @@ class PetController extends Controller
                     $pet
                 );
             }
+
+            // Check whether this adopter already applied for this pet.
+            $existingApplication = $request->user()
+                ->adoptionApplications()
+                ->where('pet_id', $pet->id)
+                ->first();
         }
 
         return view('pets.show', compact(
             'pet',
             'profile',
-            'compatibility'
+            'compatibility',
+            'existingApplication'
         ));
     }
 }
