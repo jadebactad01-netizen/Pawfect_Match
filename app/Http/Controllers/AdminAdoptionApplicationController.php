@@ -15,26 +15,39 @@ class AdminAdoptionApplicationController extends Controller
         $status = $request->query('status');
 
         // Count all applications by status.
-        $allCount = AdoptionApplication::count();
+    $allCount = AdoptionApplication::whereHas(
+        'compatibilityAssessment'
+    )->count();
 
-        $pendingCount = AdoptionApplication::where(
-            'status',
-            'Pending'
-        )->count();
 
-        $approvedCount = AdoptionApplication::where(
-            'status',
-            'Approved'
-        )->count();
+    $pendingCount = AdoptionApplication::whereHas(
+        'compatibilityAssessment'
+    )
+        ->where('status', 'Pending')
+        ->count();
 
-        $rejectedCount = AdoptionApplication::where(
-            'status',
-            'Rejected'
-        )->count();
+
+    $approvedCount = AdoptionApplication::whereHas(
+        'compatibilityAssessment'
+    )
+        ->where('status', 'Approved')
+        ->count();
+
+
+    $rejectedCount = AdoptionApplication::whereHas(
+        'compatibilityAssessment'
+    )
+        ->where('status', 'Rejected')
+        ->count();
 
 
         // Start the applications query.
-        $query = AdoptionApplication::with(['user', 'pet']);
+        $query = AdoptionApplication::with([
+            'user',
+            'pet',
+            'compatibilityAssessment',
+        ])
+            ->whereHas('compatibilityAssessment');
 
         // Apply the selected filter.
         if (in_array($status, ['Pending', 'Approved', 'Rejected'])) {
@@ -68,14 +81,23 @@ class AdminAdoptionApplicationController extends Controller
         $application->load([
             'user.adopterProfile',
             'pet',
+            'compatibilityAssessment',
         ]);
+
+        if (! $application->compatibilityAssessment) {
+            return redirect()
+                ->route('admin.applications.index')
+                ->with(
+                    'error',
+                    'This application has not completed the compatibility assessment yet.'
+                );
+        }
 
         return view(
             'admin.applications.show',
             compact('application')
         );
     }
-
 
     /**
      * Update evaluator notes and application status.
@@ -84,6 +106,15 @@ class AdminAdoptionApplicationController extends Controller
         Request $request,
         AdoptionApplication $application
     ) {
+            if (! $application->compatibilityAssessment) {
+            return redirect()
+                ->route('admin.applications.index')
+                ->with(
+                    'error',
+                    'This application has not completed the compatibility assessment yet.'
+                );
+        }
+        
         $validated = $request->validate([
             'evaluator_notes' => [
                 'nullable',

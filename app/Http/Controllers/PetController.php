@@ -63,6 +63,7 @@ class PetController extends Controller
             // Check whether this adopter already applied for this pet.
             $existingApplication = $request->user()
                 ->adoptionApplications()
+                ->with('compatibilityAssessment')
                 ->where('pet_id', $pet->id)
                 ->first();
         }

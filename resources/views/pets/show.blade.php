@@ -212,48 +212,55 @@
 
                         @if ($existingApplication)
 
-                            <a href="{{ route('adoption-applications.index') }}"
-                            class="rounded-full border px-7 py-3 font-semibold
+                            @if (! $existingApplication->compatibilityAssessment)
 
-                                @if ($existingApplication->status === 'Approved')
-                                    border-green-300 bg-green-50
-                                    text-green-700 hover:bg-green-100
-
-                                @elseif ($existingApplication->status === 'Rejected')
-                                    border-red-300 bg-red-50
-                                    text-red-700 hover:bg-red-100
-
-                                @else
-                                    border-yellow-300 bg-yellow-50
-                                    text-yellow-700 hover:bg-yellow-100
-                                @endif
-                            ">
-
-                                Already Applied
-                                ({{ $existingApplication->status }})
-
-                            </a>
+                                <a
+                                    href="{{ route(
+                                        'compatibility-assessments.create',
+                                        $existingApplication
+                                    ) }}"
+                                    class="rounded-full border border-orange-300
+                                        bg-orange-50 px-7 py-3 font-semibold
+                                        text-orange-700 hover:bg-orange-100"
+                                >
+                                    Continue Compatibility Assessment
+                                </a>
 
                             @else
 
-                                <a href="{{ route('adoption-applications.create', $pet) }}"
-                                class="rounded-full border border-orange-500
-                                        bg-white px-7 py-3 font-semibold
-                                        text-orange-500 hover:bg-orange-50">
+                                <a
+                                    href="{{ route('adoption-applications.index') }}"
+                                    class="rounded-full border px-7 py-3 font-semibold
 
-                                    Apply for Adoption
+                                        @if ($existingApplication->status === 'Approved')
+                                            border-green-300 bg-green-50
+                                            text-green-700 hover:bg-green-100
 
+                                        @elseif ($existingApplication->status === 'Rejected')
+                                            border-red-300 bg-red-50
+                                            text-red-700 hover:bg-red-100
+
+                                        @else
+                                            border-yellow-300 bg-yellow-50
+                                            text-yellow-700 hover:bg-yellow-100
+                                        @endif
+                                    "
+                                >
+                                    Already Applied
+                                    ({{ $existingApplication->status }})
                                 </a>
 
                             @endif
 
                         @else
 
-                            <a href="{{ route('profile.edit') }}"
-                            class="rounded-full border border-orange-500
+                            <a
+                                href="{{ route('adoption-applications.create', $pet) }}"
+                                class="rounded-full border border-orange-500
                                     bg-white px-7 py-3 font-semibold
-                                    text-orange-500 hover:bg-orange-50">
-                                Complete Profile to Apply
+                                    text-orange-500 hover:bg-orange-50"
+                            >
+                                Apply for Adoption
                             </a>
 
                         @endif

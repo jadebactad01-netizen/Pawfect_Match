@@ -175,8 +175,36 @@
 
                             </div>
 
-                        @endif
+                        @else
 
+                            <div class="mt-5 rounded-xl border border-orange-200
+                                        bg-orange-50 p-4">
+
+                                <p class="font-semibold text-orange-700">
+                                    Compatibility Assessment Incomplete
+                                </p>
+
+                                <p class="mt-1 text-sm text-gray-600">
+                                    Complete the assessment to finish your
+                                    adoption application.
+                                </p>
+
+                                <a
+                                    href="{{ route(
+                                        'compatibility-assessments.create',
+                                        $application
+                                    ) }}"
+                                    class="mt-4 inline-block rounded-full
+                                        bg-orange-500 px-5 py-2
+                                        text-sm font-semibold text-white
+                                        hover:bg-orange-600"
+                                >
+                                    Continue Assessment
+                                </a>
+
+                            </div>
+
+                        @endif
 
                         {{-- Status explanation --}}
                         <div class="mt-5 rounded-xl p-4

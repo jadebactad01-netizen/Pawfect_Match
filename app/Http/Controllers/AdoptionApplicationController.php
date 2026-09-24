@@ -59,15 +59,29 @@ class AdoptionApplicationController extends Controller
                 ->with('error', 'Please complete your adopter profile before applying.');
         }
 
-        // Prevent duplicate applications.
-        $alreadyApplied = $user->adoptionApplications()
+        $existingApplication = $user->adoptionApplications()
             ->where('pet_id', $pet->id)
-            ->exists();
+            ->first();
 
-        if ($alreadyApplied) {
+        if ($existingApplication) {
+
+            // The application exists, but the assessment
+            // has not been completed yet.
+            if (! $existingApplication->compatibilityAssessment) {
+                return redirect()
+                    ->route(
+                        'compatibility-assessments.create',
+                        $existingApplication
+                    );
+            }
+
+            // The entire application process is already complete.
             return redirect()
-                ->route('pets.show', $pet)
-                ->with('error', 'You have already submitted an application for this pet.');
+                ->route('adoption-applications.index')
+                ->with(
+                    'error',
+                    'You have already applied for this pet.'
+                );
         }
 
         return view('adoption-applications.create', compact('pet'));
@@ -97,14 +111,26 @@ class AdoptionApplicationController extends Controller
                 ->with('error', 'Please complete your adopter profile before applying.');
         }
 
-        $alreadyApplied = $user->adoptionApplications()
+        $existingApplication = $user->adoptionApplications()
             ->where('pet_id', $pet->id)
-            ->exists();
+            ->first();
 
-        if ($alreadyApplied) {
+        if ($existingApplication) {
+
+            if (! $existingApplication->compatibilityAssessment) {
+                return redirect()
+                    ->route(
+                        'compatibility-assessments.create',
+                        $existingApplication
+                    );
+            }
+
             return redirect()
                 ->route('pets.show', $pet)
-                ->with('error', 'You have already submitted an application for this pet.');
+                ->with(
+                    'error',
+                    'You have already applied for this pet.'
+                );
         }
 
         $validated = $request->validate([
