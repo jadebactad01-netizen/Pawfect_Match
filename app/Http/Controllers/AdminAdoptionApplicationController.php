@@ -106,15 +106,16 @@ class AdminAdoptionApplicationController extends Controller
         Request $request,
         AdoptionApplication $application
     ) {
-            if (! $application->compatibilityAssessment) {
-            return redirect()
-                ->route('admin.applications.index')
-                ->with(
-                    'error',
-                    'This application has not completed the compatibility assessment yet.'
-                );
+
+        if (! $application->compatibilityAssessment) {
+        return redirect()
+            ->route('admin.applications.index')
+            ->with(
+                'error',
+                'This application has not completed the compatibility assessment yet.'
+            );
         }
-        
+
         $validated = $request->validate([
             'evaluator_notes' => [
                 'nullable',
