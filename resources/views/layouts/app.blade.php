@@ -82,7 +82,14 @@
                         class="font-semibold text-gray-700 hover:text-orange-500">
                             My Profile
                         </a>
+
+                        <a href="{{ route('adoption-applications.index') }}"
+                            class="hover:text-orange-500">
+                            My Applications
+                        </a>
                     @endif
+
+                    
 
                     @if (in_array(auth()->user()->role, ['admin', 'super_admin']))
 
@@ -172,6 +179,11 @@
                         <a href="{{ route('profile.edit') }}"
                         class="font-semibold text-gray-700 hover:text-orange-500">
                             My Profile
+                        </a>
+
+                        <a href="{{ route('adoption-applications.index') }}"
+                            class="hover:text-orange-500">
+                            My Applications
                         </a>
                     @endif
 

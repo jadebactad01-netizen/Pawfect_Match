@@ -52,6 +52,11 @@ Route::middleware('auth')->group(function () {
         ->name('profile.update');
 
     Route::get(
+        '/my-applications',
+        [AdoptionApplicationController::class, 'index']
+    )->name('adoption-applications.index');
+
+    Route::get(
         '/pets/{pet}/apply',
         [AdoptionApplicationController::class, 'create']
     )->name('adoption-applications.create');

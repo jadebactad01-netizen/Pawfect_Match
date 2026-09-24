@@ -236,7 +236,6 @@
 
             @endguest
 
-                <!-- Not functional yet -->
             @if ($pet->status === 'Available')
 
                 @guest

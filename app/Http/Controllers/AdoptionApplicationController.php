@@ -8,6 +8,28 @@ use Illuminate\Http\Request;
 
 class AdoptionApplicationController extends Controller
 {
+
+    /**
+     * Show the logged-in adopter's applications.
+     */
+    public function index(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user->role !== 'adopter') {
+            abort(403);
+        }
+
+        $applications = $user->adoptionApplications()
+            ->with('pet')
+            ->latest()
+            ->get();
+
+        return view(
+            'adoption-applications.index',
+            compact('applications')
+        );
+    }
     /**
      * Show the adoption application form.
      */
