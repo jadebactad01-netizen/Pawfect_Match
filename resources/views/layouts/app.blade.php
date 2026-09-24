@@ -98,6 +98,11 @@
                             Manage Pets
                         </a>
 
+                        <a href="{{ route('admin.applications.index') }}"
+                            class="font-semibold text-gray-700 hover:text-orange-500">
+                            Applications
+                        </a>
+
                     @endif
 
                     <form action="{{ url('/logout') }}" method="POST">
@@ -194,6 +199,10 @@
                             Manage Pets
                         </a>
 
+                        <a href="{{ route('admin.applications.index') }}"
+                            class="font-semibold text-gray-700 hover:text-orange-500">
+                            Applications
+                        </a>
                     @endif
 
                     <form action="{{ url('/logout') }}" method="POST">

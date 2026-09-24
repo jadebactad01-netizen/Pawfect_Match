@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminPetController;
 use App\Http\Controllers\AdopterProfileController;
+use App\Http\Controllers\AdminAdoptionApplicationController;
 use App\Http\Controllers\AdoptionApplicationController;
 use App\Http\Controllers\PetController;
 use Illuminate\Support\Facades\Route;
@@ -95,5 +96,20 @@ Route::middleware('admin')->group(function () {
 
     Route::delete('/admin/pets/{pet}', [AdminPetController::class, 'destroy'])
         ->name('admin.pets.destroy');
+
+    Route::get(
+        '/admin/applications',
+        [AdminAdoptionApplicationController::class, 'index']
+    )->name('admin.applications.index');
+
+    Route::get(
+        '/admin/applications/{application}',
+        [AdminAdoptionApplicationController::class, 'show']
+    )->name('admin.applications.show');
+
+    Route::put(
+        '/admin/applications/{application}',
+        [AdminAdoptionApplicationController::class, 'update']
+    )->name('admin.applications.update');
 
 });
