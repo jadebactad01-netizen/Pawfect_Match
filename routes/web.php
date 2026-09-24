@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminPetController;
 use App\Http\Controllers\AdopterProfileController;
+use App\Http\Controllers\AdoptionApplicationController;
 use App\Http\Controllers\PetController;
 use Illuminate\Support\Facades\Route;
 
@@ -49,6 +50,16 @@ Route::middleware('auth')->group(function () {
 
     Route::put('/profile', [AdopterProfileController::class, 'update'])
         ->name('profile.update');
+
+    Route::get(
+        '/pets/{pet}/apply',
+        [AdoptionApplicationController::class, 'create']
+    )->name('adoption-applications.create');
+
+    Route::post(
+        '/pets/{pet}/apply',
+        [AdoptionApplicationController::class, 'store']
+    )->name('adoption-applications.store');
 
 });
 

@@ -25,7 +25,31 @@
 
 </section>
 
+@if (session('success') || session('error'))
 
+    <div class="bg-orange-50 px-6 pt-6">
+
+        <div class="mx-auto max-w-7xl">
+
+            @if (session('success'))
+                <div class="rounded-xl border border-green-200
+                            bg-green-50 px-5 py-4 text-green-700">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="rounded-xl border border-red-200
+                            bg-red-50 px-5 py-4 text-red-700">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+        </div>
+
+    </div>
+
+@endif
 
 <!-- =========================================
      PET PROFILE
@@ -213,15 +237,46 @@
             @endguest
 
                 <!-- Not functional yet -->
-                <a href="#"
-                   class="rounded-full border border-orange-500
-                          bg-white px-7 py-3
-                          font-semibold text-orange-500
-                          hover:bg-orange-50">
+            @if ($pet->status === 'Available')
 
-                    Apply for Adoption
+                @guest
 
-                </a>
+                    <a href="{{ route('login') }}"
+                    class="rounded-full border border-orange-500
+                            bg-white px-7 py-3 font-semibold
+                            text-orange-500 hover:bg-orange-50">
+                        Log In to Apply
+                    </a>
+
+                @else
+
+                    @if (auth()->user()->role === 'adopter')
+
+                        @if ($profile)
+
+                            <a href="{{ route('adoption-applications.create', $pet) }}"
+                            class="rounded-full border border-orange-500
+                                    bg-white px-7 py-3 font-semibold
+                                    text-orange-500 hover:bg-orange-50">
+                                Apply for Adoption
+                            </a>
+
+                        @else
+
+                            <a href="{{ route('profile.edit') }}"
+                            class="rounded-full border border-orange-500
+                                    bg-white px-7 py-3 font-semibold
+                                    text-orange-500 hover:bg-orange-50">
+                                Complete Profile to Apply
+                            </a>
+
+                        @endif
+
+                    @endif
+
+                @endguest
+
+            @endif
 
 
             </div>
