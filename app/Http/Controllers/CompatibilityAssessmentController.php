@@ -65,7 +65,6 @@ class CompatibilityAssessmentController extends Controller
                 );
         }
 
-
         $validated = $request->validate([
             'care_ability' => [
                 'required',
@@ -98,7 +97,6 @@ class CompatibilityAssessmentController extends Controller
             ],
         ]);
 
-
         // First save the adopter's answers.
         $assessment = CompatibilityAssessment::create([
             'adoption_application_id' => $application->id,
@@ -106,17 +104,14 @@ class CompatibilityAssessmentController extends Controller
             ...$validated,
         ]);
 
-
         // Load the pet being applied for.
         $application->load('pet');
-
 
         // Calculate the compatibility score.
         $result = $compatibilityService->calculate(
             $assessment,
             $application->pet
         );
-
 
         // Save the calculated result.
         $assessment->update($result);
@@ -128,14 +123,12 @@ class CompatibilityAssessmentController extends Controller
                 $application->pet
             );
 
-
         // Save the explanation only if Gemini returned one.
         if ($explanation) {
             $assessment->update([
                 'gemini_explanation' => $explanation,
             ]);
         }
-
 
         return redirect()
             ->route('adoption-applications.index')
@@ -159,67 +152,59 @@ class CompatibilityAssessmentController extends Controller
             abort(403);
         }
 
+        $application->load([
+            'pet',
+            'compatibilityAssessment',
+        ]);
 
-    $application->load([
-        'pet',
-        'compatibilityAssessment',
-    ]);
+        $assessment = $application->compatibilityAssessment;
 
+        // The assessment must already be completed.
+        if (! $assessment) {
+            return redirect()
+                ->route('adoption-applications.index')
+                ->with(
+                    'error',
+                    'Complete the compatibility assessment first.'
+                );
+        }
 
-    $assessment = $application->compatibilityAssessment;
+        // No need to call Gemini again if an explanation exists.
+        if ($assessment->gemini_explanation) {
+            return redirect()
+                ->route('adoption-applications.index')
+                ->with(
+                    'success',
+                    'The compatibility explanation is already available.'
+                );
+        }
 
-
-    // The assessment must already be completed.
-    if (! $assessment) {
-        return redirect()
-            ->route('adoption-applications.index')
-            ->with(
-                'error',
-                'Complete the compatibility assessment first.'
+        $explanation = $geminiService
+            ->generateCompatibilityExplanation(
+                $assessment,
+                $application->pet
             );
-    }
 
+        // Gemini is still unavailable.
+        if (! $explanation) {
+            return redirect()
+                ->route('adoption-applications.index')
+                ->with(
+                    'error',
+                    'The AI model is temporarily unavailable. Please try again later.'
+                );
+        }
 
-    // No need to call Gemini again if an explanation exists.
-    if ($assessment->gemini_explanation) {
+        // Save the successful explanation.
+        $assessment->update([
+            'gemini_explanation' => $explanation,
+        ]);
+
         return redirect()
             ->route('adoption-applications.index')
             ->with(
                 'success',
-                'The compatibility explanation is already available.'
+                'Compatibility explanation generated successfully.'
             );
     }
-
-
-    $explanation = $geminiService
-        ->generateCompatibilityExplanation(
-            $assessment,
-            $application->pet
-        );
-
-
-    // Gemini is still unavailable.
-    if (! $explanation) {
-        return redirect()
-            ->route('adoption-applications.index')
-            ->with(
-                'error',
-                'The AI model is temporarily unavailable. Please try again later.'
-            );
-    }
-
-
-    // Save the successful explanation.
-    $assessment->update([
-        'gemini_explanation' => $explanation,
-    ]);
-
-
-    return redirect()
-        ->route('adoption-applications.index')
-        ->with(
-            'success',
-            'Compatibility explanation generated successfully.'
-        );
-}
 }

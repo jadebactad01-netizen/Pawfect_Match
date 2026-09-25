@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\CompatibilityAssessment;
+use Illuminate\Support\Collection;
 use App\Models\Pet;
 
 class CompatibilityService
@@ -80,6 +81,37 @@ class CompatibilityService
             'total_score' => $totalScore,
             'classification' => $classification,
         ];
+    }
+
+    /**
+     * Find other available pets that match the adopter.
+     */
+    public function recommendPets(
+        CompatibilityAssessment $assessment,
+        Pet $selectedPet,
+        int $limit = 3
+    ): Collection {
+        return Pet::where('status', 'Available')
+            ->where('id', '!=', $selectedPet->id)
+            ->get()
+            ->map(function ($pet) use ($assessment) {
+
+                $result = $this->calculate(
+                    $assessment,
+                    $pet
+                );
+
+                $pet->compatibility_score =
+                    $result['total_score'];
+
+                $pet->compatibility_classification =
+                    $result['classification'];
+
+                return $pet;
+            })
+            ->sortByDesc('compatibility_score')
+            ->take($limit)
+            ->values();
     }
 
 
