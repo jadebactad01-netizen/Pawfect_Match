@@ -195,8 +195,9 @@
                                             </p>
 
                                             <p class="mt-2 text-sm leading-6 text-gray-600">
-                                                The AI model is temporarily unavailable.
-                                                Your compatibility score is still valid.
+                                                The AI model is temporarily unavailable. <br>
+                                                Your compatibility score is still valid. <br>
+                                                You can try generating the explanation again later.
                                             </p>
 
 

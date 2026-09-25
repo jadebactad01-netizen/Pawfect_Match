@@ -16,8 +16,7 @@ class AdoptionApplicationController extends Controller
     public function index(
         Request $request,
         CompatibilityService $compatibilityService
-        )
-    {
+        ) {
         $user = $request->user();
 
         if ($user->role !== 'adopter') {
