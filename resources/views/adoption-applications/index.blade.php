@@ -195,7 +195,7 @@
                                             </p>
 
                                             <p class="mt-2 text-sm leading-6 text-gray-600">
-                                                The AI explanation is temporarily unavailable.
+                                                The AI model is temporarily unavailable.
                                                 Your compatibility score is still valid.
                                             </p>
 
@@ -254,6 +254,80 @@
                                 >
                                     Continue Assessment
                                 </a>
+
+                            </div>
+
+                        @endif
+
+                        @if (
+                            $application->compatibilityAssessment &&
+                            $application->recommended_pets->isNotEmpty()
+                        )
+
+                            <div class="mt-5">
+
+                                <h3 class="font-semibold text-gray-900">
+                                    Other Compatible Pets
+                                </h3>
+
+                                <p class="mt-1 text-sm text-gray-600">
+                                    Based on your compatibility assessment,
+                                    you may also be compatible with these available pets.
+                                </p>
+
+
+                                <div class="mt-4 space-y-3">
+
+                                    @foreach ($application->recommended_pets as $recommendedPet)
+
+                                        <div class="rounded-xl border border-orange-100
+                                                    bg-orange-50 p-4">
+
+                                            <div class="flex items-center justify-between gap-4">
+
+                                                <div>
+
+                                                    <p class="font-semibold text-gray-900">
+                                                        {{ $recommendedPet->name }}
+                                                    </p>
+
+                                                    <p class="mt-1 text-sm text-gray-600">
+                                                        {{ $recommendedPet->type }}
+                                                        ·
+                                                        {{ $recommendedPet->age }}
+                                                    </p>
+
+                                                </div>
+
+
+                                                <div class="text-right">
+
+                                                    <p class="font-bold text-orange-500">
+                                                        {{ $recommendedPet->compatibility_score }}%
+                                                    </p>
+
+                                                    <p class="text-xs text-gray-600">
+                                                        {{ $recommendedPet->compatibility_classification }}
+                                                    </p>
+
+                                                </div>
+
+                                            </div>
+
+
+                                            <a
+                                                href="{{ route('pets.show', $recommendedPet) }}"
+                                                class="mt-3 inline-block text-sm font-semibold
+                                                    text-orange-500 hover:text-orange-600"
+                                            >
+                                                View {{ $recommendedPet->name }} →
+                                            </a>
+
+                                        </div>
+
+                                    @endforeach
+
+                                </div>
 
                             </div>
 

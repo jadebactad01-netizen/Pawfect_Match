@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Models\CompatibilityAssessment;
-use Illuminate\Support\Collection;
 use App\Models\Pet;
+use Illuminate\Support\Collection;
 
 class CompatibilityService
 {
