@@ -115,7 +115,8 @@ Requirements:
 - Do not change the compatibility score.
 - Do not claim that adoption is guaranteed.
 - Do not approve or reject the adoption application.
-- Keep the explanation to about 2 short paragraphs.
+- Keep the explanation brief, around 2 to 3 sentences.
+- Do not repeat every assessment factor.
 PROMPT;
     }
 }

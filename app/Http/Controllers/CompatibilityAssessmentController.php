@@ -146,18 +146,18 @@ class CompatibilityAssessmentController extends Controller
     }
 
     /**
- * Retry generating the Gemini compatibility explanation.
- */
-public function retryExplanation(
-    Request $request,
-    AdoptionApplication $application,
-    GeminiService $geminiService
-) {
-    // Make sure this application belongs to
-    // the logged-in adopter.
-    if ($application->user_id !== $request->user()->id) {
-        abort(403);
-    }
+     * Retry generating the Gemini compatibility explanation.
+     */
+    public function retryExplanation(
+        Request $request,
+        AdoptionApplication $application,
+        GeminiService $geminiService
+    ) {
+        // Make sure this application belongs to
+        // the logged-in adopter.
+        if ($application->user_id !== $request->user()->id) {
+            abort(403);
+        }
 
 
     $application->load([
@@ -204,7 +204,7 @@ public function retryExplanation(
             ->route('adoption-applications.index')
             ->with(
                 'error',
-                'The AI explanation is temporarily unavailable. Please try again later.'
+                'The AI model is temporarily unavailable. Please try again later.'
             );
     }
 

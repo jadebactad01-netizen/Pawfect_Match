@@ -78,11 +78,10 @@ Route::middleware('auth')->group(function () {
         [CompatibilityAssessmentController::class, 'store']
     )->name('compatibility-assessments.store');
 
-
     Route::post(
-    '/applications/{application}/compatibility-explanation/retry',
-    [CompatibilityAssessmentController::class, 'retryExplanation']
-)->name('compatibility-assessments.retry-explanation');
+        '/applications/{application}/compatibility-explanation/retry',
+        [CompatibilityAssessmentController::class, 'retryExplanation']
+    )->name('compatibility-assessments.retry-explanation');
 
 });
 

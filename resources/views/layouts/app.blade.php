@@ -223,13 +223,45 @@
     </header>
 
 
-    <!-- =========================
-         PAGE CONTENT
-    ========================== -->
+<!-- =========================
+     FLASH MESSAGES
+========================== -->
 
-    <main>
-        @yield('content')
-    </main>
+@if (session('success'))
+
+    <div class="mx-auto mt-4 max-w-7xl px-6">
+
+        <div class="rounded-xl border border-green-200
+                    bg-green-50 p-4 text-green-700">
+            {{ session('success') }}
+        </div>
+
+    </div>
+
+@endif
+
+
+@if (session('error'))
+
+    <div class="mx-auto mt-4 max-w-7xl px-6">
+
+        <div class="rounded-xl border border-red-200
+                    bg-red-50 p-4 text-red-700">
+            {{ session('error') }}
+        </div>
+
+    </div>
+
+@endif
+
+
+<!-- =========================
+     PAGE CONTENT
+========================== -->
+
+<main>
+    @yield('content')
+</main>
 
 
     <!-- =========================
