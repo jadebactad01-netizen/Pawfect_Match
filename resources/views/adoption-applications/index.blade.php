@@ -171,6 +171,23 @@
                                         {{ $application->compatibilityAssessment->classification }}
                                     </span>
 
+                                    @if ($application->compatibilityAssessment->gemini_explanation)
+
+                                        <div class="mt-4 border-t border-orange-200 pt-4">
+
+                                            <p class="font-semibold text-gray-900">
+                                                Compatibility Explanation
+                                            </p>
+
+                                            <p class="mt-2 whitespace-pre-line
+                                                    leading-7 text-gray-600">
+                                                {{ $application->compatibilityAssessment->gemini_explanation }}
+                                            </p>
+
+                                        </div>
+
+                                    @endif
+
                                 </div>
 
                             </div>

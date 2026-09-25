@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AdoptionApplication;
 use App\Models\CompatibilityAssessment;
 use App\Services\CompatibilityService;
+use App\Services\GeminiService;
 use Illuminate\Http\Request;
 
 class CompatibilityAssessmentController extends Controller
@@ -46,7 +47,8 @@ class CompatibilityAssessmentController extends Controller
     public function store(
         Request $request,
         AdoptionApplication $application,
-        CompatibilityService $compatibilityService
+        CompatibilityService $compatibilityService,
+        GeminiService $geminiService
     ) {
         // Make sure this application belongs to the adopter.
         if ($application->user_id !== $request->user()->id) {
@@ -118,6 +120,21 @@ class CompatibilityAssessmentController extends Controller
 
         // Save the calculated result.
         $assessment->update($result);
+
+        // Ask Gemini to explain the already-calculated result.
+        $explanation = $geminiService
+            ->generateCompatibilityExplanation(
+                $assessment,
+                $application->pet
+            );
+
+
+        // Save the explanation only if Gemini returned one.
+        if ($explanation) {
+            $assessment->update([
+                'gemini_explanation' => $explanation,
+            ]);
+        }
 
 
         return redirect()
