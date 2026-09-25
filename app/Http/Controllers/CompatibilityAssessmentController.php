@@ -144,4 +144,82 @@ class CompatibilityAssessmentController extends Controller
                 'Your adoption application and compatibility assessment were submitted successfully.'
             );
     }
+
+    /**
+ * Retry generating the Gemini compatibility explanation.
+ */
+public function retryExplanation(
+    Request $request,
+    AdoptionApplication $application,
+    GeminiService $geminiService
+) {
+    // Make sure this application belongs to
+    // the logged-in adopter.
+    if ($application->user_id !== $request->user()->id) {
+        abort(403);
+    }
+
+
+    $application->load([
+        'pet',
+        'compatibilityAssessment',
+    ]);
+
+
+    $assessment = $application->compatibilityAssessment;
+
+
+    // The assessment must already be completed.
+    if (! $assessment) {
+        return redirect()
+            ->route('adoption-applications.index')
+            ->with(
+                'error',
+                'Complete the compatibility assessment first.'
+            );
+    }
+
+
+    // No need to call Gemini again if an explanation exists.
+    if ($assessment->gemini_explanation) {
+        return redirect()
+            ->route('adoption-applications.index')
+            ->with(
+                'success',
+                'The compatibility explanation is already available.'
+            );
+    }
+
+
+    $explanation = $geminiService
+        ->generateCompatibilityExplanation(
+            $assessment,
+            $application->pet
+        );
+
+
+    // Gemini is still unavailable.
+    if (! $explanation) {
+        return redirect()
+            ->route('adoption-applications.index')
+            ->with(
+                'error',
+                'The AI explanation is temporarily unavailable. Please try again later.'
+            );
+    }
+
+
+    // Save the successful explanation.
+    $assessment->update([
+        'gemini_explanation' => $explanation,
+    ]);
+
+
+    return redirect()
+        ->route('adoption-applications.index')
+        ->with(
+            'success',
+            'Compatibility explanation generated successfully.'
+        );
+}
 }

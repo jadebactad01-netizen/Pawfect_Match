@@ -52,10 +52,7 @@ class GeminiService
 
 
 if ($response->failed()) {
-    dd([
-        'status' => $response->status(),
-        'response' => $response->json(),
-    ]);
+    return null;
 }
 
 
@@ -63,13 +60,11 @@ if ($response->failed()) {
                 'candidates.0.content.parts.0.text'
             );
 
-} catch (\Exception $exception) {
+        } catch (\Exception $exception) {
 
-    dd([
-        'exception' => $exception->getMessage(),
-    ]);
+            return null;
 
-}
+        }
     }
 
 

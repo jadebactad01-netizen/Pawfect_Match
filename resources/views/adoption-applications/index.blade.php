@@ -186,6 +186,42 @@
 
                                         </div>
 
+                                    @else
+
+                                        <div class="mt-4 border-t border-orange-200 pt-4">
+
+                                            <p class="font-semibold text-gray-900">
+                                                Compatibility Explanation
+                                            </p>
+
+                                            <p class="mt-2 text-sm leading-6 text-gray-600">
+                                                The AI explanation is temporarily unavailable.
+                                                Your compatibility score is still valid.
+                                            </p>
+
+
+                                            <form
+                                                action="{{ route(
+                                                    'compatibility-assessments.retry-explanation',
+                                                    $application
+                                                ) }}"
+                                                method="POST"
+                                                class="mt-4"
+                                            >
+                                                @csrf
+
+                                                <button
+                                                    type="submit"
+                                                    class="rounded-full bg-orange-500
+                                                        px-5 py-2 text-sm font-semibold
+                                                        text-white hover:bg-orange-600"
+                                                >
+                                                    Retry AI Explanation
+                                                </button>
+                                            </form>
+
+                                        </div>
+
                                     @endif
 
                                 </div>
