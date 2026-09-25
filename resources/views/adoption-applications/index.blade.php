@@ -276,7 +276,6 @@
                                     you may also be compatible with these available pets.
                                 </p>
 
-
                                 <div class="mt-4 space-y-3">
 
                                     @foreach ($application->recommended_pets as $recommendedPet)

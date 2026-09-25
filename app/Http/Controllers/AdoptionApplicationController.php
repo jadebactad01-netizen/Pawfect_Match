@@ -13,9 +13,9 @@ class AdoptionApplicationController extends Controller
     /**
      * Show the logged-in adopter's applications.
      */
-    public function index(
-        Request $request,
-        CompatibilityService $compatibilityService
+        public function index(
+            Request $request,
+            CompatibilityService $compatibilityService
         ) {
         $user = $request->user();
 
