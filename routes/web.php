@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminAdoptionApplicationController;
 use App\Http\Controllers\AdoptionApplicationController;
 use App\Http\Controllers\CompatibilityAssessmentController;
 use App\Http\Controllers\PetController;
+use App\Http\Controllers\AdminAdopterController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -84,12 +85,12 @@ Route::middleware('auth')->group(function () {
     )->name('compatibility-assessments.retry-explanation');
 
     Route::post(
-    '/applications/{application}/recommendation-explanations/retry',
-    [
-        CompatibilityAssessmentController::class,
-        'retryRecommendationExplanations'
-    ]
-)->name('compatibility-assessments.retry-recommendations');
+        '/applications/{application}/recommendation-explanations/retry',
+        [
+            CompatibilityAssessmentController::class,
+            'retryRecommendationExplanations'
+        ]
+    )->name('compatibility-assessments.retry-recommendations');
 
 });
 
@@ -135,5 +136,15 @@ Route::middleware('admin')->group(function () {
         '/admin/applications/{application}',
         [AdminAdoptionApplicationController::class, 'update']
     )->name('admin.applications.update');
+
+    Route::get(
+        '/admin/adopters',
+        [AdminAdopterController::class, 'index']
+    )->name('admin.adopters.index');
+
+    Route::get(
+        '/admin/adopters/{adopter}',
+        [AdminAdopterController::class, 'show']
+    )->name('admin.adopters.show');
 
 });

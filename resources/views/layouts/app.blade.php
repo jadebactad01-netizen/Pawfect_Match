@@ -98,6 +98,11 @@
                             Manage Pets
                         </a>
 
+                        <a href="{{ route('admin.adopters.index') }}"
+                            class="font-semibold text-gray-700 hover:text-orange-500">
+                            Adopters
+                        </a>
+
                         <a href="{{ route('admin.applications.index') }}"
                             class="font-semibold text-gray-700 hover:text-orange-500">
                             Applications
@@ -197,6 +202,11 @@
                         <a href="{{ route('admin.pets.manage') }}"
                         class="font-semibold text-orange-500">
                             Manage Pets
+                        </a>
+
+                        <a href="{{ route('admin.adopters.index') }}"
+                            class="font-semibold text-gray-700 hover:text-orange-500">
+                            Adopters
                         </a>
 
                         <a href="{{ route('admin.applications.index') }}"
