@@ -12,8 +12,8 @@ class AdoptionApplicationController extends Controller
     /**
      * Show the logged-in adopter's applications.
      */
-        public function index(Request $request) 
-        {
+    public function index(Request $request) 
+    {
         $user = $request->user();
 
         if ($user->role !== 'adopter') {

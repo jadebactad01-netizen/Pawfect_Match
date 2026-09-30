@@ -262,7 +262,9 @@
 
                         @if (
                             $application->compatibilityAssessment &&
-                            $application->recommended_pets->isNotEmpty()
+                            $application->compatibilityAssessment
+                                ->petRecommendations
+                                ->isNotEmpty()
                         )
 
                             <div class="mt-5">
@@ -273,28 +275,35 @@
 
                                 <p class="mt-1 text-sm text-gray-600">
                                     Based on your compatibility assessment,
-                                    you may also be compatible with these available pets.
+                                    these available pets may also be a good match for you.
                                 </p>
+
 
                                 <div class="mt-4 space-y-3">
 
-                                    @foreach ($application->recommended_pets as $recommendedPet)
+                                    @foreach (
+                                        $application->compatibilityAssessment
+                                            ->petRecommendations
+                                            ->sortByDesc('compatibility_score')
+                                        as $recommendation
+                                    )
 
                                         <div class="rounded-xl border border-orange-100
                                                     bg-orange-50 p-4">
 
-                                            <div class="flex items-center justify-between gap-4">
+                                            <div class="flex items-start
+                                                        justify-between gap-4">
 
                                                 <div>
 
                                                     <p class="font-semibold text-gray-900">
-                                                        {{ $recommendedPet->name }}
+                                                        {{ $recommendation->pet->name }}
                                                     </p>
 
                                                     <p class="mt-1 text-sm text-gray-600">
-                                                        {{ $recommendedPet->type }}
+                                                        {{ $recommendation->pet->type }}
                                                         ·
-                                                        {{ $recommendedPet->age }}
+                                                        {{ $recommendation->pet->age }}
                                                     </p>
 
                                                 </div>
@@ -303,11 +312,11 @@
                                                 <div class="text-right">
 
                                                     <p class="font-bold text-orange-500">
-                                                        {{ $recommendedPet->compatibility_score }}%
+                                                        {{ $recommendation->compatibility_score }}%
                                                     </p>
 
                                                     <p class="text-xs text-gray-600">
-                                                        {{ $recommendedPet->compatibility_classification }}
+                                                        {{ $recommendation->classification }}
                                                     </p>
 
                                                 </div>
@@ -315,12 +324,42 @@
                                             </div>
 
 
+                                            @if ($recommendation->gemini_explanation)
+
+                                                <div class="mt-3 border-t
+                                                            border-orange-200 pt-3">
+
+                                                    <p class="text-sm leading-6 text-gray-600">
+                                                        {{ $recommendation->gemini_explanation }}
+                                                    </p>
+
+                                                </div>
+
+                                            @else
+
+                                                <div class="mt-3 border-t
+                                                            border-orange-200 pt-3">
+
+                                                    <p class="text-sm text-gray-500">
+                                                        AI recommendation explanation
+                                                        is temporarily unavailable.
+                                                    </p>
+
+                                                </div>
+
+                                            @endif
+
+
                                             <a
-                                                href="{{ route('pets.show', $recommendedPet) }}"
-                                                class="mt-3 inline-block text-sm font-semibold
-                                                    text-orange-500 hover:text-orange-600"
+                                                href="{{ route(
+                                                    'pets.show',
+                                                    $recommendation->pet
+                                                ) }}"
+                                                class="mt-3 inline-block text-sm
+                                                    font-semibold text-orange-500
+                                                    hover:text-orange-600"
                                             >
-                                                View {{ $recommendedPet->name }} →
+                                                View {{ $recommendation->pet->name }} →
                                             </a>
 
                                         </div>
