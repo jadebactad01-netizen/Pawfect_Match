@@ -108,6 +108,11 @@
                             Applications
                         </a>
 
+                        <a href="{{ route('admin.adoption-records.index') }}"
+                            class="font-semibold text-gray-700 hover:text-orange-500">
+                            Adoption Records
+                        </a>
+
                     @endif
 
                     <form action="{{ url('/logout') }}" method="POST">
@@ -213,6 +218,12 @@
                             class="font-semibold text-gray-700 hover:text-orange-500">
                             Applications
                         </a>
+
+                        <a href="{{ route('admin.adoption-records.index') }}"
+                            class="font-semibold text-gray-700 hover:text-orange-500">
+                            Adoption Records
+                        </a>
+
                     @endif
 
                     <form action="{{ url('/logout') }}" method="POST">

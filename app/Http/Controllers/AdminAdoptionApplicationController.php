@@ -8,70 +8,25 @@ use Illuminate\Http\Request;
 class AdminAdoptionApplicationController extends Controller
 {
     /**
-     * Show all adoption applications.
+     * Show pending adoption applications.
      */
-    public function index(Request $request)
+    public function index()
     {
-        $status = $request->query('status');
-
-        // Count all applications by status.
-    $allCount = AdoptionApplication::whereHas(
-        'compatibilityAssessment'
-    )->count();
-
-
-    $pendingCount = AdoptionApplication::whereHas(
-        'compatibilityAssessment'
-    )
-        ->where('status', 'Pending')
-        ->count();
-
-
-    $approvedCount = AdoptionApplication::whereHas(
-        'compatibilityAssessment'
-    )
-        ->where('status', 'Approved')
-        ->count();
-
-
-    $rejectedCount = AdoptionApplication::whereHas(
-        'compatibilityAssessment'
-    )
-        ->where('status', 'Rejected')
-        ->count();
-
-
-        // Start the applications query.
-        $query = AdoptionApplication::with([
+        $applications = AdoptionApplication::with([
             'user',
             'pet',
             'compatibilityAssessment',
         ])
-            ->whereHas('compatibilityAssessment');
-
-        // Apply the selected filter.
-        if (in_array($status, ['Pending', 'Approved', 'Rejected'])) {
-            $query->where('status', $status);
-        }
-
-        $applications = $query
+            ->whereHas('compatibilityAssessment')
+            ->where('status', 'Pending')
             ->latest()
             ->get();
 
-
         return view(
             'admin.applications.index',
-            compact(
-                'applications',
-                'status',
-                'allCount',
-                'pendingCount',
-                'approvedCount',
-                'rejectedCount'
-            )
+            compact('applications')
         );
     }
-
 
     /**
      * Show one adoption application.
@@ -107,35 +62,23 @@ class AdminAdoptionApplicationController extends Controller
         AdoptionApplication $application
     ) {
 
-        if (! $application->compatibilityAssessment) {
+    if (in_array(
+        $application->status,
+        ['Approved', 'Rejected']
+    )) {
         return redirect()
-            ->route('admin.applications.index')
-            ->with(
-                'error',
-                'This application has not completed the compatibility assessment yet.'
-            );
-        }
-
-        $validated = $request->validate([
-            'evaluator_notes' => [
-                'nullable',
-                'string',
-                'max:5000',
-            ],
-
-            'status' => [
-                'required',
-                'in:Pending,Approved,Rejected',
-            ],
-        ]);
-
-        $application->update($validated);
-
-        return redirect()
-            ->route('admin.applications.show', $application)
+            ->route('admin.adoption-records.show', $application)
             ->with(
                 'success',
-                'Application review updated successfully.'
+                'Application review completed successfully.'
             );
+    }
+
+    return redirect()
+        ->route('admin.applications.show', $application)
+        ->with(
+            'success',
+            'Application review updated successfully.'
+        );
     }
 }

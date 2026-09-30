@@ -7,6 +7,7 @@ use App\Http\Controllers\AdoptionApplicationController;
 use App\Http\Controllers\CompatibilityAssessmentController;
 use App\Http\Controllers\PetController;
 use App\Http\Controllers\AdminAdopterController;
+use App\Http\Controllers\AdminAdoptionRecordController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -146,5 +147,15 @@ Route::middleware('admin')->group(function () {
         '/admin/adopters/{adopter}',
         [AdminAdopterController::class, 'show']
     )->name('admin.adopters.show');
+
+    Route::get(
+        '/admin/adoption-records',
+        [AdminAdoptionRecordController::class, 'index']
+    )->name('admin.adoption-records.index');
+
+    Route::get(
+        '/admin/adoption-records/{application}',
+        [AdminAdoptionRecordController::class, 'show']
+    )->name('admin.adoption-records.show');
 
 });
