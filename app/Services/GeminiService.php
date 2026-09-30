@@ -32,6 +32,7 @@ class GeminiService
         try {
 
             $response = Http::timeout(20)
+                ->retry(2, 1000, throw: false)
                 ->withHeaders([
                     'x-goog-api-key' => $apiKey,
                 ])
@@ -93,6 +94,7 @@ class GeminiService
         try {
 
             $response = Http::timeout(20)
+                ->retry(2, 1000, throw: false)
                 ->withHeaders([
                     'x-goog-api-key' => $apiKey,
                 ])

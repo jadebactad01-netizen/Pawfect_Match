@@ -242,4 +242,82 @@ class CompatibilityAssessmentController extends Controller
                 'Compatibility explanation generated successfully.'
             );
     }
+
+    /**
+     * Retry missing AI explanations for recommended pets.
+     */
+    public function retryRecommendationExplanations(
+        Request $request,
+        AdoptionApplication $application,
+        GeminiService $geminiService
+    ) {
+        if ($application->user_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        $application->load([
+            'compatibilityAssessment.petRecommendations.pet',
+        ]);
+
+        $assessment = $application->compatibilityAssessment;
+
+        if (! $assessment) {
+            return redirect()
+                ->route('adoption-applications.index')
+                ->with(
+                    'error',
+                    'Compatibility assessment not found.'
+                );
+        }
+
+        $missingRecommendations =
+            $assessment->petRecommendations
+                ->whereNull('gemini_explanation');
+
+        if ($missingRecommendations->isEmpty()) {
+            return redirect()
+                ->route('adoption-applications.index')
+                ->with(
+                    'success',
+                    'Recommendation explanations are already available.'
+                );
+        }
+
+        foreach ($missingRecommendations as $recommendation) {
+
+            $explanation = $geminiService
+                ->generateRecommendationExplanation(
+                    $assessment,
+                    $recommendation->pet,
+                    $recommendation->compatibility_score,
+                    $recommendation->classification
+                );
+
+            if ($explanation) {
+                $recommendation->update([
+                    'gemini_explanation' => $explanation,
+                ]);
+            }
+        }
+
+        $stillMissing = $assessment->petRecommendations()
+            ->whereNull('gemini_explanation')
+            ->exists();
+
+        if ($stillMissing) {
+            return redirect()
+                ->route('adoption-applications.index')
+                ->with(
+                    'error',
+                    'Some AI recommendation explanations are still temporarily unavailable. Please try again later.'
+                );
+        }
+
+        return redirect()
+            ->route('adoption-applications.index')
+            ->with(
+                'success',
+                'AI recommendation explanations generated successfully.'
+            );
+    }
 }

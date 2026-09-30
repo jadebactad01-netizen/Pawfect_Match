@@ -349,7 +349,6 @@
 
                                             @endif
 
-
                                             <a
                                                 href="{{ route(
                                                     'pets.show',
@@ -364,13 +363,45 @@
 
                                         </div>
 
-                                    @endforeach
+                                @endforeach
 
-                                </div>
+
+                                @if (
+                                    $application->compatibilityAssessment
+                                        ->petRecommendations
+                                        ->contains(fn ($recommendation) =>
+                                            empty($recommendation->gemini_explanation)
+                                        )
+                                )
+
+                                    <form
+                                        action="{{ route(
+                                            'compatibility-assessments.retry-recommendations',
+                                            $application
+                                        ) }}"
+                                        method="POST"
+                                        class="mt-4"
+                                    >
+                                        @csrf
+
+                                        <button
+                                            type="submit"
+                                            class="rounded-full bg-orange-500
+                                                px-5 py-2 text-sm font-semibold
+                                                text-white hover:bg-orange-600"
+                                        >
+                                            Retry AI Recommendation Explanations
+                                        </button>
+
+                                    </form>
+
+                                @endif
 
                             </div>
 
-                        @endif
+                        </div>
+
+                    @endif
 
                         {{-- Status explanation --}}
                         <div class="mt-5 rounded-xl p-4

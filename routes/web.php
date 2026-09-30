@@ -83,6 +83,14 @@ Route::middleware('auth')->group(function () {
         [CompatibilityAssessmentController::class, 'retryExplanation']
     )->name('compatibility-assessments.retry-explanation');
 
+    Route::post(
+    '/applications/{application}/recommendation-explanations/retry',
+    [
+        CompatibilityAssessmentController::class,
+        'retryRecommendationExplanations'
+    ]
+)->name('compatibility-assessments.retry-recommendations');
+
 });
 
 /*
