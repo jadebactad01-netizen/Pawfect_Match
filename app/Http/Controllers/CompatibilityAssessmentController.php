@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\AdoptionApplication;
 use App\Models\CompatibilityAssessment;
+use App\Models\PetRecommendation;
 use App\Services\CompatibilityService;
 use App\Services\GeminiService;
 use Illuminate\Http\Request;
+
 
 class CompatibilityAssessmentController extends Controller
 {
@@ -127,6 +129,39 @@ class CompatibilityAssessmentController extends Controller
         if ($explanation) {
             $assessment->update([
                 'gemini_explanation' => $explanation,
+            ]);
+        }
+
+        // Find the top compatible alternative pets.
+        $recommendedPets = $compatibilityService->recommendPets(
+            $assessment,
+            $application->pet
+        );
+
+
+        // Save each recommendation and its AI explanation.
+        foreach ($recommendedPets as $recommendedPet) {
+
+            $recommendationExplanation = $geminiService
+                ->generateRecommendationExplanation(
+                    $assessment,
+                    $recommendedPet,
+                    $recommendedPet->compatibility_score,
+                    $recommendedPet->compatibility_classification
+                );
+
+            PetRecommendation::create([
+                'compatibility_assessment_id' => $assessment->id,
+                'pet_id' => $recommendedPet->id,
+
+                'compatibility_score' =>
+                    $recommendedPet->compatibility_score,
+
+                'classification' =>
+                    $recommendedPet->compatibility_classification,
+
+                'gemini_explanation' =>
+                    $recommendationExplanation,
             ]);
         }
 

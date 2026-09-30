@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\AdoptionApplication;
 use App\Models\Pet;
 use Illuminate\Http\Request;
-use App\Services\CompatibilityService;
 
 class AdoptionApplicationController extends Controller
 {
@@ -13,10 +12,8 @@ class AdoptionApplicationController extends Controller
     /**
      * Show the logged-in adopter's applications.
      */
-        public function index(
-            Request $request,
-            CompatibilityService $compatibilityService
-        ) {
+        public function index(Request $request) 
+        {
         $user = $request->user();
 
         if ($user->role !== 'adopter') {
@@ -26,28 +23,10 @@ class AdoptionApplicationController extends Controller
         $applications = $user->adoptionApplications()
             ->with([
                 'pet',
-                'compatibilityAssessment',
+                'compatibilityAssessment.petRecommendations.pet',
             ])
             ->latest()
             ->get();
-
-        // Find other compatible pets for completed assessments.
-        foreach ($applications as $application) {
-
-            if ($application->compatibilityAssessment) {
-
-                $application->recommended_pets =
-                    $compatibilityService->recommendPets(
-                        $application->compatibilityAssessment,
-                        $application->pet
-                    );
-
-            } else {
-
-                $application->recommended_pets = collect();
-
-            }
-        }
 
         return view(
             'adoption-applications.index',
