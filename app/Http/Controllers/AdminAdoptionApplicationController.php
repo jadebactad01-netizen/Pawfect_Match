@@ -62,23 +62,47 @@ class AdminAdoptionApplicationController extends Controller
         AdoptionApplication $application
     ) {
 
-    if (in_array(
-        $application->status,
-        ['Approved', 'Rejected']
-    )) {
+        if (! $application->compatibilityAssessment) {
+            return redirect()
+                ->route('admin.applications.index')
+                ->with(
+                    'error',
+                    'This application has not completed the compatibility assessment yet.'
+                );
+        }
+
+        $validated = $request->validate([
+            'evaluator_notes' => [
+                'nullable',
+                'string',
+                'max:5000',
+            ],
+
+            'status' => [
+                'required',
+                'in:Pending,Approved,Rejected',
+            ],
+        ]);
+
+        $application->update($validated);
+
+        if (in_array(
+            $application->status,
+            ['Approved', 'Rejected']
+        )) {
+            return redirect()
+                ->route('admin.adoption-records.show', $application)
+                ->with(
+                    'success',
+                    'Application review completed successfully.'
+                );
+        }
+
         return redirect()
-            ->route('admin.adoption-records.show', $application)
+            ->route('admin.applications.show', $application)
             ->with(
                 'success',
-                'Application review completed successfully.'
+                'Application review updated successfully.'
             );
-    }
-
-    return redirect()
-        ->route('admin.applications.show', $application)
-        ->with(
-            'success',
-            'Application review updated successfully.'
-        );
     }
 }

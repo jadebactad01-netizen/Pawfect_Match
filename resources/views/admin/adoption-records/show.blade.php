@@ -11,7 +11,7 @@
         <a href="{{ route('admin.adoption-records.index') }}"
            class="font-semibold text-orange-500
                   hover:text-orange-600">
-            ← Back to Applications
+            ← Back to Adoption Records
         </a>
 
 
