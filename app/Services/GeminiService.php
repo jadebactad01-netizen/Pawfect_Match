@@ -70,6 +70,33 @@ class GeminiService
                 return null;
             }
 
+            $requiredFactors = [
+                'care',
+                'time',
+                'household',
+                'environment',
+                'experience',
+                'activity',
+            ];
+
+            $allowedValues = [
+                'full',
+                'partial',
+                'none',
+            ];
+
+            foreach ($requiredFactors as $factor) {
+
+                if (! isset($analysis[$factor])) {
+                    return null;
+                }
+
+                if (! in_array($analysis[$factor], $allowedValues, true)) {
+                    return null;
+                }
+
+            }
+
             return $analysis;
 
         } catch (\Exception $exception) {
