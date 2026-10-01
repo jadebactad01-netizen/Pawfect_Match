@@ -32,7 +32,7 @@
 
 
             <!-- Desktop Navigation -->
-            <div class="hidden items-center gap-8 md:flex">
+            <div class="hidden items-center gap-8 lg:flex">
 
                 <a href="{{ route('home') }}"
                    class="font-medium text-orange-500">
@@ -154,7 +154,7 @@
             <!-- Mobile Menu Button -->
             <button
                 id="menu-button"
-                class="text-2xl md:hidden"
+                class="text-2xl lg:hidden"
                 aria-label="Open menu">
                 ☰
             </button>
@@ -165,7 +165,7 @@
         <!-- Mobile Navigation -->
         <div
             id="mobile-menu"
-            class="hidden border-t bg-white px-6 pb-5 md:hidden">
+            class="hidden border-t bg-white px-6 pb-5 lg:hidden">
 
             <div class="flex flex-col gap-4 pt-4">
 
