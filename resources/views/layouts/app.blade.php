@@ -34,10 +34,14 @@
             <!-- Desktop Navigation -->
             <div class="hidden items-center gap-8 lg:flex">
 
-                <a href="{{ route('home') }}"
-                   class="font-medium text-orange-500">
-                    Home
-                </a>
+                @if (! auth()->check() || auth()->user()->role !== 'super_admin')
+
+                    <a href="{{ route('home') }}"
+                    class="font-medium text-gray-600 hover:text-orange-500">
+                        Home
+                    </a>
+
+                @endif
 
                 @if (! auth()->check() || auth()->user()->role === 'adopter')
 
@@ -113,14 +117,6 @@
                     @endif
 
                     @if (auth()->user()->role === 'super_admin')
-
-                        <a
-                            href="{{ route('super-admin.dashboard') }}"
-                            class="font-semibold text-gray-700
-                                hover:text-orange-500"
-                        >
-                            Dashboard
-                        </a>
 
                         <a
                             href="{{ route(
@@ -248,14 +244,6 @@
                     @endif
 
                     @if (auth()->user()->role === 'super_admin')
-
-                        <a
-                            href="{{ route('super-admin.dashboard') }}"
-                            class="font-semibold text-gray-700
-                                hover:text-orange-500"
-                        >
-                            Dashboard
-                        </a>
 
                         <a
                             href="{{ route(

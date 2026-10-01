@@ -10,6 +10,7 @@ use App\Http\Controllers\AdminAdopterController;
 use App\Http\Controllers\AdminAdoptionRecordController;
 use App\Http\Controllers\SuperAdminController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 
 /*
@@ -19,7 +20,17 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+
+    if (
+        Auth::check()
+        && Auth::user()->role === 'super_admin'
+    ) {
+        return redirect()
+            ->route('super-admin.dashboard');
+    }
+
     return view('home');
+
 })->name('home');
 
 
