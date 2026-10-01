@@ -84,10 +84,6 @@
                             My Applications
                         </a>
 
-                        <a href="{{ route('profile.edit') }}"
-                            class="font-semibold text-gray-700 hover:text-orange-500">
-                            {{ auth()->user()->name }}
-                        </a>
                     @endif
 
                     
@@ -137,6 +133,11 @@
                         </a>
 
                     @endif
+
+                        <a href="{{ route('profile.edit') }}"
+                            class="font-semibold text-gray-700 hover:text-orange-500">
+                            {{ auth()->user()->name }}
+                        </a>
 
                     <form action="{{ url('/logout') }}" method="POST">
                         @csrf
@@ -220,11 +221,6 @@
                             My Applications
                         </a>
 
-                        <a href="{{ route('profile.edit') }}"
-                            class="font-semibold text-gray-700 hover:text-orange-500">
-                            {{ auth()->user()->name }}
-                        </a>
-                        
                     @endif
 
                     @if (in_array(auth()->user()->role, ['admin', 'super_admin']))
@@ -272,6 +268,11 @@
                         </a>
 
                     @endif
+
+                        <a href="{{ route('profile.edit') }}"
+                            class="font-semibold text-gray-700 hover:text-orange-500">
+                            {{ auth()->user()->name }}
+                        </a>
 
                     <form action="{{ url('/logout') }}" method="POST">
                         @csrf
