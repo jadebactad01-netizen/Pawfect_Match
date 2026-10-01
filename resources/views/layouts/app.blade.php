@@ -34,7 +34,10 @@
             <!-- Desktop Navigation -->
             <div class="hidden items-center gap-8 lg:flex">
 
-                @if (! auth()->check() || auth()->user()->role !== 'super_admin')
+                @if (
+                    ! auth()->check()
+                    || auth()->user()->role === 'adopter'
+                )
 
                     <a href="{{ route('home') }}"
                     class="font-medium text-gray-600 hover:text-orange-500">

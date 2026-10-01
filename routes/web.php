@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminAdopterController;
 use App\Http\Controllers\AdminAdoptionRecordController;
 use App\Http\Controllers\SuperAdminController;
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,12 +22,18 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
 
-    if (
-        Auth::check()
-        && Auth::user()->role === 'super_admin'
-    ) {
-        return redirect()
-            ->route('super-admin.dashboard');
+    if (Auth::check()) {
+
+        if (Auth::user()->role === 'super_admin') {
+            return redirect()
+                ->route('super-admin.dashboard');
+        }
+
+        if (Auth::user()->role === 'admin') {
+            return redirect()
+                ->route('admin.dashboard');
+        }
+
     }
 
     return view('home');
@@ -169,6 +176,11 @@ Route::middleware('admin')->group(function () {
         '/admin/adoption-records/{application}',
         [AdminAdoptionRecordController::class, 'show']
     )->name('admin.adoption-records.show');
+
+    Route::get(
+        '/admin/dashboard',
+        [AdminController::class, 'dashboard']
+    )->name('admin.dashboard');
 
 });
 
