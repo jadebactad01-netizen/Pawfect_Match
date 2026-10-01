@@ -64,11 +64,25 @@
         <!-- PET IMAGE -->
         <div>
 
-            <div class="flex min-h-[400px] items-center
-                        justify-center rounded-3xl
-                        bg-orange-100 text-9xl">
+            <div class="overflow-hidden rounded-3xl bg-orange-100">
 
-                {{ $pet->emoji }}
+                @if ($pet->photo)
+
+                    <img
+                        src="{{ asset('storage/' . $pet->photo) }}"
+                        alt="{{ $pet->name }}"
+                        class="h-[400px] w-full object-cover
+                            lg:h-[500px]"
+                    >
+
+                @else
+
+                    <div class="flex min-h-[400px] items-center
+                                justify-center text-gray-400">
+                        No photo available
+                    </div>
+
+                @endif
 
             </div>
 

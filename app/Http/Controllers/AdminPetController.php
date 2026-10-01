@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pet;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AdminPetController extends Controller
 {
@@ -39,6 +40,12 @@ class AdminPetController extends Controller
             'age' => ['required', 'string', 'max:255'],
             'status' => ['required', 'in:Available,Unavailable'],
             'description' => ['nullable', 'string'],
+            'photo' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:5120',
+            ],
 
             'care_requirement' => ['required', 'in:Low,Moderate,High'],
             'time_requirement' => ['required', 'in:Low,Moderate,High'],
@@ -48,6 +55,11 @@ class AdminPetController extends Controller
             'activity_level' => ['required', 'in:Low,Moderate,High'],
         ]);
 
+        if ($request->hasFile('photo')) {
+            $validated['photo'] = $request
+                ->file('photo')
+                ->store('pets', 'public');
+        }
 
         Pet::create($validated);
 
@@ -78,6 +90,12 @@ class AdminPetController extends Controller
             'age' => ['required', 'string', 'max:255'],
             'status' => ['required', 'in:Available,Unavailable'],
             'description' => ['nullable', 'string'],
+            'photo' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:5120',
+            ],
 
             'care_requirement' => ['required', 'in:Low,Moderate,High'],
             'time_requirement' => ['required', 'in:Low,Moderate,High'],
@@ -87,6 +105,16 @@ class AdminPetController extends Controller
             'activity_level' => ['required', 'in:Low,Moderate,High'],
         ]);
 
+        if ($request->hasFile('photo')) {
+
+            if ($pet->photo) {
+                Storage::disk('public')->delete($pet->photo);
+            }
+
+            $validated['photo'] = $request
+                ->file('photo')
+                ->store('pets', 'public');
+        }
 
         $pet->update($validated);
 
@@ -102,6 +130,10 @@ class AdminPetController extends Controller
      */
     public function destroy(Pet $pet)
     {
+        if ($pet->photo) {
+            Storage::disk('public')->delete($pet->photo);
+        }
+        
         $pet->delete();
 
 

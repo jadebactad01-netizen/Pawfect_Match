@@ -68,6 +68,7 @@
 
             <form action="{{ route('admin.pets.store') }}"
                   method="POST"
+                  enctype="multipart/form-data"
                   class="mt-8 space-y-6">
 
                 @csrf
@@ -223,6 +224,30 @@
 
                     </select>
 
+                </div>
+
+                <!-- PHOTO -->
+
+                <div>
+                    <label
+                        for="photo"
+                        class="mb-2 block font-medium text-gray-700"
+                    >
+                        Pet Photo
+                    </label>
+
+                    <input
+                        type="file"
+                        id="photo"
+                        name="photo"
+                        accept="image/jpeg,image/png,image/webp"
+                        class="w-full rounded-lg border border-gray-300
+                            px-4 py-3"
+                    >
+
+                    <p class="mt-2 text-sm text-gray-500">
+                        JPG, PNG, or WebP. Maximum 5 MB.
+                    </p>
                 </div>
 
 

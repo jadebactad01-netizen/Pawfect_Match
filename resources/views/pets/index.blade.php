@@ -144,16 +144,28 @@
 
                     <!-- Pet Image Placeholder -->
 
-                    <div class="flex h-60 items-center
-                                justify-center bg-orange-100
-                                text-8xl">
+                    <div class="h-60 overflow-hidden bg-orange-100">
 
-                        {{ $pet->emoji }}
+                        @if ($pet->photo)
+
+                            <img
+                                src="{{ asset('storage/' . $pet->photo) }}"
+                                alt="{{ $pet->name }}"
+                                class="h-full w-full object-cover"
+                            >
+
+                        @else
+
+                            <div class="flex h-full items-center
+                                        justify-center text-gray-400">
+                                No photo available
+                            </div>
+
+                        @endif
 
                     </div>
 
-
-
+                    
                     <!-- Pet Information -->
 
                     <div class="p-6">

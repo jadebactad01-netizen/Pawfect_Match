@@ -68,6 +68,7 @@
 
             <form action="{{ route('admin.pets.update', $pet) }}"
                   method="POST"
+                  enctype="multipart/form-data"
                   class="mt-8 space-y-6">
 
                 @csrf
@@ -217,7 +218,32 @@
 
                 </div>
 
+                @if ($pet->photo)
 
+                    <div class="mb-4">
+
+                        <img
+                            src="{{ asset('storage/' . $pet->photo) }}"
+                            alt="{{ $pet->name }}"
+                            class="h-40 w-40 rounded-2xl object-cover"
+                        >
+
+                    </div>
+
+                @endif
+
+                <input
+                    type="file"
+                    id="photo"
+                    name="photo"
+                    accept="image/jpeg,image/png,image/webp"
+                    class="w-full rounded-lg border border-gray-300
+                        px-4 py-3"
+                >
+
+                <p class="mt-2 text-sm text-gray-500">
+                    Leave blank to keep the current photo.
+                </p>
 
                 <!-- DESCRIPTION -->
 

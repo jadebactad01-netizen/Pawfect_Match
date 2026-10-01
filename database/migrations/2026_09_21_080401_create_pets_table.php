@@ -28,8 +28,8 @@ return new class extends Migration
             // Longer description of the pet
             $table->text('description')->nullable();
 
-            // Temporary placeholder until we use real pet photos
-            $table->string('emoji')->nullable();
+            // Pet photo
+            $table->string('photo')->nullable();
 
             // created_at and updated_at
             $table->timestamps();
