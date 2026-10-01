@@ -78,6 +78,81 @@ class SuperAdminController extends Controller
             ->with(
                 'success',
                 'Administrator account created successfully.'
+            );  
+    }
+
+    /**
+     * Show the edit administrator form.
+     */
+    public function edit(User $administrator)
+    {
+        if ($administrator->role !== 'admin') {
+            abort(404);
+        }
+
+        return view(
+            'super-admin.administrators.edit',
+            compact('administrator')
+        );
+    }
+
+
+    /**
+     * Update an administrator account.
+     */
+    public function update(
+        Request $request,
+        User $administrator
+    ) {
+        if ($administrator->role !== 'admin') {
+            abort(404);
+        }
+
+        $validated = $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                'unique:users,email,' . $administrator->id,
+            ],
+        ]);
+
+        $administrator->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ]);
+
+        return redirect()
+            ->route('super-admin.administrators.index')
+            ->with(
+                'success',
+                'Administrator account updated successfully.'
+            );
+    }
+
+
+    /**
+     * Delete an administrator account.
+     */
+    public function destroy(User $administrator)
+    {
+        if ($administrator->role !== 'admin') {
+            abort(404);
+        }
+
+        $administrator->delete();
+
+        return redirect()
+            ->route('super-admin.administrators.index')
+            ->with(
+                'success',
+                'Administrator account deleted successfully.'
             );
     }
 }

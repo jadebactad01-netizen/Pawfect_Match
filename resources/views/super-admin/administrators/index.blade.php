@@ -77,6 +77,10 @@
                                 <th class="px-6 py-4">
                                     Created
                                 </th>
+
+                                <th class="px-6 py-4">
+                                    Actions
+                                </th>
                             </tr>
 
                         </thead>
@@ -108,6 +112,49 @@
                                                 ->created_at
                                                 ->format('M d, Y')
                                         }}
+                                    </td>
+
+                                    <td class="px-6 py-4">
+
+                                        <div class="flex items-center gap-3">
+
+                                            <a
+                                                href="{{ route(
+                                                    'super-admin.administrators.edit',
+                                                    $administrator
+                                                ) }}"
+                                                class="font-semibold text-orange-500
+                                                    hover:text-orange-600"
+                                            >
+                                                Edit
+                                            </a>
+
+
+                                            <form
+                                                action="{{ route(
+                                                    'super-admin.administrators.destroy',
+                                                    $administrator
+                                                ) }}"
+                                                method="POST"
+                                                onsubmit="return confirm(
+                                                    'Are you sure you want to delete this administrator account?'
+                                                )"
+                                            >
+                                                @csrf
+                                                @method('DELETE')
+
+                                                <button
+                                                    type="submit"
+                                                    class="font-semibold text-red-500
+                                                        hover:text-red-600"
+                                                >
+                                                    Delete
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+
                                     </td>
 
                                 </tr>

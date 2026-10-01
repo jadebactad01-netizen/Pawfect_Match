@@ -189,5 +189,22 @@ Route::middleware('super_admin')->group(function () {
         [SuperAdminController::class, 'store']
     )->name('super-admin.administrators.store');
 
+    Route::get(
+        '/super-admin/administrators/{administrator}/edit',
+        [SuperAdminController::class, 'edit']
+    )->name('super-admin.administrators.edit');
+
+
+    Route::put(
+        '/super-admin/administrators/{administrator}',
+        [SuperAdminController::class, 'update']
+    )->name('super-admin.administrators.update');
+
+
+    Route::delete(
+        '/super-admin/administrators/{administrator}',
+        [SuperAdminController::class, 'destroy']
+    )->name('super-admin.administrators.destroy');
+
 });
 
