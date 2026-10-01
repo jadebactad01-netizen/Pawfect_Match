@@ -136,188 +136,100 @@
 
 
 
-        <!-- Pet Cards -->
         <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
 
+            @forelse ($featuredPets as $pet)
 
-            <!-- PET 1 -->
-            <div class="overflow-hidden rounded-2xl bg-orange-50
-                        shadow-sm transition hover:-translate-y-1
-                        hover:shadow-lg">
+                <div class="overflow-hidden rounded-2xl bg-orange-50
+                            shadow-sm transition hover:-translate-y-1
+                            hover:shadow-lg">
 
-                <div class="flex h-56 items-center justify-center
-                            bg-orange-100 text-7xl">
+                    <div class="h-56 overflow-hidden bg-orange-100">
 
-                    🐶
+                        @if ($pet->photo)
 
-                </div>
+                            <img
+                                src="{{ asset('storage/' . $pet->photo) }}"
+                                alt="{{ $pet->name }}"
+                                class="h-full w-full object-cover"
+                            >
 
+                        @else
 
-                <div class="p-6">
+                            <div class="flex h-full items-center
+                                        justify-center text-gray-400">
+                                No photo available
+                            </div>
 
-                    <div class="flex items-center justify-between">
-
-                        <h3 class="text-xl font-bold">
-                            Buddy
-                        </h3>
-
-                        <span class="rounded-full bg-green-100
-                                     px-3 py-1 text-xs font-semibold
-                                     text-green-700">
-
-                            Available
-
-                        </span>
+                        @endif
 
                     </div>
 
 
-                    <p class="mt-2 text-sm text-gray-500">
-                        Dog • Male • 2 years old
-                    </p>
+                    <div class="p-6">
+
+                        <div class="flex items-center justify-between gap-3">
+
+                            <h3 class="text-xl font-bold">
+                                {{ $pet->name }}
+                            </h3>
+
+                            <span class="rounded-full bg-green-100
+                                        px-3 py-1 text-xs font-semibold
+                                        text-green-700">
+
+                                {{ $pet->status }}
+
+                            </span>
+
+                        </div>
 
 
-                    <p class="mt-4 leading-7 text-gray-600">
+                        <p class="mt-2 text-sm text-gray-500">
 
-                        Friendly, playful, and loves spending
-                        time with people.
+                            {{ $pet->type }}
+                            •
+                            {{ $pet->sex }}
+                            •
+                            {{ $pet->age }}
 
-                    </p>
-
-
-                    <a href="#"
-                       class="mt-5 inline-block font-semibold
-                              text-orange-500 hover:text-orange-600">
-
-                        View Profile →
-
-                    </a>
-
-                </div>
-
-            </div>
+                        </p>
 
 
+                        <p class="mt-4 leading-7 text-gray-600">
 
-            <!-- PET 2 -->
-            <div class="overflow-hidden rounded-2xl bg-orange-50
-                        shadow-sm transition hover:-translate-y-1
-                        hover:shadow-lg">
+                            {{ $pet->description }}
 
-                <div class="flex h-56 items-center justify-center
-                            bg-orange-100 text-7xl">
-
-                    🐱
-
-                </div>
+                        </p>
 
 
-                <div class="p-6">
-
-                    <div class="flex items-center justify-between">
-
-                        <h3 class="text-xl font-bold">
-                            Luna
-                        </h3>
-
-                        <span class="rounded-full bg-green-100
-                                     px-3 py-1 text-xs font-semibold
-                                     text-green-700">
-
-                            Available
-
-                        </span>
+                        <a
+                            href="{{ route('pets.show', $pet) }}"
+                            class="mt-5 inline-block font-semibold
+                                text-orange-500 hover:text-orange-600"
+                        >
+                            View Profile →
+                        </a>
 
                     </div>
 
+                </div>
 
-                    <p class="mt-2 text-sm text-gray-500">
-                        Cat • Female • 1 year old
+            @empty
+
+                <div class="sm:col-span-2 lg:col-span-3
+                            rounded-2xl bg-orange-50
+                            px-6 py-12 text-center">
+
+                    <p class="text-gray-600">
+                        There are currently no pets available for adoption.
                     </p>
-
-
-                    <p class="mt-4 leading-7 text-gray-600">
-
-                        Calm and affectionate with a curious
-                        personality.
-
-                    </p>
-
-
-                    <a href="#"
-                       class="mt-5 inline-block font-semibold
-                              text-orange-500 hover:text-orange-600">
-
-                        View Profile →
-
-                    </a>
 
                 </div>
 
-            </div>
-
-
-
-            <!-- PET 3 -->
-            <div class="overflow-hidden rounded-2xl bg-orange-50
-                        shadow-sm transition hover:-translate-y-1
-                        hover:shadow-lg">
-
-                <div class="flex h-56 items-center justify-center
-                            bg-orange-100 text-7xl">
-
-                    🐕️
-
-                </div>
-
-
-                <div class="p-6">
-
-                    <div class="flex items-center justify-between">
-
-                        <h3 class="text-xl font-bold">
-                            Max
-                        </h3>
-
-                        <span class="rounded-full bg-green-100
-                                     px-3 py-1 text-xs font-semibold
-                                     text-green-700">
-
-                            Available
-
-                        </span>
-
-                    </div>
-
-
-                    <p class="mt-2 text-sm text-gray-500">
-                        Dog • Male • 3 years old
-                    </p>
-
-
-                    <p class="mt-4 leading-7 text-gray-600">
-
-                        Gentle, loyal, and enjoys daily walks
-                        and outdoor activities.
-
-                    </p>
-
-
-                    <a href="#"
-                       class="mt-5 inline-block font-semibold
-                              text-orange-500 hover:text-orange-600">
-
-                        View Profile →
-
-                    </a>
-
-                </div>
-
-            </div>
-
+            @endforelse
 
         </div>
-
 
         <!-- View All Button -->
         <div class="mt-12 text-center">

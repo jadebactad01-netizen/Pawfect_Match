@@ -36,7 +36,15 @@ Route::get('/', function () {
 
     }
 
-    return view('home');
+    $featuredPets = \App\Models\Pet::where(
+        'status',
+        'Available'
+    )
+        ->latest()
+        ->take(3)
+        ->get();
+
+    return view('home', compact('featuredPets'));
 
 })->name('home');
 
