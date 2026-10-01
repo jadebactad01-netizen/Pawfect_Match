@@ -1,11 +1,11 @@
 <?php
 
 use App\Http\Controllers\AdminPetController;
-use App\Http\Controllers\AdopterProfileController;
 use App\Http\Controllers\AdminAdoptionApplicationController;
 use App\Http\Controllers\AdoptionApplicationController;
 use App\Http\Controllers\CompatibilityAssessmentController;
 use App\Http\Controllers\PetController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminAdopterController;
 use App\Http\Controllers\AdminAdoptionRecordController;
 use App\Http\Controllers\SuperAdminController;
@@ -41,19 +41,19 @@ Route::get('/pets/{pet}', [PetController::class, 'show'])
 
     /*
 |--------------------------------------------------------------------------
-| ADOPTER PROFILE ROUTES
+| PROFILE ROUTES
 |--------------------------------------------------------------------------
 |
-| Logged-in users can view and update their own adopter profile.
+| Logged-in users can view and update their own profile.
 |
 */
 
 Route::middleware('auth')->group(function () {
 
-    Route::get('/profile', [AdopterProfileController::class, 'edit'])
+    Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
 
-    Route::put('/profile', [AdopterProfileController::class, 'update'])
+    Route::put('/profile', [ProfileController::class, 'update'])
         ->name('profile.update');
 
     Route::get(

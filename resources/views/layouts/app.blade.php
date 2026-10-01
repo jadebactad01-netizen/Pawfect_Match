@@ -39,20 +39,24 @@
                     Home
                 </a>
 
-                <a href="#pets"
-                   class="font-medium text-gray-600 hover:text-orange-500">
-                    Available Pets
-                </a>
+                @if (! auth()->check() || auth()->user()->role === 'adopter')
 
-                <a href="#how-it-works"
-                   class="font-medium text-gray-600 hover:text-orange-500">
-                    How It Works
-                </a>
+                    <a href="{{ route('pets.index') }}"
+                    class="font-medium text-gray-600 hover:text-orange-500">
+                        Available Pets
+                    </a>
 
-                <a href="#about"
-                   class="font-medium text-gray-600 hover:text-orange-500">
-                    About Us
-                </a>
+                    <a href="{{ route('home') }}#how-it-works"
+                    class="font-medium text-gray-600 hover:text-orange-500">
+                        How It Works
+                    </a>
+
+                    <a href="{{ route('home') }}#about"
+                    class="font-medium text-gray-600 hover:text-orange-500">
+                        About Us
+                    </a>
+
+                @endif
 
                 @guest
 
@@ -73,19 +77,16 @@
 
                 @auth
 
-                    <span class="font-semibold text-gray-700">
-                        {{ auth()->user()->name }}
-                    </span>
-
                     @if (auth()->user()->role === 'adopter')
-                        <a href="{{ route('profile.edit') }}"
-                        class="font-semibold text-gray-700 hover:text-orange-500">
-                            My Profile
-                        </a>
 
                         <a href="{{ route('adoption-applications.index') }}"
                             class="hover:text-orange-500">
                             My Applications
+                        </a>
+
+                        <a href="{{ route('profile.edit') }}"
+                            class="font-semibold text-gray-700 hover:text-orange-500">
+                            {{ auth()->user()->name }}
                         </a>
                     @endif
 
@@ -174,20 +175,24 @@
                     Home
                 </a>
 
-                <a href="#pets"
-                class="font-medium text-gray-600 hover:text-orange-500">
-                    Available Pets
-                </a>
+                @if (! auth()->check() || auth()->user()->role === 'adopter')
 
-                <a href="#how-it-works"
-                   class="text-gray-600">
-                    How It Works
-                </a>
+                    <a href="{{ route('pets.index') }}"
+                    class="font-medium text-gray-600 hover:text-orange-500">
+                        Available Pets
+                    </a>
 
-                <a href="#about"
-                   class="text-gray-600">
-                    About Us
-                </a>
+                    <a href="{{ route('home') }}#how-it-works"
+                    class="font-medium text-gray-600 hover:text-orange-500">
+                        How It Works
+                    </a>
+
+                    <a href="{{ route('home') }}#about"
+                    class="font-medium text-gray-600 hover:text-orange-500">
+                        About Us
+                    </a>
+
+                @endif
 
                 @guest
 
@@ -208,20 +213,18 @@
 
                 @auth
 
-                    <span class="font-semibold text-gray-700">
-                        {{ auth()->user()->name }}
-                    </span>
-
                     @if (auth()->user()->role === 'adopter')
-                        <a href="{{ route('profile.edit') }}"
-                        class="font-semibold text-gray-700 hover:text-orange-500">
-                            My Profile
-                        </a>
 
                         <a href="{{ route('adoption-applications.index') }}"
                             class="hover:text-orange-500">
                             My Applications
                         </a>
+
+                        <a href="{{ route('profile.edit') }}"
+                            class="font-semibold text-gray-700 hover:text-orange-500">
+                            {{ auth()->user()->name }}
+                        </a>
+                        
                     @endif
 
                     @if (in_array(auth()->user()->role, ['admin', 'super_admin']))
