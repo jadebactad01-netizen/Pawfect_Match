@@ -3,11 +3,65 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\AdoptionApplication;
+use App\Models\Pet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class SuperAdminController extends Controller
 {
+
+    /**
+     * Show the Super Admin dashboard.
+     */
+    public function dashboard()
+    {
+        $totalAdopters = User::where('role', 'adopter')->count();
+
+        $totalAdministrators = User::where('role', 'admin')->count();
+
+        $totalPets = Pet::count();
+
+        $availablePets = Pet::where('status', 'Available')->count();
+
+        $pendingApplications = AdoptionApplication::where(
+            'status',
+            'Pending'
+        )->count();
+
+        $approvedApplications = AdoptionApplication::where(
+            'status',
+            'Approved'
+        )->count();
+
+        $rejectedApplications = AdoptionApplication::where(
+            'status',
+            'Rejected'
+        )->count();
+
+        $recentApplications = AdoptionApplication::with([
+            'user',
+            'pet',
+        ])
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view(
+            'super-admin.dashboard',
+            compact(
+                'totalAdopters',
+                'totalAdministrators',
+                'totalPets',
+                'availablePets',
+                'pendingApplications',
+                'approvedApplications',
+                'rejectedApplications',
+                'recentApplications'
+            )
+        );
+    }
+    
     /**
      * Show administrator accounts.
      */

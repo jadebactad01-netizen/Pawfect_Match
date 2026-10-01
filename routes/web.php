@@ -206,5 +206,9 @@ Route::middleware('super_admin')->group(function () {
         [SuperAdminController::class, 'destroy']
     )->name('super-admin.administrators.destroy');
 
+    Route::get(
+        '/super-admin/dashboard',
+        [SuperAdminController::class, 'dashboard']
+    )->name('super-admin.dashboard');
 });
 

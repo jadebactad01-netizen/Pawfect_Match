@@ -118,6 +118,14 @@
                     @if (auth()->user()->role === 'super_admin')
 
                         <a
+                            href="{{ route('super-admin.dashboard') }}"
+                            class="font-semibold text-gray-700
+                                hover:text-orange-500"
+                        >
+                            Dashboard
+                        </a>
+
+                        <a
                             href="{{ route(
                                 'super-admin.administrators.index'
                             ) }}"
@@ -236,6 +244,28 @@
                         <a href="{{ route('admin.adoption-records.index') }}"
                             class="font-semibold text-gray-700 hover:text-orange-500">
                             Adoption Records
+                        </a>
+
+                    @endif
+
+                    @if (auth()->user()->role === 'super_admin')
+
+                        <a
+                            href="{{ route('super-admin.dashboard') }}"
+                            class="font-semibold text-gray-700
+                                hover:text-orange-500"
+                        >
+                            Dashboard
+                        </a>
+
+                        <a
+                            href="{{ route(
+                                'super-admin.administrators.index'
+                            ) }}"
+                            class="font-semibold text-gray-700
+                                hover:text-orange-500"
+                        >
+                            Administrators
                         </a>
 
                     @endif
