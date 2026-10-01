@@ -115,6 +115,20 @@
 
                     @endif
 
+                    @if (auth()->user()->role === 'super_admin')
+
+                        <a
+                            href="{{ route(
+                                'super-admin.administrators.index'
+                            ) }}"
+                            class="font-semibold text-gray-700
+                                hover:text-orange-500"
+                        >
+                            Administrators
+                        </a>
+
+                    @endif
+
                     <form action="{{ url('/logout') }}" method="POST">
                         @csrf
 
