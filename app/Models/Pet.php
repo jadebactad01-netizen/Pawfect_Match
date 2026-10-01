@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
     'age',
     'status',
     'description',
-    'emoji',
+    'photo',
 
     'care_requirement',
     'time_requirement',
