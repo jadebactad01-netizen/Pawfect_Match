@@ -159,33 +159,35 @@ Route::middleware('admin')->group(function () {
         [AdminAdoptionRecordController::class, 'show']
     )->name('admin.adoption-records.show');
 
-    /*
-    |--------------------------------------------------------------------------
-    | SUPER ADMIN ROUTES
-    |--------------------------------------------------------------------------
-    |
-    | Only the Super Administrator can manage administrator accounts.
-    |
-    */
-
-    Route::middleware('super_admin')->group(function () {
-
-        Route::get(
-            '/super-admin/administrators',
-            [SuperAdminController::class, 'index']
-        )->name('super-admin.administrators.index');
-
-
-        Route::get(
-            '/super-admin/administrators/create',
-            [SuperAdminController::class, 'create']
-        )->name('super-admin.administrators.create');
-
-
-        Route::post(
-            '/super-admin/administrators',
-            [SuperAdminController::class, 'store']
-        )->name('super-admin.administrators.store');
-
-    });
 });
+
+/*
+|--------------------------------------------------------------------------
+| SUPER ADMIN ROUTES
+|--------------------------------------------------------------------------
+|
+| Only the Super Administrator can manage administrator accounts.
+|
+*/
+
+Route::middleware('super_admin')->group(function () {
+
+    Route::get(
+        '/super-admin/administrators',
+        [SuperAdminController::class, 'index']
+    )->name('super-admin.administrators.index');
+
+
+    Route::get(
+        '/super-admin/administrators/create',
+        [SuperAdminController::class, 'create']
+    )->name('super-admin.administrators.create');
+
+
+    Route::post(
+        '/super-admin/administrators',
+        [SuperAdminController::class, 'store']
+    )->name('super-admin.administrators.store');
+
+});
+
