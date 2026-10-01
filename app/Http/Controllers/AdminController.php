@@ -13,10 +13,11 @@ class AdminController extends Controller
      */
     public function dashboard()
     {
-        $pendingApplications = AdoptionApplication::where(
-            'status',
-            'Pending'
-        )->count();
+        $pendingApplications = AdoptionApplication::whereHas(
+            'compatibilityAssessment'
+        )
+            ->where('status', 'Pending')
+            ->count();
 
         $availablePets = Pet::where(
             'status',
@@ -32,6 +33,7 @@ class AdminController extends Controller
             'user',
             'pet',
         ])
+            ->whereHas('compatibilityAssessment')
             ->where('status', 'Pending')
             ->latest()
             ->take(5)
