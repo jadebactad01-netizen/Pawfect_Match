@@ -12,7 +12,7 @@
         <div class="rounded-3xl bg-orange-500 p-8 text-white">
 
             <p class="font-semibold text-orange-100">
-                Welcome back
+                Welcome
             </p>
 
             <h1 class="mt-1 text-3xl font-bold">
@@ -104,15 +104,20 @@
                         @if ($latestApplication->pet->photo)
 
                             <img
-                                src="{{
-                                    asset(
-                                        'storage/'
-                                        . $latestApplication->pet->photo
-                                    )
-                                }}"
+                                src="{{ asset(
+                                    'storage/' . $latestApplication->pet->photo
+                                ) }}"
                                 alt="{{ $latestApplication->pet->name }}"
-                                class="h-28 w-28 rounded-2xl object-cover"
+                                class="h-24 w-24 shrink-0 rounded-2xl object-cover"
                             >
+
+                        @else
+
+                            <div class="flex h-24 w-24 shrink-0 items-center
+                                        justify-center rounded-2xl bg-orange-50
+                                        text-center text-xs text-gray-400">
+                                No photo
+                            </div>
 
                         @endif
 
@@ -223,28 +228,20 @@
 
         </div>
 
-
         {{-- Recommendations --}}
         @if ($recommendedPets->isNotEmpty())
 
             <div class="mt-10">
 
-                <div class="flex items-end justify-between gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900">
+                        Recommended for You
+                    </h2>
 
-                    <div>
-
-                        <h2 class="text-xl font-bold text-gray-900">
-                            Recommended for You
-                        </h2>
-
-                        <p class="mt-1 text-sm text-gray-600">
-                            Based on your latest compatibility assessment.
-                        </p>
-
-                    </div>
-
+                    <p class="mt-1 text-sm text-gray-600">
+                        Based on your latest compatibility assessment.
+                    </p>
                 </div>
-
 
                 <div class="mt-4 grid gap-6
                             sm:grid-cols-2 lg:grid-cols-3">
@@ -252,29 +249,29 @@
                     @foreach ($recommendedPets as $recommendation)
 
                         <a
-                            href="{{
-                                route(
-                                    'pets.show',
-                                    $recommendation->pet
-                                )
-                            }}"
-                            class="overflow-hidden rounded-2xl
-                                   bg-white shadow-sm transition
-                                   hover:-translate-y-1 hover:shadow-md"
+                            href="{{ route('pets.show', $recommendation->pet) }}"
+                            class="mx-auto w-full max-w-sm overflow-hidden
+                                rounded-2xl bg-white shadow-sm transition
+                                hover:-translate-y-1 hover:shadow-md"
                         >
 
                             @if ($recommendation->pet->photo)
 
                                 <img
-                                    src="{{
-                                        asset(
-                                            'storage/'
-                                            . $recommendation->pet->photo
-                                        )
-                                    }}"
+                                    src="{{ asset(
+                                        'storage/' . $recommendation->pet->photo
+                                    ) }}"
                                     alt="{{ $recommendation->pet->name }}"
-                                    class="h-48 w-full object-cover"
+                                    class="h-40 w-full object-cover"
                                 >
+
+                            @else
+
+                                <div class="flex h-40 w-full items-center
+                                            justify-center bg-orange-50
+                                            text-gray-400">
+                                    No photo available
+                                </div>
 
                             @endif
 
@@ -313,8 +310,7 @@
 
         @endif
 
-
-        {{-- Available pets --}}
+        {{-- Available Pets --}}
         <div class="mt-10">
 
             <div class="flex items-end justify-between gap-4">
@@ -335,13 +331,12 @@
                 <a
                     href="{{ route('pets.index') }}"
                     class="text-sm font-semibold text-orange-500
-                           hover:text-orange-600"
+                        hover:text-orange-600"
                 >
                     View All
                 </a>
 
             </div>
-
 
             <div class="mt-4 grid gap-6
                         sm:grid-cols-2 lg:grid-cols-3">
@@ -350,9 +345,9 @@
 
                     <a
                         href="{{ route('pets.show', $pet) }}"
-                        class="overflow-hidden rounded-2xl bg-white
-                               shadow-sm transition
-                               hover:-translate-y-1 hover:shadow-md"
+                        class="mx-auto w-full max-w-sm overflow-hidden
+                            rounded-2xl bg-white shadow-sm transition
+                            hover:-translate-y-1 hover:shadow-md"
                     >
 
                         @if ($pet->photo)
@@ -360,12 +355,12 @@
                             <img
                                 src="{{ asset('storage/' . $pet->photo) }}"
                                 alt="{{ $pet->name }}"
-                                class="h-48 w-full object-cover"
+                                class="h-40 w-full object-cover"
                             >
 
                         @else
 
-                            <div class="flex h-48 items-center
+                            <div class="flex h-40 w-full items-center
                                         justify-center bg-orange-50
                                         text-gray-400">
                                 No photo available
@@ -392,63 +387,6 @@
                     </a>
 
                 @endforeach
-
-            </div>
-
-        </div>
-
-
-        {{-- Quick actions --}}
-        <div class="mt-10">
-
-            <h2 class="text-xl font-bold text-gray-900">
-                Quick Actions
-            </h2>
-
-            <div class="mt-4 grid gap-4
-                        sm:grid-cols-2 lg:grid-cols-3">
-
-                <a
-                    href="{{ route('pets.index') }}"
-                    class="rounded-2xl bg-white p-5 shadow-sm
-                           transition hover:shadow-md"
-                >
-                    <p class="font-bold text-gray-900">
-                        Browse Pets
-                    </p>
-
-                    <p class="mt-1 text-sm text-gray-600">
-                        Explore pets currently available for adoption.
-                    </p>
-                </a>
-
-                <a
-                    href="{{ route('adoption-applications.index') }}"
-                    class="rounded-2xl bg-white p-5 shadow-sm
-                           transition hover:shadow-md"
-                >
-                    <p class="font-bold text-gray-900">
-                        My Applications
-                    </p>
-
-                    <p class="mt-1 text-sm text-gray-600">
-                        Review your applications and compatibility results.
-                    </p>
-                </a>
-
-                <a
-                    href="{{ route('profile.edit') }}"
-                    class="rounded-2xl bg-white p-5 shadow-sm
-                           transition hover:shadow-md"
-                >
-                    <p class="font-bold text-gray-900">
-                        My Profile
-                    </p>
-
-                    <p class="mt-1 text-sm text-gray-600">
-                        Update your personal information.
-                    </p>
-                </a>
 
             </div>
 
