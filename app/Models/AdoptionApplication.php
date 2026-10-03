@@ -13,8 +13,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
     'status',
 
     'age',
-    'home_phone',
-    'work_phone',
     'mobile_number',
 
     'reference_name',
@@ -29,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
     'preferred_breed',
     'preferred_size',
     'preferred_age',
+    'preferred_age_unit',
 
     'evaluator_notes',
 ])]

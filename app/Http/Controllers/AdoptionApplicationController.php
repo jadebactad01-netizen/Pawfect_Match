@@ -134,15 +134,34 @@ class AdoptionApplicationController extends Controller
         }
 
         $validated = $request->validate([
-            'age' => ['required', 'integer', 'min:18', 'max:120'],
+            'age' => [
+                'required',
+                'integer',
+                'min:18',
+                'max:120',
+            ],
 
-            'home_phone' => ['nullable', 'string', 'max:30'],
-            'work_phone' => ['nullable', 'string', 'max:30'],
-            'mobile_number' => ['required', 'string', 'max:30'],
+            'mobile_number' => [
+                'required',
+                'digits:11',
+            ],
 
-            'reference_name' => ['required', 'string', 'max:255'],
-            'reference_relationship' => ['required', 'string', 'max:255'],
-            'reference_phone' => ['required', 'string', 'max:30'],
+            'reference_name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'reference_relationship' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'reference_phone' => [
+                'required',
+                'digits:11',
+            ],
 
             'shelter_source' => [
                 'required',
@@ -166,14 +185,28 @@ class AdoptionApplicationController extends Controller
                 'max:255',
             ],
 
-            'preferred_breed' => ['nullable', 'string', 'max:255'],
+            'preferred_breed' => [
+                'nullable',
+                'regex:/^[a-zA-Z\s\-]+$/',
+                'max:255',
+            ],
 
             'preferred_size' => [
                 'nullable',
-                'in:S,M,L,XL',
+                'in:Small,Medium,Large,Extra Large',
             ],
 
-            'preferred_age' => ['nullable', 'string', 'max:255'],
+            'preferred_age' => [
+                'nullable',
+                'integer',
+                'min:1',
+                'max:30',
+            ],
+
+            'preferred_age_unit' => [
+                'nullable',
+                'in:Months,Years',
+            ],
         ]);
 
         // Require the "Other" description when Other is selected.

@@ -113,9 +113,8 @@
 
             </div>
 
-
             {{-- =====================================
-                 APPLICANT INFORMATION
+                APPLICANT INFORMATION
             ====================================== --}}
 
             <div class="border-t border-gray-200 pt-8">
@@ -125,7 +124,6 @@
                 </h2>
 
                 <div class="mt-6 grid gap-6 sm:grid-cols-2">
-
 
                     {{-- Name --}}
                     <div>
@@ -138,16 +136,17 @@
                             value="{{ auth()->user()->name }}"
                             disabled
                             class="mt-2 w-full rounded-xl border
-                                   border-gray-200 bg-gray-100
-                                   px-4 py-3 text-gray-600"
+                                border-gray-200 bg-gray-100
+                                px-4 py-3 text-gray-600"
                         >
                     </div>
 
-
                     {{-- Age --}}
                     <div>
-                        <label for="age"
-                               class="font-semibold text-gray-700">
+                        <label
+                            for="age"
+                            class="font-semibold text-gray-700"
+                        >
                             Age
                         </label>
 
@@ -156,13 +155,13 @@
                             id="age"
                             name="age"
                             min="18"
+                            max="120"
                             value="{{ old('age') }}"
                             required
                             class="mt-2 w-full rounded-xl border
-                                   border-gray-300 px-4 py-3"
+                                border-gray-300 px-4 py-3"
                         >
                     </div>
-
 
                     {{-- Email --}}
                     <div>
@@ -175,11 +174,10 @@
                             value="{{ auth()->user()->email }}"
                             disabled
                             class="mt-2 w-full rounded-xl border
-                                   border-gray-200 bg-gray-100
-                                   px-4 py-3 text-gray-600"
+                                border-gray-200 bg-gray-100
+                                px-4 py-3 text-gray-600"
                         >
                     </div>
-
 
                     {{-- Address --}}
                     <div>
@@ -192,53 +190,18 @@
                             value="{{ auth()->user()->adopterProfile->address }}"
                             disabled
                             class="mt-2 w-full rounded-xl border
-                                   border-gray-200 bg-gray-100
-                                   px-4 py-3 text-gray-600"
+                                border-gray-200 bg-gray-100
+                                px-4 py-3 text-gray-600"
                         >
                     </div>
 
-
-                    {{-- Home phone --}}
-                    <div>
-                        <label for="home_phone"
-                               class="font-semibold text-gray-700">
-                            Home Telephone
-                        </label>
-
-                        <input
-                            type="text"
-                            id="home_phone"
-                            name="home_phone"
-                            value="{{ old('home_phone') }}"
-                            class="mt-2 w-full rounded-xl border
-                                   border-gray-300 px-4 py-3"
-                        >
-                    </div>
-
-
-                    {{-- Work phone --}}
-                    <div>
-                        <label for="work_phone"
-                               class="font-semibold text-gray-700">
-                            Work Telephone
-                        </label>
-
-                        <input
-                            type="text"
-                            id="work_phone"
-                            name="work_phone"
-                            value="{{ old('work_phone') }}"
-                            class="mt-2 w-full rounded-xl border
-                                   border-gray-300 px-4 py-3"
-                        >
-                    </div>
-
-
-                    {{-- Mobile --}}
+                    {{-- Mobile Number --}}
                     <div class="sm:col-span-2">
 
-                        <label for="mobile_number"
-                               class="font-semibold text-gray-700">
+                        <label
+                            for="mobile_number"
+                            class="font-semibold text-gray-700"
+                        >
                             Mobile Number
                         </label>
 
@@ -246,13 +209,17 @@
                             type="text"
                             id="mobile_number"
                             name="mobile_number"
+                            inputmode="numeric"
+                            maxlength="11"
+                            pattern="[0-9]{11}"
                             value="{{ old(
                                 'mobile_number',
                                 auth()->user()->adopterProfile->phone_number
                             ) }}"
                             required
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                             class="mt-2 w-full rounded-xl border
-                                   border-gray-300 px-4 py-3"
+                                border-gray-300 px-4 py-3"
                         >
 
                     </div>
@@ -261,9 +228,9 @@
 
             </div>
 
-
+            
             {{-- =====================================
-                 PERSONAL REFERENCE
+                PERSONAL REFERENCE
             ====================================== --}}
 
             <div class="border-t border-gray-200 pt-8">
@@ -275,8 +242,10 @@
                 <div class="mt-6 grid gap-6 sm:grid-cols-3">
 
                     <div>
-                        <label for="reference_name"
-                               class="font-semibold text-gray-700">
+                        <label
+                            for="reference_name"
+                            class="font-semibold text-gray-700"
+                        >
                             Name
                         </label>
 
@@ -287,13 +256,15 @@
                             value="{{ old('reference_name') }}"
                             required
                             class="mt-2 w-full rounded-xl border
-                                   border-gray-300 px-4 py-3"
+                                border-gray-300 px-4 py-3"
                         >
                     </div>
 
                     <div>
-                        <label for="reference_relationship"
-                               class="font-semibold text-gray-700">
+                        <label
+                            for="reference_relationship"
+                            class="font-semibold text-gray-700"
+                        >
                             Relationship
                         </label>
 
@@ -304,24 +275,30 @@
                             value="{{ old('reference_relationship') }}"
                             required
                             class="mt-2 w-full rounded-xl border
-                                   border-gray-300 px-4 py-3"
+                                border-gray-300 px-4 py-3"
                         >
                     </div>
 
                     <div>
-                        <label for="reference_phone"
-                               class="font-semibold text-gray-700">
-                            Telephone Number
+                        <label
+                            for="reference_phone"
+                            class="font-semibold text-gray-700"
+                        >
+                            Mobile Number
                         </label>
 
                         <input
                             type="text"
                             id="reference_phone"
                             name="reference_phone"
+                            inputmode="numeric"
+                            maxlength="11"
+                            pattern="[0-9]{11}"
                             value="{{ old('reference_phone') }}"
                             required
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                             class="mt-2 w-full rounded-xl border
-                                   border-gray-300 px-4 py-3"
+                                border-gray-300 px-4 py-3"
                         >
                     </div>
 
@@ -331,13 +308,15 @@
 
 
             {{-- =====================================
-                 SHELTER SOURCE
+                SHELTER SOURCE
             ====================================== --}}
 
             <div class="border-t border-gray-200 pt-8">
 
-                <label for="shelter_source"
-                       class="text-lg font-bold text-gray-900">
+                <label
+                    for="shelter_source"
+                    class="text-lg font-bold text-gray-900"
+                >
                     What prompted you to come to Animal Shelter?
                 </label>
 
@@ -345,16 +324,25 @@
                     id="shelter_source"
                     name="shelter_source"
                     required
+                    onchange="
+                        document.getElementById('shelter_source_other').disabled =
+                            this.value !== 'Other';
+                    "
                     class="mt-4 w-full rounded-xl border
-                           border-gray-300 bg-white px-4 py-3"
+                        border-gray-300 bg-white px-4 py-3"
                 >
 
                     <option value="">Select an option</option>
 
-                    @foreach (['Friends', 'Print Ads', 'TV Show', 'Website', 'Other'] as $source)
+                    @foreach (
+                        ['Friends', 'Print Ads', 'TV Show', 'Website', 'Other']
+                        as $source
+                    )
 
-                        <option value="{{ $source }}"
-                            @selected(old('shelter_source') === $source)>
+                        <option
+                            value="{{ $source }}"
+                            @selected(old('shelter_source') === $source)
+                        >
                             {{ $source }}
                         </option>
 
@@ -362,11 +350,12 @@
 
                 </select>
 
-
                 <div class="mt-4">
 
-                    <label for="shelter_source_other"
-                           class="font-semibold text-gray-700">
+                    <label
+                        for="shelter_source_other"
+                        class="font-semibold text-gray-700"
+                    >
                         If Other, please specify
                     </label>
 
@@ -375,8 +364,12 @@
                         id="shelter_source_other"
                         name="shelter_source_other"
                         value="{{ old('shelter_source_other') }}"
+                        @disabled(old('shelter_source') !== 'Other')
                         class="mt-2 w-full rounded-xl border
-                               border-gray-300 px-4 py-3"
+                            border-gray-300 px-4 py-3
+                            disabled:cursor-not-allowed
+                            disabled:bg-gray-100
+                            disabled:text-gray-400"
                     >
 
                 </div>
@@ -385,7 +378,7 @@
 
 
             {{-- =====================================
-                 ANIMAL INFORMATION
+                ANIMAL INFORMATION
             ====================================== --}}
 
             <div class="border-t border-gray-200 pt-8">
@@ -394,14 +387,14 @@
                     Animal Preference
                 </h2>
 
-
                 <div class="mt-6 grid gap-6 sm:grid-cols-2">
-
 
                     {{-- Interested in --}}
                     <div>
-                        <label for="animal_preference"
-                               class="font-semibold text-gray-700">
+                        <label
+                            for="animal_preference"
+                            class="font-semibold text-gray-700"
+                        >
                             Are you interested in a:
                         </label>
 
@@ -409,16 +402,28 @@
                             id="animal_preference"
                             name="animal_preference"
                             required
+                            onchange="
+                                document.getElementById(
+                                    'animal_preference_other'
+                                ).disabled = this.value !== 'Other';
+                            "
                             class="mt-2 w-full rounded-xl border
-                                   border-gray-300 bg-white px-4 py-3"
+                                border-gray-300 bg-white px-4 py-3"
                         >
 
                             <option value="">Select an option</option>
 
-                            @foreach (['Cat', 'Kitten', 'Dog', 'Puppy', 'Other'] as $animal)
+                            @foreach (
+                                ['Cat', 'Kitten', 'Dog', 'Puppy', 'Other']
+                                as $animal
+                            )
 
-                                <option value="{{ $animal }}"
-                                    @selected(old('animal_preference') === $animal)>
+                                <option
+                                    value="{{ $animal }}"
+                                    @selected(
+                                        old('animal_preference') === $animal
+                                    )
+                                >
                                     {{ $animal }}
                                 </option>
 
@@ -427,11 +432,12 @@
                         </select>
                     </div>
 
-
                     {{-- Other --}}
                     <div>
-                        <label for="animal_preference_other"
-                               class="font-semibold text-gray-700">
+                        <label
+                            for="animal_preference_other"
+                            class="font-semibold text-gray-700"
+                        >
                             If Other, please specify
                         </label>
 
@@ -440,16 +446,21 @@
                             id="animal_preference_other"
                             name="animal_preference_other"
                             value="{{ old('animal_preference_other') }}"
+                            @disabled(old('animal_preference') !== 'Other')
                             class="mt-2 w-full rounded-xl border
-                                   border-gray-300 px-4 py-3"
+                                border-gray-300 px-4 py-3
+                                disabled:cursor-not-allowed
+                                disabled:bg-gray-100
+                                disabled:text-gray-400"
                         >
                     </div>
 
-
                     {{-- Breed --}}
                     <div>
-                        <label for="preferred_breed"
-                               class="font-semibold text-gray-700">
+                        <label
+                            for="preferred_breed"
+                            class="font-semibold text-gray-700"
+                        >
                             Breed / Mix
                         </label>
 
@@ -458,16 +469,21 @@
                             id="preferred_breed"
                             name="preferred_breed"
                             value="{{ old('preferred_breed') }}"
+                            oninput="
+                                this.value =
+                                    this.value.replace(/[^a-zA-Z\s-]/g, '')
+                            "
                             class="mt-2 w-full rounded-xl border
-                                   border-gray-300 px-4 py-3"
+                                border-gray-300 px-4 py-3"
                         >
                     </div>
 
-
                     {{-- Size --}}
                     <div>
-                        <label for="preferred_size"
-                               class="font-semibold text-gray-700">
+                        <label
+                            for="preferred_size"
+                            class="font-semibold text-gray-700"
+                        >
                             Preferred Size
                         </label>
 
@@ -475,15 +491,20 @@
                             id="preferred_size"
                             name="preferred_size"
                             class="mt-2 w-full rounded-xl border
-                                   border-gray-300 bg-white px-4 py-3"
+                                border-gray-300 bg-white px-4 py-3"
                         >
 
                             <option value="">Select size</option>
 
-                            @foreach (['S', 'M', 'L', 'XL'] as $size)
+                            @foreach (
+                                ['Small', 'Medium', 'Large', 'Extra Large']
+                                as $size
+                            )
 
-                                <option value="{{ $size }}"
-                                    @selected(old('preferred_size') === $size)>
+                                <option
+                                    value="{{ $size }}"
+                                    @selected(old('preferred_size') === $size)
+                                >
                                     {{ $size }}
                                 </option>
 
@@ -492,25 +513,51 @@
                         </select>
                     </div>
 
-
                     {{-- Preferred Age --}}
                     <div>
-                        <label for="preferred_age"
-                               class="font-semibold text-gray-700">
+                        <label
+                            for="preferred_age"
+                            class="font-semibold text-gray-700"
+                        >
                             Preferred Age
                         </label>
 
-                        <input
-                            type="text"
-                            id="preferred_age"
-                            name="preferred_age"
-                            value="{{ old('preferred_age') }}"
-                            placeholder="Example: 1 year old"
-                            class="mt-2 w-full rounded-xl border
-                                   border-gray-300 px-4 py-3"
-                        >
-                    </div>
+                        <div class="mt-2 flex gap-3">
 
+                            <input
+                                type="number"
+                                id="preferred_age"
+                                name="preferred_age"
+                                min="1"
+                                max="30"
+                                value="{{ old('preferred_age') }}"
+                                placeholder="Age"
+                                class="w-full rounded-xl border
+                                    border-gray-300 px-4 py-3"
+                            >
+
+                            <select
+                                name="preferred_age_unit"
+                                class="rounded-xl border border-gray-300
+                                    bg-white px-4 py-3"
+                            >
+                                <option
+                                    value="Months"
+                                    @selected(old('preferred_age_unit') === 'Months')
+                                >
+                                    Months
+                                </option>
+
+                                <option
+                                    value="Years"
+                                    @selected(old('preferred_age_unit') === 'Years')
+                                >
+                                    Years
+                                </option>
+                            </select>
+
+                        </div>
+                    </div>
 
                     {{-- Selected Animal --}}
                     <div>

@@ -12,25 +12,24 @@ return new class extends Migration
 
             // Applicant information
             $table->unsignedInteger('age')->nullable();
-            $table->string('home_phone')->nullable();
-            $table->string('work_phone')->nullable();
-            $table->string('mobile_number')->nullable();
+            $table->string('mobile_number', 11)->nullable();
 
             // Personal reference
             $table->string('reference_name')->nullable();
             $table->string('reference_relationship')->nullable();
-            $table->string('reference_phone')->nullable();
+            $table->string('reference_phone', 11)->nullable();
 
             // How the applicant heard about the shelter
             $table->string('shelter_source')->nullable();
             $table->string('shelter_source_other')->nullable();
 
-            // Animal preference from the shelter form
+            // Animal preference
             $table->string('animal_preference')->nullable();
             $table->string('animal_preference_other')->nullable();
             $table->string('preferred_breed')->nullable();
             $table->string('preferred_size')->nullable();
-            $table->string('preferred_age')->nullable();
+            $table->unsignedInteger('preferred_age')->nullable();
+            $table->string('preferred_age_unit')->nullable();
 
             // Filled in later by shelter staff
             $table->text('evaluator_notes')->nullable();
@@ -42,8 +41,6 @@ return new class extends Migration
         Schema::table('adoption_applications', function (Blueprint $table) {
             $table->dropColumn([
                 'age',
-                'home_phone',
-                'work_phone',
                 'mobile_number',
                 'reference_name',
                 'reference_relationship',
@@ -55,6 +52,7 @@ return new class extends Migration
                 'preferred_breed',
                 'preferred_size',
                 'preferred_age',
+                'preferred_age_unit',
                 'evaluator_notes',
             ]);
         });
