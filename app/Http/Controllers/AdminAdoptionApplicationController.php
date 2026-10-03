@@ -86,6 +86,23 @@ class AdminAdoptionApplicationController extends Controller
 
         $application->update($validated);
 
+        if ($application->status === 'Approved') {
+            $application->pet->update([
+                'status' => 'Adopted',
+            ]);
+        }
+
+        if ($application->status === 'Pending') {
+            $application->pet->update([
+                'status' => 'Unavailable',
+            ]);
+        }
+
+        if ($application->status === 'Rejected') {
+            $application->pet->update([
+                'status' => 'Available',
+            ]);
+        }
         if (in_array(
             $application->status,
             ['Approved', 'Rejected']

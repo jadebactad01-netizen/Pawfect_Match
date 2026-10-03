@@ -267,7 +267,11 @@ class AdoptionApplicationController extends Controller
             ...$validated,
         ]);
 
+        $pet->update([
+            'status' => 'Unavailable',
+        ]);
+
         return redirect()
             ->route('compatibility-assessments.create', $application);
-            }
+    }
 }
