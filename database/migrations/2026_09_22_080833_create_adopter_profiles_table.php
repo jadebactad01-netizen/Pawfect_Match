@@ -19,13 +19,6 @@ return new class extends Migration
             $table->string('phone_number')->nullable();
             $table->string('address')->nullable();
 
-            $table->string('living_environment')->nullable();
-            $table->string('household')->nullable();
-            $table->string('available_time')->nullable();
-            $table->string('pet_care_experience')->nullable();
-            $table->string('activity_level')->nullable();
-            $table->string('care_ability')->nullable();
-
             $table->timestamps();
         });
     }
