@@ -200,7 +200,6 @@ class AdoptionApplicationController extends Controller
                 'nullable',
                 'integer',
                 'min:1',
-                'max:30',
             ],
 
             'preferred_age_unit' => [
@@ -208,6 +207,32 @@ class AdoptionApplicationController extends Controller
                 'in:Months,Years',
             ],
         ]);
+
+        if (
+            isset($validated['preferred_age']) &&
+            $validated['preferred_age_unit'] === 'Months' &&
+            $validated['preferred_age'] > 11
+        ) {
+            return back()
+                ->withErrors([
+                    'preferred_age' =>
+                        'Preferred age in months must be between 1 and 11.',
+                ])
+                ->withInput();
+        }
+
+        if (
+            isset($validated['preferred_age']) &&
+            $validated['preferred_age_unit'] === 'Years' &&
+            $validated['preferred_age'] > 30
+        ) {
+            return back()
+                ->withErrors([
+                    'preferred_age' =>
+                        'Preferred age in years must be between 1 and 30.',
+                ])
+                ->withInput();
+        }
 
         // Require the "Other" description when Other is selected.
         if (

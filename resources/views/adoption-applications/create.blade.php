@@ -525,38 +525,69 @@
                         <div class="mt-2 flex gap-3">
 
                             <input
-                                type="number"
+                                type="text"
                                 id="preferred_age"
                                 name="preferred_age"
-                                min="1"
-                                max="30"
+                                inputmode="numeric"
+                                maxlength="2"
                                 value="{{ old('preferred_age') }}"
                                 placeholder="Age"
+                                oninput="
+                                    this.value = this.value.replace(/[^0-9]/g, '');
+
+                                    if (
+                                        document.getElementById('preferred_age_unit').value === 'Months'
+                                        && Number(this.value) > 11
+                                    ) {
+                                        this.value = '11';
+                                    }
+
+                                    if (
+                                        document.getElementById('preferred_age_unit').value === 'Years'
+                                        && Number(this.value) > 30
+                                    ) {
+                                        this.value = '30';
+                                    }
+                                "
                                 class="w-full rounded-xl border
                                     border-gray-300 px-4 py-3"
                             >
 
                             <select
+                                id="preferred_age_unit"
                                 name="preferred_age_unit"
+                                onchange="
+                                    document.getElementById('preferred_age').value = '';
+                                "
                                 class="rounded-xl border border-gray-300
                                     bg-white px-4 py-3"
                             >
+
                                 <option
                                     value="Months"
-                                    @selected(old('preferred_age_unit') === 'Months')
+                                    @selected(
+                                        old('preferred_age_unit', 'Months') === 'Months'
+                                    )
                                 >
                                     Months
                                 </option>
 
                                 <option
                                     value="Years"
-                                    @selected(old('preferred_age_unit') === 'Years')
+                                    @selected(
+                                        old('preferred_age_unit') === 'Years'
+                                    )
                                 >
                                     Years
                                 </option>
+
                             </select>
 
                         </div>
+
+                        <p class="mt-2 text-sm text-gray-500">
+                            Months: 1–11 • Years: 1–30
+                        </p>
                     </div>
 
                     {{-- Selected Animal --}}
