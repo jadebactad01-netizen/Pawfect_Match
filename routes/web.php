@@ -10,6 +10,7 @@ use App\Http\Controllers\AdminAdopterController;
 use App\Http\Controllers\AdminAdoptionRecordController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdopterController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -32,6 +33,15 @@ Route::get('/', function () {
         if (Auth::user()->role === 'admin') {
             return redirect()
                 ->route('admin.dashboard');
+        }
+
+        if (
+            Auth::user()->role === 'adopter'
+            && request()->routeIs('home')
+            && request()->query('public') !== '1'
+        ) {
+            return redirect()
+                ->route('adopter.dashboard');
         }
 
     }
@@ -119,6 +129,11 @@ Route::middleware('auth')->group(function () {
             'retryRecommendationExplanations'
         ]
     )->name('compatibility-assessments.retry-recommendations');
+
+    Route::get(
+        '/adopter/dashboard',
+        [AdopterController::class, 'dashboard']
+    )->name('adopter.dashboard');
 
 });
 
