@@ -25,7 +25,15 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Fortify::loginView(function () {
+        Fortify::loginView(function (Request $request) {
+
+            if ($request->filled('pet')) {
+                session()->put(
+                    'url.intended',
+                    route('pets.show', $request->pet)
+                );
+            }
+
             return view('auth.login');
         });
 

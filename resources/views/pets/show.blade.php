@@ -185,14 +185,14 @@
                         Adoption Status
                     </p>
 
-                <p class="mt-1 font-bold
+                    <p class="mt-1 font-bold
                         {{ $pet->status === 'Available'
                             ? 'text-green-600'
                             : 'text-red-600' }}">
 
-                    {{ $pet->status }}
+                        {{ $pet->status }}
 
-                </p>
+                    </p>
 
                 </div>
 
@@ -212,7 +212,10 @@
                 @guest
 
                     <a
-                        href="{{ route('login') }}"
+                        href="{{ route(
+                            'login',
+                            ['pet' => $pet->id]
+                        ) }}"
                         class="rounded-full border border-orange-500
                             bg-white px-7 py-3 font-semibold
                             text-orange-500 hover:bg-orange-50"
@@ -312,7 +315,7 @@
 
                 You will need an adopter account before submitting
                 an adoption application.
-            
+
             </p>
 
 
