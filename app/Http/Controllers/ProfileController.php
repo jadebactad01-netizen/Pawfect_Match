@@ -100,6 +100,7 @@ class ProfileController extends Controller
             $user->adopterProfile()->updateOrCreate(
                 [],
                 [
+                    'age' => $validated['age'],
                     'phone_number' => $validated['phone_number'],
                     'address' => $validated['address'],
                 ]

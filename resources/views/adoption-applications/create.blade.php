@@ -162,9 +162,10 @@
                                     auth()->user()->adopterProfile->age
                                 )
                             }}"
-                            required
+                            disabled
                             class="mt-2 w-full rounded-xl border
-                                border-gray-300 px-4 py-3"
+                                border-gray-200 bg-gray-100
+                                px-4 py-3 text-gray-700"
                         >
                     </div>
 
@@ -221,10 +222,11 @@
                                 'mobile_number',
                                 auth()->user()->adopterProfile->phone_number
                             ) }}"
-                            required
+                            disabled
                             oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                             class="mt-2 w-full rounded-xl border
-                                border-gray-300 px-4 py-3"
+                                border-gray-300 bg-gray-100
+                                px-4 py-3 text-gray-700"
                         >
 
                     </div>

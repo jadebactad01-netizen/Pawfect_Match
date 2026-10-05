@@ -134,18 +134,6 @@ class AdoptionApplicationController extends Controller
         }
 
         $validated = $request->validate([
-            'age' => [
-                'required',
-                'integer',
-                'min:18',
-                'max:120',
-            ],
-
-            'mobile_number' => [
-                'required',
-                'digits:11',
-            ],
-
             'reference_name' => [
                 'required',
                 'string',
@@ -207,6 +195,9 @@ class AdoptionApplicationController extends Controller
                 'in:Months,Years',
             ],
         ]);
+
+        $validated['age'] = $user->adopterProfile->age;
+        $validated['mobile_number'] = $user->adopterProfile->phone_number;  
 
         if (
             isset($validated['preferred_age_number']) &&
