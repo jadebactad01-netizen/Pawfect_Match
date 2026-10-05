@@ -516,7 +516,7 @@
                     {{-- Preferred Age --}}
                     <div>
                         <label
-                            for="preferred_age"
+                            for="preferred_age_number"
                             class="font-semibold text-gray-700"
                         >
                             Preferred Age
@@ -526,24 +526,29 @@
 
                             <input
                                 type="text"
-                                id="preferred_age"
-                                name="preferred_age"
+                                id="preferred_age_number"
+                                name="preferred_age_number"
                                 inputmode="numeric"
                                 maxlength="2"
-                                value="{{ old('preferred_age') }}"
+                                value="{{ old('preferred_age_number') }}"
                                 placeholder="Age"
                                 oninput="
-                                    this.value = this.value.replace(/[^0-9]/g, '');
+                                    this.value =
+                                        this.value.replace(/[^0-9]/g, '');
 
                                     if (
-                                        document.getElementById('preferred_age_unit').value === 'Months'
+                                        document.getElementById(
+                                            'preferred_age_unit'
+                                        ).value === 'Months'
                                         && Number(this.value) > 11
                                     ) {
                                         this.value = '11';
                                     }
 
                                     if (
-                                        document.getElementById('preferred_age_unit').value === 'Years'
+                                        document.getElementById(
+                                            'preferred_age_unit'
+                                        ).value === 'Years'
                                         && Number(this.value) > 30
                                     ) {
                                         this.value = '30';
@@ -557,27 +562,19 @@
                                 id="preferred_age_unit"
                                 name="preferred_age_unit"
                                 onchange="
-                                    document.getElementById('preferred_age').value = '';
+                                    document.getElementById(
+                                        'preferred_age_number'
+                                    ).value = '';
                                 "
                                 class="rounded-xl border border-gray-300
                                     bg-white px-4 py-3"
                             >
 
-                                <option
-                                    value="Months"
-                                    @selected(
-                                        old('preferred_age_unit', 'Months') === 'Months'
-                                    )
-                                >
+                                <option value="Months">
                                     Months
                                 </option>
 
-                                <option
-                                    value="Years"
-                                    @selected(
-                                        old('preferred_age_unit') === 'Years'
-                                    )
-                                >
+                                <option value="Years">
                                     Years
                                 </option>
 

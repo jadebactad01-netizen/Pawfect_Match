@@ -37,7 +37,16 @@ class AdminPetController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', 'in:Dog,Cat'],
             'sex' => ['required', 'in:Male,Female'],
-            'age' => ['required', 'string', 'max:255'],
+            'age_number' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
+
+            'age_unit' => [
+                'required',
+                'in:Months,Years',
+            ],
             'status' => ['required', 'in:Available,Unavailable'],
             'description' => ['nullable', 'string'],
             'photo' => [
@@ -54,6 +63,38 @@ class AdminPetController extends Controller
             'experience_requirement' => ['required', 'in:None,Some,Experienced'],
             'activity_level' => ['required', 'in:Low,Moderate,High'],
         ]);
+
+        if (
+            $validated['age_unit'] === 'Months'
+            && $validated['age_number'] > 11
+        ) {
+            return back()
+                ->withErrors([
+                    'age_number' =>
+                        'Age in months must be between 1 and 11.',
+                ])
+                ->withInput();
+        }
+
+        if (
+            $validated['age_unit'] === 'Years'
+            && $validated['age_number'] > 30
+        ) {
+            return back()
+                ->withErrors([
+                    'age_number' =>
+                        'Age in years must be between 1 and 30.',
+                ])
+                ->withInput();
+        }
+
+        $validated['age'] =
+            $validated['age_number'] . ' ' . $validated['age_unit'];
+
+        unset(
+            $validated['age_number'],
+            $validated['age_unit']
+        );
 
         if ($request->hasFile('photo')) {
             $validated['photo'] = $request
@@ -87,7 +128,16 @@ class AdminPetController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', 'in:Dog,Cat'],
             'sex' => ['required', 'in:Male,Female'],
-            'age' => ['required', 'string', 'max:255'],
+            'age_number' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
+
+            'age_unit' => [
+                'required',
+                'in:Months,Years',
+            ],
             'status' => ['required', 'in:Available,Unavailable'],
             'description' => ['nullable', 'string'],
             'photo' => [
@@ -104,6 +154,38 @@ class AdminPetController extends Controller
             'experience_requirement' => ['required', 'in:None,Some,Experienced'],
             'activity_level' => ['required', 'in:Low,Moderate,High'],
         ]);
+
+        if (
+            $validated['age_unit'] === 'Months'
+            && $validated['age_number'] > 11
+        ) {
+            return back()
+                ->withErrors([
+                    'age_number' =>
+                        'Age in months must be between 1 and 11.',
+                ])
+                ->withInput();
+        }
+
+        if (
+            $validated['age_unit'] === 'Years'
+            && $validated['age_number'] > 30
+        ) {
+            return back()
+                ->withErrors([
+                    'age_number' =>
+                        'Age in years must be between 1 and 30.',
+                ])
+                ->withInput();
+        }
+
+        $validated['age'] =
+            $validated['age_number'] . ' ' . $validated['age_unit'];
+
+        unset(
+            $validated['age_number'],
+            $validated['age_unit']
+        );
 
         if ($request->hasFile('photo')) {
 

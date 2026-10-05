@@ -27,7 +27,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
     'preferred_breed',
     'preferred_size',
     'preferred_age',
-    'preferred_age_unit',
 
     'evaluator_notes',
 ])]

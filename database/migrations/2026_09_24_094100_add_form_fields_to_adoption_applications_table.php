@@ -28,8 +28,7 @@ return new class extends Migration
             $table->string('animal_preference_other')->nullable();
             $table->string('preferred_breed')->nullable();
             $table->string('preferred_size')->nullable();
-            $table->unsignedInteger('preferred_age')->nullable();
-            $table->string('preferred_age_unit')->nullable();
+            $table->string('preferred_age')->nullable();
 
             // Filled in later by shelter staff
             $table->text('evaluator_notes')->nullable();
@@ -52,7 +51,6 @@ return new class extends Migration
                 'preferred_breed',
                 'preferred_size',
                 'preferred_age',
-                'preferred_age_unit',
                 'evaluator_notes',
             ]);
         });

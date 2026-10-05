@@ -171,26 +171,76 @@
 
                 </div>
 
-
-
                 <!-- AGE -->
 
                 <div>
 
-                    <label for="age"
-                           class="font-semibold text-gray-700">
+                    <label
+                        for="age_number"
+                        class="font-semibold text-gray-700"
+                    >
                         Age
                     </label>
 
-                    <input type="text"
-                           id="age"
-                           name="age"
-                           value="{{ old('age') }}"
-                           placeholder="Example: 2 years old"
-                           required
-                           class="mt-2 w-full rounded-xl
-                                  border border-gray-300
-                                  px-4 py-3">
+                    <div class="mt-2 flex gap-3">
+
+                        <input
+                            type="text"
+                            id="age_number"
+                            name="age_number"
+                            inputmode="numeric"
+                            maxlength="2"
+                            value="{{ old('age_number') }}"
+                            placeholder="Age"
+                            required
+                            oninput="
+                                this.value =
+                                    this.value.replace(/[^0-9]/g, '');
+
+                                if (
+                                    document.getElementById('age_unit').value === 'Months'
+                                    && Number(this.value) > 11
+                                ) {
+                                    this.value = '11';
+                                }
+
+                                if (
+                                    document.getElementById('age_unit').value === 'Years'
+                                    && Number(this.value) > 30
+                                ) {
+                                    this.value = '30';
+                                }
+                            "
+                            class="w-full rounded-xl border
+                                border-gray-300 px-4 py-3"
+                        >
+
+                        <select
+                            id="age_unit"
+                            name="age_unit"
+                            required
+                            onchange="
+                                document.getElementById('age_number').value = '';
+                            "
+                            class="rounded-xl border border-gray-300
+                                bg-white px-4 py-3"
+                        >
+
+                            <option value="Months">
+                                Months
+                            </option>
+
+                            <option value="Years">
+                                Years
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <p class="mt-2 text-sm text-gray-500">
+                        Months: 1–11 • Years: 1–30
+                    </p>
 
                 </div>
 

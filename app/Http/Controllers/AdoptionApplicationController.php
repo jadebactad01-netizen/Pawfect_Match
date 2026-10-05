@@ -196,7 +196,7 @@ class AdoptionApplicationController extends Controller
                 'in:Small,Medium,Large,Extra Large',
             ],
 
-            'preferred_age' => [
+            'preferred_age_number' => [
                 'nullable',
                 'integer',
                 'min:1',
@@ -209,30 +209,42 @@ class AdoptionApplicationController extends Controller
         ]);
 
         if (
-            isset($validated['preferred_age']) &&
+            isset($validated['preferred_age_number']) &&
             $validated['preferred_age_unit'] === 'Months' &&
-            $validated['preferred_age'] > 11
+            $validated['preferred_age_number'] > 11
         ) {
             return back()
                 ->withErrors([
-                    'preferred_age' =>
-                        'Preferred age in months must be between 1 and 11.',
+                    'preferred_age_number' =>
+                        'Age in months must be between 1 and 11.',
                 ])
                 ->withInput();
         }
 
         if (
-            isset($validated['preferred_age']) &&
+            isset($validated['preferred_age_number']) &&
             $validated['preferred_age_unit'] === 'Years' &&
-            $validated['preferred_age'] > 30
+            $validated['preferred_age_number'] > 30
         ) {
             return back()
                 ->withErrors([
-                    'preferred_age' =>
-                        'Preferred age in years must be between 1 and 30.',
+                    'preferred_age_number' =>
+                        'Age in years must be between 1 and 30.',
                 ])
                 ->withInput();
         }
+
+        if (isset($validated['preferred_age_number'])) {
+            $validated['preferred_age'] =
+                $validated['preferred_age_number']
+                . ' '
+                . $validated['preferred_age_unit'];
+        }
+
+        unset(
+            $validated['preferred_age_number'],
+            $validated['preferred_age_unit']
+        );
 
         // Require the "Other" description when Other is selected.
         if (
