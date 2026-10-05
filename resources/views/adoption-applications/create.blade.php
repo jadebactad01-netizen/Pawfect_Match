@@ -156,7 +156,12 @@
                             name="age"
                             min="18"
                             max="120"
-                            value="{{ old('age') }}"
+                            value="{{
+                                old(
+                                    'age',
+                                    auth()->user()->adopterProfile->age
+                                )
+                            }}"
                             required
                             class="mt-2 w-full rounded-xl border
                                 border-gray-300 px-4 py-3"

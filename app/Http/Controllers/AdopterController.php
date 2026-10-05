@@ -34,6 +34,10 @@ class AdopterController extends Controller
             ->where('status', 'Approved')
             ->count();
 
+        $rejectedApplications = $applications
+            ->where('status', 'Rejected')
+            ->count();
+
         $latestApplication = $applications->first();
 
         $recommendedPets = collect();
@@ -65,6 +69,7 @@ class AdopterController extends Controller
                 'applications',
                 'pendingApplications',
                 'approvedApplications',
+                'rejectedApplications',
                 'latestApplication',
                 'recommendedPets',
                 'availablePets'

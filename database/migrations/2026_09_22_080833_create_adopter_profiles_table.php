@@ -16,7 +16,8 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
 
-            $table->string('phone_number')->nullable();
+            $table->unsignedInteger('age')->nullable();
+            $table->string('phone_number', 11)->nullable();
             $table->string('address')->nullable();
 
             $table->timestamps();

@@ -147,7 +147,41 @@
 
                 <div class="mt-6 grid gap-6 sm:grid-cols-2">
 
-                    {{-- Phone Number --}}
+                    {{-- Age --}}
+                    <div>
+
+                        <label
+                            for="age"
+                            class="mb-2 block font-medium text-gray-700"
+                        >
+                            Age
+                        </label>
+
+                        <input
+                            type="text"
+                            id="age"
+                            name="age"
+                            inputmode="numeric"
+                            maxlength="3"
+                            value="{{ old('age', $profile?->age) }}"
+                            required
+                            oninput="
+                                this.value =
+                                    this.value.replace(/[^0-9]/g, '').slice(0, 3);
+
+                                if (Number(this.value) > 120) {
+                                    this.value = '120';
+                                }
+                            "
+                            class="w-full rounded-lg border
+                                border-gray-300 px-4 py-3
+                                outline-none
+                                focus:border-orange-500"
+                        >
+
+                    </div>
+
+                    {{-- Mobile Number --}}
                     <div>
 
                         <label
@@ -155,24 +189,31 @@
                             class="mb-2 block font-medium
                                    text-gray-700"
                         >
-                            Phone Number
+                            Mobile Number
                         </label>
 
                         <input
                             type="text"
                             id="phone_number"
                             name="phone_number"
+                            inputmode="numeric"
+                            maxlength="11"
                             value="{{
                                 old(
                                     'phone_number',
                                     $profile?->phone_number
                                 )
                             }}"
-                            placeholder="Enter your phone number"
+                            placeholder="Enter your mobile number"
+                            required
+                            oninput="
+                                this.value =
+                                    this.value.replace(/[^0-9]/g, '');
+                            "
                             class="w-full rounded-lg border
-                                   border-gray-300 px-4 py-3
-                                   outline-none
-                                   focus:border-orange-500"
+                                border-gray-300 px-4 py-3
+                                outline-none
+                                focus:border-orange-500"
                         >
 
                     </div>

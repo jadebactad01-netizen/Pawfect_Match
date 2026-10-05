@@ -28,7 +28,7 @@
 
 
         {{-- Adoption overview --}}
-        <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
 
             <div class="rounded-2xl bg-white p-6 shadow-sm">
 
@@ -80,6 +80,22 @@
 
                 <p class="mt-2 text-sm text-gray-500">
                     Approved adoption applications.
+                </p>
+
+            </div>
+
+            <div class="rounded-2xl bg-white p-6 shadow-sm">
+
+                <p class="text-sm font-semibold text-gray-500">
+                    Rejected
+                </p>
+
+                <p class="mt-2 text-3xl font-bold text-red-600">
+                    {{ $rejectedApplications }}
+                </p>
+
+                <p class="mt-2 text-sm text-gray-500">
+                    Rejected adoption applications.
                 </p>
 
             </div>

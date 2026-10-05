@@ -58,14 +58,20 @@ class ProfileController extends Controller
          * Adopter-specific profile information.
          */
         if ($user->role === 'adopter') {
+            $rules['age'] = [
+                'required',
+                'integer',
+                'min:18',
+                'max:120',
+            ];
+
             $rules['phone_number'] = [
-                'nullable',
-                'string',
-                'max:20',
+                'required',
+                'digits:11',
             ];
 
             $rules['address'] = [
-                'nullable',
+                'required',
                 'string',
                 'max:255',
             ];
