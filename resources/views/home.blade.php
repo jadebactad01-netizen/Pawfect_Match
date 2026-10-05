@@ -73,26 +73,14 @@
         </div>
 
 
-        <!-- Hero Illustration -->
+        <!-- Hero Image -->
         <div class="flex justify-center">
 
-            <div class="relative flex h-80 w-80 items-center
-                        justify-center rounded-full bg-orange-200
-                        sm:h-96 sm:w-96">
-
-                <div class="text-center">
-
-                    <div class="text-8xl sm:text-9xl">
-                        🐶
-                    </div>
-
-                    <p class="mt-4 font-semibold text-orange-700">
-                        Your new best friend is waiting!
-                    </p>
-
-                </div>
-
-            </div>
+            <img
+                src="{{ asset('images/pawfect-hero.png') }}"
+                alt="Cat and dog waiting for adoption"
+                class="w-full max-w-xl object-contain"
+            >
 
         </div>
 
@@ -340,7 +328,6 @@
 
     <div class="mx-auto max-w-7xl px-6">
 
-
         <div class="mb-14 text-center">
 
             <p class="font-semibold text-orange-500">
@@ -354,11 +341,16 @@
 
             </h2>
 
+            <p class="mx-auto mt-4 max-w-2xl text-gray-600">
+                Follow these steps to find a pet and complete
+                the adoption process.
+            </p>
+
         </div>
 
 
-
-        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="grid gap-8 sm:grid-cols-2
+                    lg:grid-cols-5">
 
 
             <!-- Step 1 -->
@@ -377,11 +369,10 @@
                 </h3>
 
                 <p class="mt-3 leading-7 text-gray-600">
-                    Register and create your adopter profile.
+                    Register and complete your adopter profile.
                 </p>
 
             </div>
-
 
 
             <!-- Step 2 -->
@@ -396,7 +387,7 @@
                 </div>
 
                 <h3 class="mt-5 text-lg font-bold">
-                    Browse Pets
+                    Browse Available Pets
                 </h3>
 
                 <p class="mt-3 leading-7 text-gray-600">
@@ -404,7 +395,6 @@
                 </p>
 
             </div>
-
 
 
             <!-- Step 3 -->
@@ -419,15 +409,15 @@
                 </div>
 
                 <h3 class="mt-5 text-lg font-bold">
-                    Check Compatibility
+                    Apply for Adoption
                 </h3>
 
                 <p class="mt-3 leading-7 text-gray-600">
-                    Answer the compatibility assessment questions.
+                    Complete and submit the adoption form
+                    for your chosen pet.
                 </p>
 
             </div>
-
 
 
             <!-- Step 4 -->
@@ -442,11 +432,36 @@
                 </div>
 
                 <h3 class="mt-5 text-lg font-bold">
-                    Apply for Adoption
+                    Check Compatibility
                 </h3>
 
                 <p class="mt-3 leading-7 text-gray-600">
-                    Submit your application and track its status.
+                    Complete the compatibility assessment
+                    to see how well the pet matches your
+                    lifestyle and home environment.
+                </p>
+
+            </div>
+
+
+            <!-- Step 5 -->
+            <div class="text-center">
+
+                <div class="mx-auto flex h-16 w-16 items-center
+                            justify-center rounded-full bg-orange-100
+                            text-2xl font-bold text-orange-500">
+
+                    5
+
+                </div>
+
+                <h3 class="mt-5 text-lg font-bold">
+                    Track Your Application
+                </h3>
+
+                <p class="mt-3 leading-7 text-gray-600">
+                    View your application status and wait
+                    for the shelter's decision.
                 </p>
 
             </div>

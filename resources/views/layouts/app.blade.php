@@ -23,11 +23,16 @@
 
             <!-- Website Logo / Name -->
             <a href="{{ route('home') }}"
-               class="flex items-center gap-2 text-xl font-bold text-orange-500">
+            class="flex items-center gap-3 text-xl font-bold text-orange-500">
 
-                <span class="text-2xl">🐾</span>
+                <img
+                    src="{{ asset('images/pawfect-logo.png') }}"
+                    alt="Pawfect Match Logo"
+                    class="h-11 w-11 rounded-full object-cover"
+                >
 
                 <span>Pawfect Match</span>
+
             </a>
 
 
@@ -53,13 +58,27 @@
                         Available Pets
                     </a>
 
-                    <a href="{{ route('home') }}#how-it-works"
-                    class="font-medium text-gray-600 hover:text-orange-500">
+                    <a
+                        href="{{
+                            auth()->check()
+                            && auth()->user()->role === 'adopter'
+                                ? route('home', ['public' => 1]) . '#how-it-works'
+                                : route('home') . '#how-it-works'
+                        }}"
+                        class="font-medium text-gray-600 hover:text-orange-500"
+                    >
                         How It Works
                     </a>
 
-                    <a href="{{ route('home') }}#about"
-                    class="font-medium text-gray-600 hover:text-orange-500">
+                    <a
+                        href="{{
+                            auth()->check()
+                            && auth()->user()->role === 'adopter'
+                                ? route('home', ['public' => 1]) . '#about'
+                                : route('home') . '#about'
+                        }}"
+                        class="font-medium text-gray-600 hover:text-orange-500"
+                    >
                         About Us
                     </a>
 
@@ -182,13 +201,27 @@
                         Available Pets
                     </a>
 
-                    <a href="{{ route('home') }}#how-it-works"
-                    class="font-medium text-gray-600 hover:text-orange-500">
+                    <a
+                        href="{{
+                            auth()->check()
+                            && auth()->user()->role === 'adopter'
+                                ? route('home', ['public' => 1]) . '#how-it-works'
+                                : route('home') . '#how-it-works'
+                        }}"
+                        class="font-medium text-gray-600 hover:text-orange-500"
+                    >
                         How It Works
                     </a>
 
-                    <a href="{{ route('home') }}#about"
-                    class="font-medium text-gray-600 hover:text-orange-500">
+                    <a
+                        href="{{
+                            auth()->check()
+                            && auth()->user()->role === 'adopter'
+                                ? route('home', ['public' => 1]) . '#about'
+                                : route('home') . '#about'
+                        }}"
+                        class="font-medium text-gray-600 hover:text-orange-500"
+                    >
                         About Us
                     </a>
 
@@ -338,8 +371,7 @@
 
                 <h3 class="mb-4 flex items-center gap-2
                            text-xl font-bold text-white">
-
-                    <span>🐾</span>
+                           
                     Pawfect Match
 
                 </h3>
@@ -361,23 +393,41 @@
 
                 <div class="flex flex-col gap-3">
 
-                    <a href="{{ route('home') }}"
-                       class="hover:text-orange-400">
+                    <a
+                        href="{{ route('home') }}"
+                        class="hover:text-orange-400"
+                    >
                         Home
                     </a>
 
-                    <a href="{{ route('pets.index') }}"
-                    class="font-medium text-gray-600 hover:text-orange-500">
+                    <a
+                        href="{{ route('pets.index') }}"
+                        class="hover:text-orange-400"
+                    >
                         Available Pets
                     </a>
 
-                    <a href="#how-it-works"
-                       class="hover:text-orange-400">
+                    <a
+                        href="{{
+                            auth()->check()
+                            && auth()->user()->role === 'adopter'
+                                ? route('home', ['public' => 1]) . '#how-it-works'
+                                : route('home') . '#how-it-works'
+                        }}"
+                        class="hover:text-orange-400"
+                    >
                         How It Works
                     </a>
 
-                    <a href="#about"
-                       class="hover:text-orange-400">
+                    <a
+                        href="{{
+                            auth()->check()
+                            && auth()->user()->role === 'adopter'
+                                ? route('home', ['public' => 1]) . '#about'
+                                : route('home') . '#about'
+                        }}"
+                        class="hover:text-orange-400"
+                    >
                         About Us
                     </a>
 
