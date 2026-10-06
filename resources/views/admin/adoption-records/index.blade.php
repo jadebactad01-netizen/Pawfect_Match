@@ -22,7 +22,8 @@
         </p>
 
 
-        {{-- Record filters --}}
+        <!-- FILTERS -->
+
         <div class="mt-8 flex flex-wrap gap-3">
 
             <a
@@ -34,6 +35,7 @@
             >
                 All Records
             </a>
+
 
             <a
                 href="{{ route(
@@ -47,6 +49,7 @@
             >
                 Approved
             </a>
+
 
             <a
                 href="{{ route(
@@ -64,6 +67,47 @@
         </div>
 
 
+        <!-- SEARCH -->
+
+        <form
+            action="{{ route('admin.adoption-records.index') }}"
+            method="GET"
+            class="mt-6 flex max-w-md"
+        >
+
+            @if ($status)
+
+                <input
+                    type="hidden"
+                    name="status"
+                    value="{{ $status }}"
+                >
+
+            @endif
+
+            <input
+                type="text"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Search pet or adopter name..."
+                class="min-w-0 flex-1 rounded-l-xl
+                       border border-gray-300 bg-white
+                       px-4 py-2 outline-none
+                       focus:border-orange-500"
+            >
+
+            <button
+                type="submit"
+                class="rounded-r-xl bg-orange-500
+                       px-5 py-2 font-semibold text-white
+                       hover:bg-orange-600"
+            >
+                Search
+            </button>
+
+        </form>
+
+
         @if ($records->isEmpty())
 
             <div class="mt-8 rounded-3xl bg-white
@@ -74,8 +118,7 @@
                 </h2>
 
                 <p class="mt-2 text-gray-600">
-                    Approved and rejected applications
-                    will appear here.
+                    No matching adoption records found.
                 </p>
 
             </div>
@@ -94,9 +137,11 @@
                                     lg:justify-between">
 
                             <div class="grid flex-1 gap-5
-                                        sm:grid-cols-2 lg:grid-cols-4">
+                                        sm:grid-cols-2
+                                        lg:grid-cols-4">
 
                                 <div>
+
                                     <p class="text-sm text-gray-500">
                                         Record
                                     </p>
@@ -104,9 +149,12 @@
                                     <p class="mt-1 font-bold text-gray-900">
                                         #{{ $record->id }}
                                     </p>
+
                                 </div>
 
+
                                 <div>
+
                                     <p class="text-sm text-gray-500">
                                         Applicant
                                     </p>
@@ -114,9 +162,12 @@
                                     <p class="mt-1 font-semibold">
                                         {{ $record->user->name }}
                                     </p>
+
                                 </div>
 
+
                                 <div>
+
                                     <p class="text-sm text-gray-500">
                                         Pet
                                     </p>
@@ -124,9 +175,12 @@
                                     <p class="mt-1 font-semibold">
                                         {{ $record->pet->name }}
                                     </p>
+
                                 </div>
 
+
                                 <div>
+
                                     <p class="text-sm text-gray-500">
                                         Submitted
                                     </p>
@@ -134,6 +188,7 @@
                                     <p class="mt-1 font-semibold">
                                         {{ $record->created_at->format('M d, Y') }}
                                     </p>
+
                                 </div>
 
                             </div>
@@ -150,14 +205,16 @@
                                     {{ $record->status }}
                                 </span>
 
+
                                 <a
                                     href="{{ route(
                                         'admin.adoption-records.show',
                                         $record
                                     ) }}"
                                     class="rounded-full bg-orange-500
-                                           px-5 py-2 text-sm font-semibold
-                                           text-white hover:bg-orange-600"
+                                           px-5 py-2 text-sm
+                                           font-semibold text-white
+                                           hover:bg-orange-600"
                                 >
                                     View Record
                                 </a>

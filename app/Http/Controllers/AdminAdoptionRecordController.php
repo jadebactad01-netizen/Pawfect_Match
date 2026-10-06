@@ -13,6 +13,7 @@ class AdminAdoptionRecordController extends Controller
     public function index(Request $request)
     {
         $status = $request->query('status');
+        $search = $request->query('search');
 
         $query = AdoptionApplication::with([
             'user',
@@ -25,8 +26,45 @@ class AdminAdoptionRecordController extends Controller
                 'Rejected',
             ]);
 
-        if (in_array($status, ['Approved', 'Rejected'])) {
-            $query->where('status', $status);
+        if (in_array(
+            $status,
+            ['Approved', 'Rejected']
+        )) {
+            $query->where(
+                'status',
+                $status
+            );
+        }
+
+        if ($search) {
+
+            $query->where(
+                function ($query) use ($search) {
+
+                    $query->whereHas(
+                        'user',
+                        function ($userQuery) use ($search) {
+                            $userQuery->where(
+                                'name',
+                                'like',
+                                '%' . $search . '%'
+                            );
+                        }
+                    );
+
+                    $query->orWhereHas(
+                        'pet',
+                        function ($petQuery) use ($search) {
+                            $petQuery->where(
+                                'name',
+                                'like',
+                                '%' . $search . '%'
+                            );
+                        }
+                    );
+
+                }
+            );
         }
 
         $records = $query
@@ -35,7 +73,11 @@ class AdminAdoptionRecordController extends Controller
 
         return view(
             'admin.adoption-records.index',
-            compact('records', 'status')
+            compact(
+                'records',
+                'status',
+                'search'
+            )
         );
     }
 
@@ -43,8 +85,9 @@ class AdminAdoptionRecordController extends Controller
     /**
      * Show one adoption record.
      */
-    public function show(AdoptionApplication $application)
-    {
+    public function show(
+        AdoptionApplication $application
+    ) {
         if (! in_array(
             $application->status,
             ['Approved', 'Rejected']

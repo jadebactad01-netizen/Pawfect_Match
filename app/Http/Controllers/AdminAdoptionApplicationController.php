@@ -10,29 +10,68 @@ class AdminAdoptionApplicationController extends Controller
     /**
      * Show pending adoption applications.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $applications = AdoptionApplication::with([
+        $search = $request->query('search');
+
+        $query = AdoptionApplication::with([
             'user',
             'pet',
             'compatibilityAssessment',
         ])
             ->whereHas('compatibilityAssessment')
             ->where('status', 'Pending')
-            ->latest()
-            ->get();
+            ->latest();
+
+        if ($search) {
+
+            $query->where(
+                function ($query) use ($search) {
+
+                    $query->whereHas(
+                        'user',
+                        function ($userQuery) use ($search) {
+                            $userQuery->where(
+                                'name',
+                                'like',
+                                '%' . $search . '%'
+                            );
+                        }
+                    );
+
+                    $query->orWhereHas(
+                        'pet',
+                        function ($petQuery) use ($search) {
+                            $petQuery->where(
+                                'name',
+                                'like',
+                                '%' . $search . '%'
+                            );
+                        }
+                    );
+
+                }
+            );
+        }
+
+        $applications = $query->get();
 
         return view(
             'admin.applications.index',
-            compact('applications')
+            compact(
+                'applications',
+                'search'
+            )
         );
     }
+
 
     /**
      * Show one adoption application.
      */
-    public function show(AdoptionApplication $application)
-    {
+    public function show(
+        AdoptionApplication $application
+    ) {
         $application->load([
             'user.adopterProfile',
             'pet',
@@ -40,6 +79,7 @@ class AdminAdoptionApplicationController extends Controller
         ]);
 
         if (! $application->compatibilityAssessment) {
+
             return redirect()
                 ->route('admin.applications.index')
                 ->with(
@@ -54,6 +94,7 @@ class AdminAdoptionApplicationController extends Controller
         );
     }
 
+
     /**
      * Update evaluator notes and application status.
      */
@@ -63,6 +104,7 @@ class AdminAdoptionApplicationController extends Controller
     ) {
 
         if (! $application->compatibilityAssessment) {
+
             return redirect()
                 ->route('admin.applications.index')
                 ->with(
@@ -87,28 +129,36 @@ class AdminAdoptionApplicationController extends Controller
         $application->update($validated);
 
         if ($application->status === 'Approved') {
+
             $application->pet->update([
                 'status' => 'Adopted',
             ]);
         }
 
         if ($application->status === 'Pending') {
+
             $application->pet->update([
                 'status' => 'Unavailable',
             ]);
         }
 
         if ($application->status === 'Rejected') {
+
             $application->pet->update([
                 'status' => 'Available',
             ]);
         }
+
         if (in_array(
             $application->status,
             ['Approved', 'Rejected']
         )) {
+
             return redirect()
-                ->route('admin.adoption-records.show', $application)
+                ->route(
+                    'admin.adoption-records.show',
+                    $application
+                )
                 ->with(
                     'success',
                     'Application review completed successfully.'
@@ -116,7 +166,10 @@ class AdminAdoptionApplicationController extends Controller
         }
 
         return redirect()
-            ->route('admin.applications.show', $application)
+            ->route(
+                'admin.applications.show',
+                $application
+            )
             ->with(
                 'success',
                 'Application review updated successfully.'

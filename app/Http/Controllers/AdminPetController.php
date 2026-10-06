@@ -11,11 +11,26 @@ class AdminPetController extends Controller
     /**
      * Show all pets for shelter management.
      */
-    public function manage()
+    public function manage(Request $request)
     {
-        $pets = Pet::latest()->get();
+        $search = $request->query('search');
 
-        return view('admin.pets.manage', compact('pets'));
+        $query = Pet::latest();
+
+        if ($search) {
+            $query->where(
+                'name',
+                'like',
+                '%' . $search . '%'
+            );
+        }
+
+        $pets = $query->get();
+
+        return view(
+            'admin.pets.manage',
+            compact('pets', 'search')
+        );
     }
 
 
@@ -37,6 +52,7 @@ class AdminPetController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', 'in:Dog,Cat'],
             'sex' => ['required', 'in:Male,Female'],
+
             'age_number' => [
                 'required',
                 'integer',
@@ -47,8 +63,17 @@ class AdminPetController extends Controller
                 'required',
                 'in:Months,Years',
             ],
-            'status' => ['required', 'in:Available,Unavailable'],
-            'description' => ['nullable', 'string'],
+
+            'status' => [
+                'required',
+                'in:Available,Unavailable',
+            ],
+
+            'description' => [
+                'nullable',
+                'string',
+            ],
+
             'photo' => [
                 'nullable',
                 'image',
@@ -56,12 +81,35 @@ class AdminPetController extends Controller
                 'max:5120',
             ],
 
-            'care_requirement' => ['required', 'in:Low,Moderate,High'],
-            'time_requirement' => ['required', 'in:Low,Moderate,High'],
-            'household_compatibility' => ['required', 'in:Living alone,Adults only,Family with children,Any'],
-            'living_environment' => ['required', 'in:House,Apartment,Other,Any'],
-            'experience_requirement' => ['required', 'in:None,Some,Experienced'],
-            'activity_level' => ['required', 'in:Low,Moderate,High'],
+            'care_requirement' => [
+                'required',
+                'in:Low,Moderate,High',
+            ],
+
+            'time_requirement' => [
+                'required',
+                'in:Low,Moderate,High',
+            ],
+
+            'household_compatibility' => [
+                'required',
+                'in:Living alone,Adults only,Family with children,Any',
+            ],
+
+            'living_environment' => [
+                'required',
+                'in:House,Apartment,Other,Any',
+            ],
+
+            'experience_requirement' => [
+                'required',
+                'in:None,Some,Experienced',
+            ],
+
+            'activity_level' => [
+                'required',
+                'in:Low,Moderate,High',
+            ],
         ]);
 
         if (
@@ -89,7 +137,9 @@ class AdminPetController extends Controller
         }
 
         $validated['age'] =
-            $validated['age_number'] . ' ' . $validated['age_unit'];
+            $validated['age_number']
+            . ' '
+            . $validated['age_unit'];
 
         unset(
             $validated['age_number'],
@@ -104,30 +154,39 @@ class AdminPetController extends Controller
 
         Pet::create($validated);
 
-
         return redirect()
             ->route('admin.pets.manage')
-            ->with('success', 'Pet added successfully.');
+            ->with(
+                'success',
+                'Pet added successfully.'
+            );
     }
-    
+
+
     /**
      * Show the form for editing a pet.
      */
     public function edit(Pet $pet)
     {
-        return view('admin.pets.edit', compact('pet'));
+        return view(
+            'admin.pets.edit',
+            compact('pet')
+        );
     }
 
 
     /**
      * Update an existing pet.
      */
-    public function update(Request $request, Pet $pet)
-    {
+    public function update(
+        Request $request,
+        Pet $pet
+    ) {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', 'in:Dog,Cat'],
             'sex' => ['required', 'in:Male,Female'],
+
             'age_number' => [
                 'required',
                 'integer',
@@ -138,8 +197,17 @@ class AdminPetController extends Controller
                 'required',
                 'in:Months,Years',
             ],
-            'status' => ['required', 'in:Available,Unavailable'],
-            'description' => ['nullable', 'string'],
+
+            'status' => [
+                'required',
+                'in:Available,Unavailable',
+            ],
+
+            'description' => [
+                'nullable',
+                'string',
+            ],
+
             'photo' => [
                 'nullable',
                 'image',
@@ -147,12 +215,35 @@ class AdminPetController extends Controller
                 'max:5120',
             ],
 
-            'care_requirement' => ['required', 'in:Low,Moderate,High'],
-            'time_requirement' => ['required', 'in:Low,Moderate,High'],
-            'household_compatibility' => ['required', 'in:Living alone,Adults only,Family with children,Any'],
-            'living_environment' => ['required', 'in:House,Apartment,Other,Any'],
-            'experience_requirement' => ['required', 'in:None,Some,Experienced'],
-            'activity_level' => ['required', 'in:Low,Moderate,High'],
+            'care_requirement' => [
+                'required',
+                'in:Low,Moderate,High',
+            ],
+
+            'time_requirement' => [
+                'required',
+                'in:Low,Moderate,High',
+            ],
+
+            'household_compatibility' => [
+                'required',
+                'in:Living alone,Adults only,Family with children,Any',
+            ],
+
+            'living_environment' => [
+                'required',
+                'in:House,Apartment,Other,Any',
+            ],
+
+            'experience_requirement' => [
+                'required',
+                'in:None,Some,Experienced',
+            ],
+
+            'activity_level' => [
+                'required',
+                'in:Low,Moderate,High',
+            ],
         ]);
 
         if (
@@ -180,7 +271,9 @@ class AdminPetController extends Controller
         }
 
         $validated['age'] =
-            $validated['age_number'] . ' ' . $validated['age_unit'];
+            $validated['age_number']
+            . ' '
+            . $validated['age_unit'];
 
         unset(
             $validated['age_number'],
@@ -190,7 +283,8 @@ class AdminPetController extends Controller
         if ($request->hasFile('photo')) {
 
             if ($pet->photo) {
-                Storage::disk('public')->delete($pet->photo);
+                Storage::disk('public')
+                    ->delete($pet->photo);
             }
 
             $validated['photo'] = $request
@@ -200,10 +294,12 @@ class AdminPetController extends Controller
 
         $pet->update($validated);
 
-
         return redirect()
             ->route('admin.pets.manage')
-            ->with('success', 'Pet updated successfully.');
+            ->with(
+                'success',
+                'Pet updated successfully.'
+            );
     }
 
 
@@ -213,14 +309,17 @@ class AdminPetController extends Controller
     public function destroy(Pet $pet)
     {
         if ($pet->photo) {
-            Storage::disk('public')->delete($pet->photo);
+            Storage::disk('public')
+                ->delete($pet->photo);
         }
-        
-        $pet->delete();
 
+        $pet->delete();
 
         return redirect()
             ->route('admin.pets.manage')
-            ->with('success', 'Pet deleted successfully.');
+            ->with(
+                'success',
+                'Pet deleted successfully.'
+            );
     }
 }

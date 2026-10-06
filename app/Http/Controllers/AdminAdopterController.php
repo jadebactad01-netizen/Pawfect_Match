@@ -3,23 +3,41 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class AdminAdopterController extends Controller
 {
     /**
      * Show all registered adopters.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $adopters = User::where('role', 'adopter')
+        $search = $request->query('search');
+
+        $query = User::where(
+            'role',
+            'adopter'
+        )
             ->with('adopterProfile')
             ->withCount('adoptionApplications')
-            ->latest()
-            ->get();
+            ->latest();
+
+        if ($search) {
+            $query->where(
+                'name',
+                'like',
+                '%' . $search . '%'
+            );
+        }
+
+        $adopters = $query->get();
 
         return view(
             'admin.adopters.index',
-            compact('adopters')
+            compact(
+                'adopters',
+                'search'
+            )
         );
     }
 

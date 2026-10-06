@@ -4,119 +4,152 @@
 
 @section('content')
 
-    <section class="mx-auto max-w-7xl px-6 py-10">
+<section class="mx-auto max-w-7xl px-6 py-10">
 
-        <div class="mb-8">
+    <div class="mb-8">
 
-            <p class="text-sm font-semibold uppercase
-                      tracking-wider text-orange-500">
-                Administration
-            </p>
+        <p class="text-sm font-semibold uppercase
+                  tracking-wider text-orange-500">
+            Administration
+        </p>
 
-            <h1 class="mt-2 text-3xl font-bold text-gray-900">
-                Registered Adopters
-            </h1>
+        <h1 class="mt-2 text-3xl font-bold text-gray-900">
+            Registered Adopters
+        </h1>
 
-            <p class="mt-2 text-gray-600">
-                View registered adopter accounts and
-                their adoption activity.
+        <p class="mt-2 text-gray-600">
+            View registered adopter accounts and
+            their adoption activity.
+        </p>
+
+    </div>
+
+
+    <!-- SEARCH -->
+
+    <form
+        action="{{ route('admin.adopters.index') }}"
+        method="GET"
+        class="mb-6 flex max-w-md"
+    >
+
+        <input
+            type="text"
+            name="search"
+            value="{{ request('search') }}"
+            placeholder="Search adopter name..."
+            class="min-w-0 flex-1 rounded-l-xl
+                   border border-gray-300 bg-white
+                   px-4 py-2 outline-none
+                   focus:border-orange-500"
+        >
+
+        <button
+            type="submit"
+            class="rounded-r-xl bg-orange-500
+                   px-5 py-2 font-semibold text-white
+                   hover:bg-orange-600"
+        >
+            Search
+        </button>
+
+    </form>
+
+
+    @if ($adopters->isEmpty())
+
+        <div class="rounded-2xl bg-white p-8 shadow-sm">
+
+            <p class="text-gray-600">
+                No registered adopters found.
             </p>
 
         </div>
 
+    @else
 
-        @if ($adopters->isEmpty())
+        <div class="overflow-hidden rounded-2xl
+                    bg-white shadow-sm">
 
-            <div class="rounded-2xl bg-white p-8 shadow-sm">
+            <div class="overflow-x-auto">
 
-                <p class="text-gray-600">
-                    No registered adopters found.
-                </p>
+                <table class="w-full text-left">
 
-            </div>
+                    <thead class="bg-orange-50 text-sm
+                                  text-gray-700">
 
-        @else
+                        <tr>
 
-            <div class="overflow-hidden rounded-2xl
-                        bg-white shadow-sm">
+                            <th class="px-6 py-4">
+                                Name
+                            </th>
 
-                <div class="overflow-x-auto">
+                            <th class="px-6 py-4">
+                                Email
+                            </th>
 
-                    <table class="w-full text-left">
+                            <th class="px-6 py-4">
+                                Applications
+                            </th>
 
-                        <thead class="bg-orange-50 text-sm
-                                      text-gray-700">
+                            <th class="px-6 py-4">
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody class="divide-y divide-gray-100">
+
+                        @foreach ($adopters as $adopter)
 
                             <tr>
-                                <th class="px-6 py-4">
-                                    Name
-                                </th>
 
-                                <th class="px-6 py-4">
-                                    Email
-                                </th>
+                                <td class="px-6 py-4 font-semibold
+                                           text-gray-900">
+                                    {{ $adopter->name }}
+                                </td>
 
-                                <th class="px-6 py-4">
-                                    Applications
-                                </th>
+                                <td class="px-6 py-4 text-gray-600">
+                                    {{ $adopter->email }}
+                                </td>
 
-                                <th class="px-6 py-4">
-                                    Action
-                                </th>
+                                <td class="px-6 py-4 text-gray-600">
+                                    {{ $adopter->adoption_applications_count }}
+                                </td>
+
+                                <td class="px-6 py-4">
+
+                                    <a
+                                        href="{{ route(
+                                            'admin.adopters.show',
+                                            $adopter
+                                        ) }}"
+                                        class="font-semibold
+                                               text-orange-500
+                                               hover:text-orange-600"
+                                    >
+                                        View Details
+                                    </a>
+
+                                </td>
+
                             </tr>
 
-                        </thead>
+                        @endforeach
 
+                    </tbody>
 
-                        <tbody class="divide-y divide-gray-100">
-
-                            @foreach ($adopters as $adopter)
-
-                                <tr>
-
-                                    <td class="px-6 py-4 font-semibold
-                                               text-gray-900">
-                                        {{ $adopter->name }}
-                                    </td>
-
-                                    <td class="px-6 py-4 text-gray-600">
-                                        {{ $adopter->email }}
-                                    </td>
-
-                                    <td class="px-6 py-4 text-gray-600">
-                                        {{ $adopter->adoption_applications_count }}
-                                    </td>
-
-                                    <td class="px-6 py-4">
-
-                                        <a
-                                            href="{{ route(
-                                                'admin.adopters.show',
-                                                $adopter
-                                            ) }}"
-                                            class="font-semibold
-                                                   text-orange-500
-                                                   hover:text-orange-600"
-                                        >
-                                            View Details
-                                        </a>
-
-                                    </td>
-
-                                </tr>
-
-                            @endforeach
-
-                        </tbody>
-
-                    </table>
-
-                </div>
+                </table>
 
             </div>
 
-        @endif
+        </div>
 
-    </section>
+    @endif
+
+</section>
 
 @endsection

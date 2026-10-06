@@ -457,6 +457,53 @@
                     ['admin', 'super_admin']
                 ))
 
+                    @if (
+                    request()->routeIs('admin.pets.manage')
+                    || request()->routeIs('admin.adopters.index')
+                    || request()->routeIs('admin.applications.index')
+                    || request()->routeIs('admin.adoption-records.index')
+                )
+
+                    <form
+                        action="{{ url()->current() }}"
+                        method="GET"
+                        class="flex items-center"
+                    >
+
+                        @if (
+                            request()->routeIs('admin.adoption-records.index')
+                            && request('status')
+                        )
+                            <input
+                                type="hidden"
+                                name="status"
+                                value="{{ request('status') }}"
+                            >
+                        @endif
+
+                        <input
+                            type="text"
+                            name="search"
+                            value="{{ request('search') }}"
+                            placeholder="Search..."
+                            class="w-40 rounded-l-lg border border-gray-300
+                                px-3 py-2 text-sm outline-none
+                                focus:border-orange-500"
+                        >
+
+                        <button
+                            type="submit"
+                            class="rounded-r-lg bg-orange-500
+                                px-3 py-2 text-sm font-semibold
+                                text-white hover:bg-orange-600"
+                        >
+                            Search
+                        </button>
+
+                    </form>
+
+                @endif
+
                     <a
                         href="{{ route('admin.pets.manage') }}"
                         class="rounded-lg px-3 py-2 font-medium

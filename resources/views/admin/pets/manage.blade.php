@@ -67,6 +67,37 @@
         @endif
 
 
+        <!-- SEARCH -->
+
+        <form
+            action="{{ route('admin.pets.manage') }}"
+            method="GET"
+            class="mb-6 flex max-w-md"
+        >
+
+            <input
+                type="text"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Search pet name..."
+                class="min-w-0 flex-1 rounded-l-xl
+                       border border-gray-300
+                       px-4 py-2 outline-none
+                       focus:border-orange-500"
+            >
+
+            <button
+                type="submit"
+                class="rounded-r-xl bg-orange-500
+                       px-5 py-2 font-semibold text-white
+                       hover:bg-orange-600"
+            >
+                Search
+            </button>
+
+        </form>
+
+
         <div class="overflow-x-auto rounded-2xl
                     border border-gray-200">
 
@@ -133,6 +164,7 @@
                                 {{ $pet->age }}
                             </td>
 
+
                             <td class="px-6 py-4">
 
                                 <span class="rounded-full px-3 py-1
@@ -147,47 +179,50 @@
 
                             </td>
 
+
                             <td class="px-6 py-4">
 
                                 <div class="flex items-center gap-3">
 
-
-                                    <!-- EDIT -->
-
-                                    <a href="{{ route('admin.pets.edit', $pet) }}"
-                                    class="rounded-full border border-orange-500
-                                            px-4 py-2 text-sm font-semibold
-                                            text-orange-500
-                                            hover:bg-orange-50">
-
+                                    <a
+                                        href="{{ route(
+                                            'admin.pets.edit',
+                                            $pet
+                                        ) }}"
+                                        class="rounded-full border
+                                               border-orange-500
+                                               px-4 py-2 text-sm
+                                               font-semibold text-orange-500
+                                               hover:bg-orange-50"
+                                    >
                                         Edit
-
                                     </a>
 
 
-
-                                    <!-- DELETE -->
-
-                                    <form action="{{ route('admin.pets.destroy', $pet) }}"
-                                        method="POST">
+                                    <form
+                                        action="{{ route(
+                                            'admin.pets.destroy',
+                                            $pet
+                                        ) }}"
+                                        method="POST"
+                                    >
 
                                         @csrf
                                         @method('DELETE')
 
-
-                                        <button type="submit"
-                                                onclick="return confirm('Are you sure you want to delete this pet?')"
-                                                class="rounded-full border border-red-500
-                                                    px-4 py-2 text-sm font-semibold
-                                                    text-red-500
-                                                    hover:bg-red-50">
-
+                                        <button
+                                            type="submit"
+                                            onclick="return confirm('Are you sure you want to delete this pet?')"
+                                            class="rounded-full border
+                                                   border-red-500
+                                                   px-4 py-2 text-sm
+                                                   font-semibold text-red-500
+                                                   hover:bg-red-50"
+                                        >
                                             Delete
-
                                         </button>
 
                                     </form>
-
 
                                 </div>
 
@@ -199,12 +234,12 @@
 
                         <tr>
 
-                            <td colspan="6"
+                            <td
+                                colspan="6"
                                 class="px-6 py-12 text-center
-                                       text-gray-500">
-
-                                No pets have been added yet.
-
+                                       text-gray-500"
+                            >
+                                No pets found.
                             </td>
 
                         </tr>

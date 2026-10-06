@@ -8,26 +8,54 @@
 
     <div class="mx-auto max-w-7xl px-4 sm:px-6">
 
-        {{-- Heading --}}
-        <div class="flex flex-col gap-4 sm:flex-row
-                    sm:items-center sm:justify-between">
+        <div>
 
-            <div>
-                <p class="font-semibold text-orange-500">
-                    Shelter Management
-                </p>
+            <p class="font-semibold text-orange-500">
+                Shelter Management
+            </p>
 
-                <h1 class="mt-1 text-3xl font-bold text-gray-900">
-                    Adoption Applications
-                </h1>
+            <h1 class="mt-1 text-3xl font-bold text-gray-900">
+                Adoption Applications
+            </h1>
 
-                <p class="mt-2 text-gray-600">
-                    Review pending adoption applications
-                    submitted by adopters.
-                </p>
-            </div>
+            <p class="mt-2 text-gray-600">
+                Review pending adoption applications
+                submitted by adopters.
+            </p>
 
         </div>
+
+
+        <!-- SEARCH -->
+
+        <form
+            action="{{ route('admin.applications.index') }}"
+            method="GET"
+            class="mt-8 flex max-w-md"
+        >
+
+            <input
+                type="text"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Search pet or adopter name..."
+                class="min-w-0 flex-1 rounded-l-xl
+                       border border-gray-300 bg-white
+                       px-4 py-2 outline-none
+                       focus:border-orange-500"
+            >
+
+            <button
+                type="submit"
+                class="rounded-r-xl bg-orange-500
+                       px-5 py-2 font-semibold text-white
+                       hover:bg-orange-600"
+            >
+                Search
+            </button>
+
+        </form>
+
 
         @if ($applications->isEmpty())
 
@@ -43,8 +71,7 @@
                 </h2>
 
                 <p class="mt-2 text-gray-600">
-                    There are currently no applications
-                    waiting for review.
+                    No matching pending applications found.
                 </p>
 
             </div>
@@ -62,11 +89,12 @@
                                     lg:flex-row lg:items-center
                                     lg:justify-between">
 
-                            {{-- Application information --}}
                             <div class="grid flex-1 gap-5
-                                        sm:grid-cols-2 lg:grid-cols-4">
+                                        sm:grid-cols-2
+                                        lg:grid-cols-4">
 
                                 <div>
+
                                     <p class="text-sm text-gray-500">
                                         Application
                                     </p>
@@ -74,46 +102,56 @@
                                     <p class="mt-1 font-bold text-gray-900">
                                         #{{ $application->id }}
                                     </p>
+
                                 </div>
 
 
                                 <div>
+
                                     <p class="text-sm text-gray-500">
                                         Applicant
                                     </p>
 
-                                    <p class="mt-1 font-semibold text-gray-900">
+                                    <p class="mt-1 font-semibold
+                                              text-gray-900">
                                         {{ $application->user->name }}
                                     </p>
+
                                 </div>
 
 
                                 <div>
+
                                     <p class="text-sm text-gray-500">
                                         Pet
                                     </p>
 
-                                    <p class="mt-1 font-semibold text-gray-900">
+                                    <p class="mt-1 font-semibold
+                                              text-gray-900">
                                         {{ $application->pet->name }}
                                     </p>
+
                                 </div>
 
 
                                 <div>
+
                                     <p class="text-sm text-gray-500">
                                         Submitted
                                     </p>
 
-                                    <p class="mt-1 font-semibold text-gray-900">
+                                    <p class="mt-1 font-semibold
+                                              text-gray-900">
                                         {{ $application->created_at->format('M d, Y') }}
                                     </p>
+
                                 </div>
 
                             </div>
 
 
-                            {{-- Status and button --}}
-                            <div class="flex flex-wrap items-center gap-3">
+                            <div class="flex flex-wrap
+                                        items-center gap-3">
 
                                 <span class="rounded-full px-4 py-2
                                              text-sm font-semibold
@@ -138,8 +176,9 @@
                                         $application
                                     ) }}"
                                     class="rounded-full bg-orange-500
-                                           px-5 py-2 text-sm font-semibold
-                                           text-white hover:bg-orange-600"
+                                           px-5 py-2 text-sm
+                                           font-semibold text-white
+                                           hover:bg-orange-600"
                                 >
                                     Review
                                 </a>

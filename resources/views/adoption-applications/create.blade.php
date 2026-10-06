@@ -342,7 +342,7 @@
                     <option value="">Select an option</option>
 
                     @foreach (
-                        ['Friends', 'Print Ads', 'TV Show', 'Website', 'Other']
+                        ['Friends', 'Facebook', 'Website', 'Other']
                         as $source
                     )
 
