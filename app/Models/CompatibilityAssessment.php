@@ -47,3 +47,4 @@ class CompatibilityAssessment extends Model
         return $this->hasMany(PetRecommendation::class);
     }
 }
+    
