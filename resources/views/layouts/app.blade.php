@@ -15,305 +15,569 @@
 
 <body class="bg-orange-50 text-gray-800">
 
-    <!-- =========================
-         NAVIGATION BAR
-    ========================== -->
-    <header class="bg-white shadow-sm">
-        <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+<!-- =========================
+     NAVIGATION BAR
+========================== -->
 
-            <!-- Website Logo / Name -->
-            <a href="{{ route('home') }}"
-            class="flex items-center gap-3 text-xl font-bold text-orange-500">
+<header class="bg-white shadow-sm">
 
-                <img
-                    src="{{ asset('images/pawfect-logo.png') }}"
-                    alt="Pawfect Match Logo"
-                    class="h-11 w-11 rounded-full object-cover"
+    <nav class="mx-auto flex max-w-7xl items-center
+                justify-between px-6 py-4">
+
+        <!-- Website Logo / Name -->
+        <a href="{{ route('home') }}"
+           class="flex items-center gap-3 text-xl
+                  font-bold text-orange-500">
+
+            <img
+                src="{{ asset('images/pawfect-logo.png') }}"
+                alt="Pawfect Match Logo"
+                class="h-11 w-11 rounded-full object-cover"
+            >
+
+            <span>Pawfect Match</span>
+
+        </a>
+
+
+        <!-- =========================================
+             DESKTOP NAVIGATION
+        ========================================== -->
+
+        <div class="hidden items-center gap-3 lg:flex">
+
+
+            <!-- GUEST + ADOPTER LINKS -->
+            @if (! auth()->check() || auth()->user()->role === 'adopter')
+
+
+                <!-- Home -->
+                <a
+                    href="{{ route('home') }}"
+                    class="rounded-lg px-3 py-2 font-medium
+                        {{
+                            request()->routeIs('home')
+                            && ! request()->has('public')
+                                ? 'bg-orange-100 text-orange-600'
+                                : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                        }}"
                 >
-
-                <span>Pawfect Match</span>
-
-            </a>
-
-
-            <!-- Desktop Navigation -->
-            <div class="hidden items-center gap-8 lg:flex">
-
-                @if (
-                    ! auth()->check()
-                    || auth()->user()->role === 'adopter'
-                )
-
-                    <a href="{{ route('home') }}"
-                    class="font-medium text-gray-600 hover:text-orange-500">
-                        Home
-                    </a>
-
-                @endif
-
-                @if (! auth()->check() || auth()->user()->role === 'adopter')
-
-                    <a href="{{ route('pets.index') }}"
-                    class="font-medium text-gray-600 hover:text-orange-500">
-                        Available Pets
-                    </a>
-
-                    <a
-                        href="{{
-                            auth()->check()
-                            && auth()->user()->role === 'adopter'
-                                ? route('home', ['public' => 1]) . '#how-it-works'
-                                : route('home') . '#how-it-works'
-                        }}"
-                        class="font-medium text-gray-600 hover:text-orange-500"
-                    >
-                        How It Works
-                    </a>
-
-                    <a
-                        href="{{
-                            auth()->check()
-                            && auth()->user()->role === 'adopter'
-                                ? route('home', ['public' => 1]) . '#about'
-                                : route('home') . '#about'
-                        }}"
-                        class="font-medium text-gray-600 hover:text-orange-500"
-                    >
-                        About Us
-                    </a>
-
-                @endif
-
-                @guest
-
-                    <a href="{{ route('login') }}"
-                    class="font-semibold text-gray-700 hover:text-orange-500">
-                        Login
-                    </a>
-
-                    <a href="{{ route('register') }}"
-                    class="rounded-full bg-orange-500
-                            px-5 py-2 font-semibold text-white
-                            hover:bg-orange-600">
-                        Register
-                    </a>
-
-                @endguest
-
-
-                @auth
-
-                    @if (auth()->user()->role === 'adopter')
-
-                        <a href="{{ route('adoption-applications.index') }}"
-                            class="hover:text-orange-500">
-                            My Applications
-                        </a>
-
-                    @endif
-
-                    
-
-                    @if (in_array(auth()->user()->role, ['admin', 'super_admin']))
-
-                        <a href="{{ route('admin.pets.manage') }}"
-                        class="font-semibold text-orange-500">
-                            Manage Pets
-                        </a>
-
-                        <a href="{{ route('admin.adopters.index') }}"
-                            class="font-semibold text-gray-700 hover:text-orange-500">
-                            Adopters
-                        </a>
-
-                        <a href="{{ route('admin.applications.index') }}"
-                            class="font-semibold text-gray-700 hover:text-orange-500">
-                            Applications
-                        </a>
-
-                        <a href="{{ route('admin.adoption-records.index') }}"
-                            class="font-semibold text-gray-700 hover:text-orange-500">
-                            Adoption Records
-                        </a>
-
-                    @endif
-
-                    @if (auth()->user()->role === 'super_admin')
-
-                        <a
-                            href="{{ route(
-                                'super-admin.administrators.index'
-                            ) }}"
-                            class="font-semibold text-gray-700
-                                hover:text-orange-500"
-                        >
-                            Administrators
-                        </a>
-
-                    @endif
-
-                        <a href="{{ route('profile.edit') }}"
-                            class="font-semibold text-gray-700 hover:text-orange-500">
-                            {{ auth()->user()->name }}
-                        </a>
-
-                    <form action="{{ url('/logout') }}" method="POST">
-                        @csrf
-
-                        <button type="submit"
-                                class="font-semibold text-red-500 hover:text-red-600">
-                            Logout
-                        </button>
-                    </form>
-
-                @endauth
-
-            </div>
-
-
-            <!-- Mobile Menu Button -->
-            <button
-                id="menu-button"
-                class="text-2xl lg:hidden"
-                aria-label="Open menu">
-                ☰
-            </button>
-
-        </nav>
-
-
-        <!-- Mobile Navigation -->
-        <div
-            id="mobile-menu"
-            class="hidden border-t bg-white px-6 pb-5 lg:hidden">
-
-            <div class="flex flex-col gap-4 pt-4">
-
-                <a href="{{ route('home') }}"
-                   class="font-medium text-orange-500">
                     Home
                 </a>
 
-                @if (! auth()->check() || auth()->user()->role === 'adopter')
 
-                    <a href="{{ route('pets.index') }}"
-                    class="font-medium text-gray-600 hover:text-orange-500">
-                        Available Pets
-                    </a>
+                <!-- Available Pets -->
+                <a
+                    href="{{ route('pets.index') }}"
+                    class="rounded-lg px-3 py-2 font-medium
+                        {{
+                            request()->routeIs('pets.*')
+                                ? 'bg-orange-100 text-orange-600'
+                                : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                        }}"
+                >
+                    Available Pets
+                </a>
+
+
+                <!-- How It Works -->
+                <a
+                    href="{{
+                        auth()->check()
+                        && auth()->user()->role === 'adopter'
+                            ? route('home', ['public' => 1]) . '#how-it-works'
+                            : route('home') . '#how-it-works'
+                    }}"
+                    class="rounded-lg px-3 py-2 font-medium
+                           text-gray-600
+                           hover:bg-orange-50
+                           hover:text-orange-500"
+                >
+                    How It Works
+                </a>
+
+
+                <!-- About Us -->
+                <a
+                    href="{{
+                        auth()->check()
+                        && auth()->user()->role === 'adopter'
+                            ? route('home', ['public' => 1]) . '#about'
+                            : route('home') . '#about'
+                    }}"
+                    class="rounded-lg px-3 py-2 font-medium
+                           text-gray-600
+                           hover:bg-orange-50
+                           hover:text-orange-500"
+                >
+                    About Us
+                </a>
+
+            @endif
+
+
+            <!-- =========================================
+                 GUEST ACCOUNT LINKS
+            ========================================== -->
+
+            @guest
+
+                <a
+                    href="{{ route('login') }}"
+                    class="rounded-lg px-3 py-2 font-semibold
+                        {{
+                            request()->routeIs('login')
+                                ? 'bg-orange-100 text-orange-600'
+                                : 'text-gray-700 hover:bg-orange-50 hover:text-orange-500'
+                        }}"
+                >
+                    Login
+                </a>
+
+
+                <a
+                    href="{{ route('register') }}"
+                    class="rounded-full px-5 py-2 font-semibold
+                        {{
+                            request()->routeIs('register')
+                                ? 'bg-orange-600 text-white'
+                                : 'bg-orange-500 text-white hover:bg-orange-600'
+                        }}"
+                >
+                    Register
+                </a>
+
+            @endguest
+
+
+            <!-- =========================================
+                 LOGGED-IN USER LINKS
+            ========================================== -->
+
+            @auth
+
+
+                <!-- ADOPTER -->
+                @if (auth()->user()->role === 'adopter')
 
                     <a
-                        href="{{
-                            auth()->check()
-                            && auth()->user()->role === 'adopter'
-                                ? route('home', ['public' => 1]) . '#how-it-works'
-                                : route('home') . '#how-it-works'
-                        }}"
-                        class="font-medium text-gray-600 hover:text-orange-500"
+                        href="{{ route('adoption-applications.index') }}"
+                        class="rounded-lg px-3 py-2 font-medium
+                            {{
+                                request()->routeIs('adoption-applications.*')
+                                || request()->routeIs('compatibility-assessments.*')
+                                    ? 'bg-orange-100 text-orange-600'
+                                    : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                            }}"
                     >
-                        How It Works
-                    </a>
-
-                    <a
-                        href="{{
-                            auth()->check()
-                            && auth()->user()->role === 'adopter'
-                                ? route('home', ['public' => 1]) . '#about'
-                                : route('home') . '#about'
-                        }}"
-                        class="font-medium text-gray-600 hover:text-orange-500"
-                    >
-                        About Us
+                        My Applications
                     </a>
 
                 @endif
 
-                @guest
 
-                    <a href="{{ route('login') }}"
-                    class="font-semibold text-gray-700 hover:text-orange-500">
-                        Login
+                <!-- ADMIN + SUPER ADMIN -->
+                @if (in_array(
+                    auth()->user()->role,
+                    ['admin', 'super_admin']
+                ))
+
+                    <a
+                        href="{{ route('admin.pets.manage') }}"
+                        class="rounded-lg px-3 py-2 font-medium
+                            {{
+                                request()->routeIs('admin.pets.*')
+                                    ? 'bg-orange-100 text-orange-600'
+                                    : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                            }}"
+                    >
+                        Manage Pets
                     </a>
 
-                    <a href="{{ route('register') }}"
-                    class="rounded-full bg-orange-500
-                            px-5 py-2 font-semibold text-white
-                            hover:bg-orange-600">
-                        Register
+
+                    <a
+                        href="{{ route('admin.adopters.index') }}"
+                        class="rounded-lg px-3 py-2 font-medium
+                            {{
+                                request()->routeIs('admin.adopters.*')
+                                    ? 'bg-orange-100 text-orange-600'
+                                    : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                            }}"
+                    >
+                        Adopters
                     </a>
 
-                @endguest
+
+                    <a
+                        href="{{ route('admin.applications.index') }}"
+                        class="rounded-lg px-3 py-2 font-medium
+                            {{
+                                request()->routeIs('admin.applications.*')
+                                    ? 'bg-orange-100 text-orange-600'
+                                    : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                            }}"
+                    >
+                        Applications
+                    </a>
 
 
-                @auth
+                    <a
+                        href="{{ route('admin.adoption-records.index') }}"
+                        class="rounded-lg px-3 py-2 font-medium
+                            {{
+                                request()->routeIs('admin.adoption-records.*')
+                                    ? 'bg-orange-100 text-orange-600'
+                                    : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                            }}"
+                    >
+                        Adoption Records
+                    </a>
 
-                    @if (auth()->user()->role === 'adopter')
+                @endif
 
-                        <a href="{{ route('adoption-applications.index') }}"
-                            class="hover:text-orange-500">
-                            My Applications
-                        </a>
 
-                    @endif
+                <!-- SUPER ADMIN ONLY -->
+                @if (auth()->user()->role === 'super_admin')
 
-                    @if (in_array(auth()->user()->role, ['admin', 'super_admin']))
+                    <a
+                        href="{{ route(
+                            'super-admin.administrators.index'
+                        ) }}"
+                        class="rounded-lg px-3 py-2 font-medium
+                            {{
+                                request()->routeIs(
+                                    'super-admin.administrators.*'
+                                )
+                                    ? 'bg-orange-100 text-orange-600'
+                                    : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                            }}"
+                    >
+                        Administrators
+                    </a>
 
-                        <a href="{{ route('admin.pets.manage') }}"
-                        class="font-semibold text-orange-500">
-                            Manage Pets
-                        </a>
+                @endif
 
-                        <a href="{{ route('admin.adopters.index') }}"
-                            class="font-semibold text-gray-700 hover:text-orange-500">
-                            Adopters
-                        </a>
 
-                        <a href="{{ route('admin.applications.index') }}"
-                            class="font-semibold text-gray-700 hover:text-orange-500">
-                            Applications
-                        </a>
+                <!-- PROFILE -->
+                <a
+                    href="{{ route('profile.edit') }}"
+                    class="flex items-center gap-2 rounded-full
+                           border border-orange-200 px-4 py-2
+                           font-semibold
+                        {{
+                            request()->routeIs('profile.*')
+                                ? 'bg-orange-500 text-white'
+                                : 'bg-orange-50 text-orange-600 hover:bg-orange-100'
+                        }}"
+                >
+                    <span>👤</span>
 
-                        <a href="{{ route('admin.adoption-records.index') }}"
-                            class="font-semibold text-gray-700 hover:text-orange-500">
-                            Adoption Records
-                        </a>
+                    <span>
+                        {{ auth()->user()->name }}
+                    </span>
+                </a>
 
-                    @endif
 
-                    @if (auth()->user()->role === 'super_admin')
+                <!-- LOGOUT -->
+                <form
+                    action="{{ url('/logout') }}"
+                    method="POST"
+                >
+                    @csrf
 
-                        <a
-                            href="{{ route(
-                                'super-admin.administrators.index'
-                            ) }}"
-                            class="font-semibold text-gray-700
-                                hover:text-orange-500"
-                        >
-                            Administrators
-                        </a>
+                    <button
+                        type="submit"
+                        class="rounded-lg px-3 py-2
+                               font-semibold text-red-500
+                               hover:bg-red-50 hover:text-red-600"
+                    >
+                        Logout
+                    </button>
 
-                    @endif
+                </form>
 
-                        <a href="{{ route('profile.edit') }}"
-                            class="font-semibold text-gray-700 hover:text-orange-500">
-                            {{ auth()->user()->name }}
-                        </a>
-
-                    <form action="{{ url('/logout') }}" method="POST">
-                        @csrf
-
-                        <button type="submit"
-                                class="font-semibold text-red-500 hover:text-red-600">
-                            Logout
-                        </button>
-                    </form>
-
-                @endauth
-
-            </div>
+            @endauth
 
         </div>
 
-    </header>
+
+        <!-- =========================================
+             MOBILE MENU BUTTON
+        ========================================== -->
+
+        <button
+            id="menu-button"
+            class="text-2xl lg:hidden"
+            aria-label="Open menu"
+        >
+            ☰
+        </button>
+
+    </nav>
+
+
+    <!-- =========================================
+         MOBILE NAVIGATION
+    ========================================== -->
+
+    <div
+        id="mobile-menu"
+        class="hidden border-t bg-white px-6 pb-5 lg:hidden"
+    >
+
+        <div class="flex flex-col gap-2 pt-4">
+
+
+            <!-- GUEST + ADOPTER LINKS -->
+            @if (! auth()->check() || auth()->user()->role === 'adopter')
+
+
+                <!-- Home -->
+                <a
+                    href="{{ route('home') }}"
+                    class="rounded-lg px-3 py-2 font-medium
+                        {{
+                            request()->routeIs('home')
+                            && ! request()->has('public')
+                                ? 'bg-orange-100 text-orange-600'
+                                : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                        }}"
+                >
+                    Home
+                </a>
+
+
+                <!-- Available Pets -->
+                <a
+                    href="{{ route('pets.index') }}"
+                    class="rounded-lg px-3 py-2 font-medium
+                        {{
+                            request()->routeIs('pets.*')
+                                ? 'bg-orange-100 text-orange-600'
+                                : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                        }}"
+                >
+                    Available Pets
+                </a>
+
+
+                <!-- How It Works -->
+                <a
+                    href="{{
+                        auth()->check()
+                        && auth()->user()->role === 'adopter'
+                            ? route('home', ['public' => 1]) . '#how-it-works'
+                            : route('home') . '#how-it-works'
+                    }}"
+                    class="rounded-lg px-3 py-2 font-medium
+                           text-gray-600
+                           hover:bg-orange-50
+                           hover:text-orange-500"
+                >
+                    How It Works
+                </a>
+
+
+                <!-- About Us -->
+                <a
+                    href="{{
+                        auth()->check()
+                        && auth()->user()->role === 'adopter'
+                            ? route('home', ['public' => 1]) . '#about'
+                            : route('home') . '#about'
+                    }}"
+                    class="rounded-lg px-3 py-2 font-medium
+                           text-gray-600
+                           hover:bg-orange-50
+                           hover:text-orange-500"
+                >
+                    About Us
+                </a>
+
+            @endif
+
+
+            <!-- GUEST -->
+            @guest
+
+                <a
+                    href="{{ route('login') }}"
+                    class="rounded-lg px-3 py-2 font-semibold
+                        {{
+                            request()->routeIs('login')
+                                ? 'bg-orange-100 text-orange-600'
+                                : 'text-gray-700 hover:bg-orange-50 hover:text-orange-500'
+                        }}"
+                >
+                    Login
+                </a>
+
+
+                <a
+                    href="{{ route('register') }}"
+                    class="rounded-lg px-3 py-2 font-semibold
+                        {{
+                            request()->routeIs('register')
+                                ? 'bg-orange-500 text-white'
+                                : 'text-orange-500 hover:bg-orange-50'
+                        }}"
+                >
+                    Register
+                </a>
+
+            @endguest
+
+
+            <!-- LOGGED-IN USERS -->
+            @auth
+
+
+                <!-- ADOPTER -->
+                @if (auth()->user()->role === 'adopter')
+
+                    <a
+                        href="{{ route('adoption-applications.index') }}"
+                        class="rounded-lg px-3 py-2 font-medium
+                            {{
+                                request()->routeIs('adoption-applications.*')
+                                || request()->routeIs('compatibility-assessments.*')
+                                    ? 'bg-orange-100 text-orange-600'
+                                    : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                            }}"
+                    >
+                        My Applications
+                    </a>
+
+                @endif
+
+
+                <!-- ADMIN + SUPER ADMIN -->
+                @if (in_array(
+                    auth()->user()->role,
+                    ['admin', 'super_admin']
+                ))
+
+                    <a
+                        href="{{ route('admin.pets.manage') }}"
+                        class="rounded-lg px-3 py-2 font-medium
+                            {{
+                                request()->routeIs('admin.pets.*')
+                                    ? 'bg-orange-100 text-orange-600'
+                                    : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                            }}"
+                    >
+                        Manage Pets
+                    </a>
+
+
+                    <a
+                        href="{{ route('admin.adopters.index') }}"
+                        class="rounded-lg px-3 py-2 font-medium
+                            {{
+                                request()->routeIs('admin.adopters.*')
+                                    ? 'bg-orange-100 text-orange-600'
+                                    : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                            }}"
+                    >
+                        Adopters
+                    </a>
+
+
+                    <a
+                        href="{{ route('admin.applications.index') }}"
+                        class="rounded-lg px-3 py-2 font-medium
+                            {{
+                                request()->routeIs('admin.applications.*')
+                                    ? 'bg-orange-100 text-orange-600'
+                                    : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                            }}"
+                    >
+                        Applications
+                    </a>
+
+
+                    <a
+                        href="{{ route('admin.adoption-records.index') }}"
+                        class="rounded-lg px-3 py-2 font-medium
+                            {{
+                                request()->routeIs('admin.adoption-records.*')
+                                    ? 'bg-orange-100 text-orange-600'
+                                    : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                            }}"
+                    >
+                        Adoption Records
+                    </a>
+
+                @endif
+
+
+                <!-- SUPER ADMIN -->
+                @if (auth()->user()->role === 'super_admin')
+
+                    <a
+                        href="{{ route(
+                            'super-admin.administrators.index'
+                        ) }}"
+                        class="rounded-lg px-3 py-2 font-medium
+                            {{
+                                request()->routeIs(
+                                    'super-admin.administrators.*'
+                                )
+                                    ? 'bg-orange-100 text-orange-600'
+                                    : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                            }}"
+                    >
+                        Administrators
+                    </a>
+
+                @endif
+
+
+                <!-- PROFILE -->
+                <a
+                    href="{{ route('profile.edit') }}"
+                    class="mt-2 flex items-center gap-2
+                           rounded-xl border border-orange-200
+                           px-4 py-3 font-semibold
+                        {{
+                            request()->routeIs('profile.*')
+                                ? 'bg-orange-500 text-white'
+                                : 'bg-orange-50 text-orange-600'
+                        }}"
+                >
+                    <span>👤</span>
+
+                    <span>
+                        {{ auth()->user()->name }}
+                    </span>
+                </a>
+
+
+                <!-- LOGOUT -->
+                <form
+                    action="{{ url('/logout') }}"
+                    method="POST"
+                >
+                    @csrf
+
+                    <button
+                        type="submit"
+                        class="w-full rounded-lg px-3 py-2
+                               text-left font-semibold text-red-500
+                               hover:bg-red-50"
+                    >
+                        Logout
+                    </button>
+
+                </form>
+
+            @endauth
+
+        </div>
+
+    </div>
+
+</header>
 
 
 <!-- =========================
