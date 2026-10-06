@@ -8,11 +8,10 @@ use Illuminate\Http\Request;
 
 class AdoptionApplicationController extends Controller
 {
-
     /**
      * Show the logged-in adopter's applications.
      */
-    public function index(Request $request) 
+    public function index(Request $request)
     {
         $user = $request->user();
 
@@ -33,6 +32,8 @@ class AdoptionApplicationController extends Controller
             compact('applications')
         );
     }
+
+
     /**
      * Show the adoption application form.
      */
@@ -49,24 +50,30 @@ class AdoptionApplicationController extends Controller
         if ($pet->status !== 'Available') {
             return redirect()
                 ->route('pets.show', $pet)
-                ->with('error', 'This pet is currently unavailable for adoption.');
+                ->with(
+                    'error',
+                    'This pet is currently unavailable for adoption.'
+                );
         }
 
         // The adopter must complete their profile first.
         if (! $user->adopterProfile) {
             return redirect()
                 ->route('profile.edit')
-                ->with('error', 'Please complete your adopter profile before applying.');
+                ->with(
+                    'error',
+                    'Please complete your adopter profile before applying.'
+                );
         }
 
-        $existingApplication = $user->adoptionApplications()
+        $existingApplication = $user
+            ->adoptionApplications()
             ->where('pet_id', $pet->id)
             ->first();
 
         if ($existingApplication) {
 
-            // The application exists, but the assessment
-            // has not been completed yet.
+            // Application exists but assessment is not complete.
             if (! $existingApplication->compatibilityAssessment) {
                 return redirect()
                     ->route(
@@ -75,7 +82,7 @@ class AdoptionApplicationController extends Controller
                     );
             }
 
-            // The entire application process is already complete.
+            // Application process is already complete.
             return redirect()
                 ->route('adoption-applications.index')
                 ->with(
@@ -84,7 +91,10 @@ class AdoptionApplicationController extends Controller
                 );
         }
 
-        return view('adoption-applications.create', compact('pet'));
+        return view(
+            'adoption-applications.create',
+            compact('pet')
+        );
     }
 
 
@@ -102,16 +112,23 @@ class AdoptionApplicationController extends Controller
         if ($pet->status !== 'Available') {
             return redirect()
                 ->route('pets.show', $pet)
-                ->with('error', 'This pet is currently unavailable for adoption.');
+                ->with(
+                    'error',
+                    'This pet is currently unavailable for adoption.'
+                );
         }
 
         if (! $user->adopterProfile) {
             return redirect()
                 ->route('profile.edit')
-                ->with('error', 'Please complete your adopter profile before applying.');
+                ->with(
+                    'error',
+                    'Please complete your adopter profile before applying.'
+                );
         }
 
-        $existingApplication = $user->adoptionApplications()
+        $existingApplication = $user
+            ->adoptionApplications()
             ->where('pet_id', $pet->id)
             ->first();
 
@@ -134,6 +151,7 @@ class AdoptionApplicationController extends Controller
         }
 
         $validated = $request->validate([
+
             'reference_name' => [
                 'required',
                 'string',
@@ -153,7 +171,7 @@ class AdoptionApplicationController extends Controller
 
             'shelter_source' => [
                 'required',
-                'in:Friends,Print Ads,TV Show,Website,Other',
+                'in:Friends,Facebook,Website,Other',
             ],
 
             'shelter_source_other' => [
@@ -196,13 +214,18 @@ class AdoptionApplicationController extends Controller
             ],
         ]);
 
-        $validated['age'] = $user->adopterProfile->age;
-        $validated['mobile_number'] = $user->adopterProfile->phone_number;  
+        $validated['age'] =
+            $user->adopterProfile->age;
 
+        $validated['mobile_number'] =
+            $user->adopterProfile->phone_number;
+
+
+        // Check preferred age in months.
         if (
-            isset($validated['preferred_age_number']) &&
-            $validated['preferred_age_unit'] === 'Months' &&
-            $validated['preferred_age_number'] > 11
+            isset($validated['preferred_age_number'])
+            && $validated['preferred_age_unit'] === 'Months'
+            && $validated['preferred_age_number'] > 11
         ) {
             return back()
                 ->withErrors([
@@ -212,10 +235,12 @@ class AdoptionApplicationController extends Controller
                 ->withInput();
         }
 
+
+        // Check preferred age in years.
         if (
-            isset($validated['preferred_age_number']) &&
-            $validated['preferred_age_unit'] === 'Years' &&
-            $validated['preferred_age_number'] > 30
+            isset($validated['preferred_age_number'])
+            && $validated['preferred_age_unit'] === 'Years'
+            && $validated['preferred_age_number'] > 30
         ) {
             return back()
                 ->withErrors([
@@ -225,7 +250,10 @@ class AdoptionApplicationController extends Controller
                 ->withInput();
         }
 
+
+        // Combine preferred age number and unit.
         if (isset($validated['preferred_age_number'])) {
+
             $validated['preferred_age'] =
                 $validated['preferred_age_number']
                 . ' '
@@ -237,10 +265,11 @@ class AdoptionApplicationController extends Controller
             $validated['preferred_age_unit']
         );
 
-        // Require the "Other" description when Other is selected.
+
+        // Require description when Other is selected.
         if (
-            $validated['shelter_source'] === 'Other' &&
-            empty($validated['shelter_source_other'])
+            $validated['shelter_source'] === 'Other'
+            && empty($validated['shelter_source_other'])
         ) {
             return back()
                 ->withErrors([
@@ -250,9 +279,11 @@ class AdoptionApplicationController extends Controller
                 ->withInput();
         }
 
+
+        // Require animal description when Other is selected.
         if (
-            $validated['animal_preference'] === 'Other' &&
-            empty($validated['animal_preference_other'])
+            $validated['animal_preference'] === 'Other'
+            && empty($validated['animal_preference_other'])
         ) {
             return back()
                 ->withErrors([
@@ -262,6 +293,7 @@ class AdoptionApplicationController extends Controller
                 ->withInput();
         }
 
+
         $application = AdoptionApplication::create([
             'user_id' => $user->id,
             'pet_id' => $pet->id,
@@ -270,11 +302,16 @@ class AdoptionApplicationController extends Controller
             ...$validated,
         ]);
 
+
         $pet->update([
             'status' => 'Unavailable',
         ]);
 
+
         return redirect()
-            ->route('compatibility-assessments.create', $application);
+            ->route(
+                'compatibility-assessments.create',
+                $application
+            );
     }
 }
