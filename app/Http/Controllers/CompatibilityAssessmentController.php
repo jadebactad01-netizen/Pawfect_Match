@@ -9,29 +9,33 @@ use App\Services\CompatibilityService;
 use App\Services\GeminiService;
 use Illuminate\Http\Request;
 
-
 class CompatibilityAssessmentController extends Controller
 {
-    /**
-     * Show the compatibility assessment.
-     */
     public function create(
         Request $request,
         AdoptionApplication $application
     ) {
-        // Make sure the application belongs to
-        // the logged-in adopter.
         if ($application->user_id !== $request->user()->id) {
             abort(403);
         }
 
-        // Prevent another assessment if one already exists.
         if ($application->compatibilityAssessment) {
             return redirect()
                 ->route('adoption-applications.index')
                 ->with(
                     'error',
                     'You already completed the compatibility assessment.'
+                );
+        }
+
+        $profile = $request->user()->adopterProfile;
+
+        if (! $profile || ! $profile->assessment_locked_at) {
+            return redirect()
+                ->route('profile.edit')
+                ->with(
+                    'error',
+                    'Please complete your compatibility assessment in your profile.'
                 );
         }
 
@@ -43,21 +47,16 @@ class CompatibilityAssessmentController extends Controller
         );
     }
 
-    /**
-     * Save the assessment and calculate compatibility.
-     */
     public function store(
         Request $request,
         AdoptionApplication $application,
         CompatibilityService $compatibilityService,
         GeminiService $geminiService
     ) {
-        // Make sure this application belongs to the adopter.
         if ($application->user_id !== $request->user()->id) {
             abort(403);
         }
 
-        // Prevent duplicate assessments.
         if ($application->compatibilityAssessment) {
             return redirect()
                 ->route('adoption-applications.index')
@@ -67,79 +66,62 @@ class CompatibilityAssessmentController extends Controller
                 );
         }
 
-        $validated = $request->validate([
-            'care_ability' => [
-                'required',
-                'in:Limited,Moderate,High',
-            ],
+        $profile = $request->user()->adopterProfile;
 
-            'available_time' => [
-                'required',
-                'in:Low,Moderate,High',
-            ],
+        if (! $profile || ! $profile->assessment_locked_at) {
+            return redirect()
+                ->route('profile.edit')
+                ->with(
+                    'error',
+                    'Complete your profile compatibility assessment first.'
+                );
+        }
 
-            'household_compatibility' => [
-                'required',
-                'in:Living alone,Adults only,Family with children',
-            ],
+        // These answers come from the saved adopter profile.
+        $answers = [
+            'care_ability' => $profile->care_ability,
+            'available_time' => $profile->available_time,
+            'household_compatibility' => $profile->household_compatibility,
+            'living_environment' => $profile->living_environment,
+            'pet_care_experience' => $profile->pet_care_experience,
+            'activity_level' => $profile->activity_level,
+        ];
 
-            'living_environment' => [
-                'required',
-                'in:House,Apartment,Other',
-            ],
-
-            'pet_care_experience' => [
-                'required',
-                'in:None,Some,Experienced',
-            ],
-
-            'activity_level' => [
-                'required',
-                'in:Low,Moderate,High',
-            ],
-        ]);
-
-        // First save the adopter's answers.
+        // Preserve one set of answers for this particular application.
         $assessment = CompatibilityAssessment::create([
             'adoption_application_id' => $application->id,
-
-            ...$validated,
+            ...$answers,
         ]);
 
-        // Load the pet being applied for.
         $application->load('pet');
 
-        // Calculate the compatibility score.
+        // Calculate the pet-specific compatibility score.
         $result = $compatibilityService->calculate(
             $assessment,
             $application->pet
         );
 
-        // Save the calculated result.
         $assessment->update($result);
 
-        // Ask Gemini to explain the already-calculated result.
+        // Generate the AI explanation for the calculated result.
         $explanation = $geminiService
             ->generateCompatibilityExplanation(
                 $assessment,
                 $application->pet
             );
 
-        // Save the explanation only if Gemini returned one.
         if ($explanation) {
             $assessment->update([
                 'gemini_explanation' => $explanation,
             ]);
         }
 
-        // Find the top compatible alternative pets.
+        // Get compatible alternative pets.
         $recommendedPets = $compatibilityService->recommendPets(
             $assessment,
             $application->pet
         );
 
-
-        // Save each recommendation and its AI explanation.
         foreach ($recommendedPets as $recommendedPet) {
 
             $recommendationExplanation = $geminiService
@@ -173,16 +155,11 @@ class CompatibilityAssessmentController extends Controller
             );
     }
 
-    /**
-     * Retry generating the Gemini compatibility explanation.
-     */
     public function retryExplanation(
         Request $request,
         AdoptionApplication $application,
         GeminiService $geminiService
     ) {
-        // Make sure this application belongs to
-        // the logged-in adopter.
         if ($application->user_id !== $request->user()->id) {
             abort(403);
         }
@@ -194,7 +171,6 @@ class CompatibilityAssessmentController extends Controller
 
         $assessment = $application->compatibilityAssessment;
 
-        // The assessment must already be completed.
         if (! $assessment) {
             return redirect()
                 ->route('adoption-applications.index')
@@ -204,7 +180,6 @@ class CompatibilityAssessmentController extends Controller
                 );
         }
 
-        // No need to call Gemini again if an explanation exists.
         if ($assessment->gemini_explanation) {
             return redirect()
                 ->route('adoption-applications.index')
@@ -220,7 +195,6 @@ class CompatibilityAssessmentController extends Controller
                 $application->pet
             );
 
-        // Gemini is still unavailable.
         if (! $explanation) {
             return redirect()
                 ->route('adoption-applications.index')
@@ -230,7 +204,6 @@ class CompatibilityAssessmentController extends Controller
                 );
         }
 
-        // Save the successful explanation.
         $assessment->update([
             'gemini_explanation' => $explanation,
         ]);
@@ -243,9 +216,6 @@ class CompatibilityAssessmentController extends Controller
             );
     }
 
-    /**
-     * Retry missing AI explanations for recommended pets.
-     */
     public function retryRecommendationExplanations(
         Request $request,
         AdoptionApplication $application,

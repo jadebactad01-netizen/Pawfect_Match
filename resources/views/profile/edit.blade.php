@@ -8,22 +8,17 @@
 
     <div class="mx-auto max-w-3xl">
 
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">
-                My Profile
-            </h1>
+        <h1 class="text-3xl font-bold text-gray-900">
+            My Profile
+        </h1>
 
-            <p class="mt-2 text-gray-600">
-                Update your account information, preferences,
-                and compatibility assessment answers.
-            </p>
-        </div>
+        <p class="mt-2 text-gray-600">
+            Manage your account, animal preferences, and compatibility information.
+        </p>
 
         @if ($errors->any())
-            <div class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
-                <p class="font-semibold">
-                    Please check the information below.
-                </p>
+            <div class="mt-6 rounded-xl bg-red-50 p-4 text-red-700">
+                <p class="font-semibold">Please check the information below.</p>
 
                 <ul class="mt-2 list-inside list-disc">
                     @foreach ($errors->all() as $error)
@@ -33,10 +28,51 @@
             </div>
         @endif
 
+        @php
+            $assessmentEditable =
+                ! $profile?->assessment_locked_at
+                || $profile?->edit_permission_granted;
+
+            $ageParts = explode(' ', $profile?->preferred_age ?? '');
+
+            $questions = [
+                'care_ability' => [
+                    'Ability to Provide Proper Care',
+                    'How would you describe your ability to provide food, veterinary care, grooming, and other needs?',
+                    ['Limited', 'Moderate', 'High'],
+                ],
+                'available_time' => [
+                    'Available Time',
+                    'How much time can you regularly give to a pet?',
+                    ['Low', 'Moderate', 'High'],
+                ],
+                'household_compatibility' => [
+                    'Household',
+                    'Which best describes your household?',
+                    ['Living alone', 'Adults only', 'Family with children'],
+                ],
+                'living_environment' => [
+                    'Living Environment',
+                    'What type of home do you currently live in?',
+                    ['House', 'Apartment', 'Other'],
+                ],
+                'pet_care_experience' => [
+                    'Pet-care Experience',
+                    'How much experience do you have caring for pets?',
+                    ['None', 'Some', 'Experienced'],
+                ],
+                'activity_level' => [
+                    'Activity Level',
+                    'How would you describe your normal activity level?',
+                    ['Low', 'Moderate', 'High'],
+                ],
+            ];
+        @endphp
+
         <form
             action="{{ route('profile.update') }}"
             method="POST"
-            class="space-y-8 rounded-2xl bg-white p-6 shadow-sm sm:p-8"
+            class="mt-8 space-y-8 rounded-2xl bg-white p-6 shadow-sm sm:p-8"
         >
             @csrf
             @method('PUT')
@@ -100,8 +136,8 @@
                                 name="age"
                                 inputmode="numeric"
                                 maxlength="3"
-                                value="{{ old('age', $profile?->age) }}"
                                 required
+                                value="{{ old('age', $profile?->age) }}"
                                 oninput="this.value = this.value.replace(/[^0-9]/g, ''); if (Number(this.value) > 120) this.value = '120';"
                                 class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3"
                             >
@@ -118,8 +154,8 @@
                                 name="phone_number"
                                 inputmode="numeric"
                                 maxlength="11"
-                                value="{{ old('phone_number', $profile?->phone_number) }}"
                                 required
+                                value="{{ old('phone_number', $profile?->phone_number) }}"
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                 class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3"
                             >
@@ -134,8 +170,8 @@
                                 type="text"
                                 id="address"
                                 name="address"
-                                value="{{ old('address', $profile?->address) }}"
                                 required
+                                value="{{ old('address', $profile?->address) }}"
                                 class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3"
                             >
                         </div>
@@ -149,7 +185,8 @@
                     </h2>
 
                     <p class="mt-2 text-sm text-gray-500">
-                        These answers will automatically appear in your adoption application.
+                        Edit your preferences here. They will be shown as read-only
+                        information in your adoption application.
                     </p>
 
                     <div class="mt-6 grid gap-6 sm:grid-cols-2">
@@ -166,12 +203,12 @@
                             >
                                 <option value="">Select an option</option>
 
-                                @foreach (['Cat', 'Kitten', 'Dog', 'Puppy', 'Other'] as $option)
+                                @foreach (['Cat', 'Kitten', 'Dog', 'Puppy', 'Other'] as $animal)
                                     <option
-                                        value="{{ $option }}"
-                                        @selected(old('animal_preference', $profile?->animal_preference) === $option)
+                                        value="{{ $animal }}"
+                                        @selected(old('animal_preference', $profile?->animal_preference) === $animal)
                                     >
-                                        {{ $option }}
+                                        {{ $animal }}
                                     </option>
                                 @endforeach
                             </select>
@@ -189,7 +226,7 @@
                                 value="{{ old('animal_preference_other', $profile?->animal_preference_other) }}"
                                 @disabled(old('animal_preference', $profile?->animal_preference) !== 'Other')
                                 oninput="this.value = this.value.replace(/[^\p{L}\s.'-]/gu, '')"
-                                class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-gray-100"
+                                class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3 disabled:bg-gray-100"
                             >
                         </div>
 
@@ -231,10 +268,6 @@
                             </select>
                         </div>
 
-                        @php
-                            $ageParts = explode(' ', $profile?->preferred_age ?? '');
-                        @endphp
-
                         <div class="sm:col-span-2">
                             <label for="preferred_age_number" class="font-medium text-gray-700">
                                 Preferred Age
@@ -247,8 +280,8 @@
                                     name="preferred_age_number"
                                     inputmode="numeric"
                                     maxlength="2"
-                                    value="{{ old('preferred_age_number', $ageParts[0]) }}"
                                     placeholder="Age"
+                                    value="{{ old('preferred_age_number', $ageParts[0]) }}"
                                     oninput="
                                         this.value = this.value.replace(/[^0-9]/g, '');
                                         if (Number(this.value) > (document.getElementById('preferred_age_unit').value === 'Months' ? 11 : 30)) this.value = '';
@@ -282,54 +315,50 @@
 
                 {{-- COMPATIBILITY ASSESSMENT --}}
                 <div class="border-t pt-8">
-                    <h2 class="text-xl font-bold text-gray-900">
-                        Compatibility Assessment
-                    </h2>
 
-                    <p class="mt-2 text-sm text-gray-500">
-                        Save your lifestyle information. You can review or change
-                        these answers for each adoption application.
-                    </p>
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <h2 class="text-xl font-bold text-gray-900">
+                            Compatibility Assessment
+                        </h2>
 
-                    @php
-                        $questions = [
-                            'care_ability' => [
-                                'Ability to Provide Proper Care',
-                                'How would you describe your ability to provide food, veterinary care, grooming, and other needs?',
-                                ['Limited', 'Moderate', 'High'],
-                            ],
-                            'available_time' => [
-                                'Available Time',
-                                'How much time can you regularly give to a pet?',
-                                ['Low', 'Moderate', 'High'],
-                            ],
-                            'household_compatibility' => [
-                                'Household',
-                                'Which best describes your household?',
-                                ['Living alone', 'Adults only', 'Family with children'],
-                            ],
-                            'living_environment' => [
-                                'Living Environment',
-                                'What type of home do you currently live in?',
-                                ['House', 'Apartment', 'Other'],
-                            ],
-                            'pet_care_experience' => [
-                                'Pet-care Experience',
-                                'How much experience do you have caring for pets?',
-                                ['None', 'Some', 'Experienced'],
-                            ],
-                            'activity_level' => [
-                                'Activity Level',
-                                'How would you describe your normal activity level?',
-                                ['Low', 'Moderate', 'High'],
-                            ],
-                        ];
-                    @endphp
+                        @if ($assessmentEditable)
+                            <span class="rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700">
+                                Editable
+                            </span>
+                        @else
+                            <span class="rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-600">
+                                Locked
+                            </span>
+                        @endif
+                    </div>
+
+                    @if (! $profile?->assessment_locked_at)
+                        <p class="mt-3 text-sm text-gray-600">
+                            Complete all six questions. After saving for the first time,
+                            your answers will be locked.
+                        </p>
+                    @elseif ($profile?->edit_permission_granted)
+                        <div class="mt-4 rounded-xl bg-green-50 p-4 text-sm text-green-700">
+                            Your edit request has been approved.
+                            You can change your answers once.
+                            They will lock again after saving.
+                        </div>
+                    @else
+                        <div class="mt-4 rounded-xl bg-gray-50 p-4 text-sm text-gray-600">
+                            Your compatibility assessment is locked.
+                            You may view your answers but cannot change them
+                            without administrator approval.
+                        </div>
+                    @endif
 
                     <div class="mt-6 space-y-6">
+
                         @foreach ($questions as $field => $question)
                             <div>
-                                <label for="{{ $field }}" class="font-semibold text-gray-700">
+                                <label
+                                    for="{{ $field }}"
+                                    class="font-semibold text-gray-700"
+                                >
                                     {{ $loop->iteration }}. {{ $question[0] }}
                                 </label>
 
@@ -340,7 +369,9 @@
                                 <select
                                     id="{{ $field }}"
                                     name="{{ $field }}"
-                                    class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3"
+                                    @disabled(! $assessmentEditable)
+                                    @if ($assessmentEditable) required @endif
+                                    class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-600"
                                 >
                                     <option value="">Select an answer</option>
 
@@ -355,12 +386,13 @@
                                 </select>
                             </div>
                         @endforeach
+
                     </div>
                 </div>
 
             @endif
 
-            {{-- CHANGE PASSWORD --}}
+            {{-- PASSWORD --}}
             <div class="border-t pt-8">
                 <h2 class="text-xl font-bold text-gray-900">
                     Change Password
@@ -409,6 +441,85 @@
             </div>
 
         </form>
+
+        {{-- REQUEST PERMISSION --}}
+        @if ($user->role === 'adopter' && $profile?->assessment_locked_at)
+
+            <div class="mt-8 rounded-2xl bg-white p-6 shadow-sm sm:p-8">
+
+                <h2 class="text-xl font-bold text-gray-900">
+                    Request Permission to Edit Assessment
+                </h2>
+
+                @if ($profile->edit_permission_granted)
+
+                    <div class="mt-4 rounded-xl bg-green-50 p-4 text-green-700">
+                        Your request has been approved.
+                        You can now edit your compatibility assessment above.
+                    </div>
+
+                @elseif ($profile->edit_request_status === 'Pending')
+
+                    <div class="mt-4 rounded-xl bg-yellow-50 p-4 text-yellow-800">
+                        Your request is pending administrator review.
+                        Your assessment remains locked.
+                    </div>
+
+                @else
+
+                    @if ($profile->edit_request_status === 'Rejected')
+                        <div class="mt-4 rounded-xl bg-red-50 p-4 text-red-700">
+                            Your previous request was rejected.
+                            You may submit another request with a reason.
+                        </div>
+                    @elseif ($profile->edit_request_status === 'Completed')
+                        <p class="mt-3 text-sm text-gray-600">
+                            Your previous approved edit was completed.
+                            You can request permission again if necessary.
+                        </p>
+                    @endif
+
+                    <form
+                        action="{{ route('profile.request-edit') }}"
+                        method="POST"
+                        class="mt-5"
+                    >
+                        @csrf
+
+                        <label for="reason" class="font-semibold text-gray-700">
+                            Reason for requesting a change
+                        </label>
+
+                        <textarea
+                            id="reason"
+                            name="reason"
+                            rows="4"
+                            minlength="10"
+                            maxlength="1000"
+                            required
+                            placeholder="Explain why you need to change your compatibility information..."
+                            class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3"
+                        >{{ old('reason') }}</textarea>
+
+                        <p class="mt-2 text-sm text-gray-500">
+                            Only the shelter's Admin and Super Admin can
+                            read your reason and review your request.
+                        </p>
+
+                        <button
+                            type="submit"
+                            class="mt-4 rounded-full bg-orange-500 px-6 py-3 font-semibold text-white hover:bg-orange-600"
+                        >
+                            Submit Request
+                        </button>
+                    </form>
+
+                @endif
+
+            </div>
+
+        @endif
+
     </div>
 
 </section>

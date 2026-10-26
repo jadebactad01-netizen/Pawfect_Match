@@ -4,169 +4,196 @@
 
 @section('content')
 
-    <section class="mx-auto max-w-5xl px-6 py-10">
+<section class="mx-auto max-w-5xl px-6 py-10">
 
-        <a
-            href="{{ route('admin.adopters.index') }}"
-            class="text-sm font-semibold text-orange-500
-                   hover:text-orange-600"
-        >
-            ← Back to Adopters
-        </a>
+    <a
+        href="{{ route('admin.adopters.index') }}"
+        class="text-sm font-semibold text-orange-500 hover:text-orange-600"
+    >
+        ← Back to Adopters
+    </a>
 
+    {{-- ADOPTER INFORMATION --}}
+    <div class="mt-6 rounded-2xl bg-white p-6 shadow-sm">
 
-        <div class="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+        <h1 class="text-2xl font-bold text-gray-900">
+            {{ $adopter->name }}
+        </h1>
 
-            <h1 class="text-2xl font-bold text-gray-900">
-                {{ $adopter->name }}
-            </h1>
+        <div class="mt-6 grid gap-5 md:grid-cols-2">
 
-            <div class="mt-6 grid gap-5 md:grid-cols-2">
+            <div>
+                <p class="text-sm font-semibold text-gray-500">
+                    Email
+                </p>
 
-                <div>
-                    <p class="text-sm font-semibold text-gray-500">
-                        Email
-                    </p>
+                <p class="mt-1 text-gray-900">
+                    {{ $adopter->email }}
+                </p>
+            </div>
 
-                    <p class="mt-1 text-gray-900">
-                        {{ $adopter->email }}
-                    </p>
-                </div>
+            <div>
+                <p class="text-sm font-semibold text-gray-500">
+                    Phone Number
+                </p>
 
+                <p class="mt-1 text-gray-900">
+                    {{ $adopter->adopterProfile?->phone_number ?? 'Not provided' }}
+                </p>
+            </div>
 
-                <div>
-                    <p class="text-sm font-semibold text-gray-500">
-                        Phone Number
-                    </p>
+            <div class="md:col-span-2">
+                <p class="text-sm font-semibold text-gray-500">
+                    Address
+                </p>
 
-                    <p class="mt-1 text-gray-900">
-                        {{ $adopter->adopterProfile?->phone_number
-                            ?? 'Not provided' }}
-                    </p>
-                </div>
-
-
-                <div class="md:col-span-2">
-
-                    <p class="text-sm font-semibold text-gray-500">
-                        Address
-                    </p>
-
-                    <p class="mt-1 text-gray-900">
-                        {{ $adopter->adopterProfile?->address
-                            ?? 'Not provided' }}
-                    </p>
-
-                </div>
-
+                <p class="mt-1 text-gray-900">
+                    {{ $adopter->adopterProfile?->address ?? 'Not provided' }}
+                </p>
             </div>
 
         </div>
+    </div>
 
+    {{-- ASSESSMENT EDIT REQUEST --}}
+    @if ($adopter->adopterProfile?->edit_request_status)
 
-        <div class="mt-8">
+        <div class="mt-8 rounded-2xl bg-white p-6 shadow-sm">
 
             <h2 class="text-xl font-bold text-gray-900">
-                Adoption Applications
+                Compatibility Assessment Edit Request
             </h2>
 
+            <p class="mt-3 text-sm text-gray-600">
+                Request Status:
+                <span class="font-semibold text-orange-600">
+                    {{ $adopter->adopterProfile->edit_request_status }}
+                </span>
+            </p>
 
-            @if ($adopter->adoptionApplications->isEmpty())
+            <div class="mt-5 rounded-xl bg-gray-50 p-5">
 
-                <div class="mt-4 rounded-2xl bg-white
-                            p-6 shadow-sm">
+                <p class="font-semibold text-gray-800">
+                    Reason for Request
+                </p>
 
-                    <p class="text-gray-600">
-                        This adopter has not submitted
-                        any applications.
-                    </p>
+                <p class="mt-2 whitespace-pre-line text-gray-700">
+                    {{ $adopter->adopterProfile->edit_request_reason }}
+                </p>
 
-                </div>
+            </div>
 
-            @else
+            @if ($adopter->adopterProfile->edit_request_status === 'Pending')
 
-                <div class="mt-4 space-y-4">
+                <div class="mt-5 flex flex-wrap gap-3">
 
-                    @foreach (
-                        $adopter->adoptionApplications
-                            ->sortByDesc('created_at')
-                        as $application
-                    )
+                    <form
+                        action="{{ route('admin.adopters.review-edit-request', $adopter) }}"
+                        method="POST"
+                    >
+                        @csrf
 
-                        <div class="rounded-2xl bg-white
-                                    p-6 shadow-sm">
+                        <input type="hidden" name="decision" value="Approved">
 
-                            <div class="flex flex-wrap items-center
-                                        justify-between gap-4">
+                        <button
+                            type="submit"
+                            class="rounded-full bg-green-600 px-6 py-3 font-semibold text-white hover:bg-green-700"
+                        >
+                            Approve Request
+                        </button>
+                    </form>
 
-                                <div>
+                    <form
+                        action="{{ route('admin.adopters.review-edit-request', $adopter) }}"
+                        method="POST"
+                    >
+                        @csrf
 
-                                    <p class="font-semibold text-gray-900">
-                                        {{ $application->pet->name }}
-                                    </p>
+                        <input type="hidden" name="decision" value="Rejected">
 
-                                    <p class="mt-1 text-sm text-gray-600">
-                                        Status:
-                                        {{ $application->status }}
-                                    </p>
-
-                                    @if (
-                                        $application
-                                            ->compatibilityAssessment
-                                    )
-
-                                        <p class="mt-1 text-sm
-                                                  text-gray-600">
-                                            Compatibility:
-                                            {{
-                                                $application
-                                                    ->compatibilityAssessment
-                                                    ->total_score
-                                            }}%
-                                        </p>
-
-                                    @endif
-
-                                </div>
-
-
-                                @if (
-                                    $application
-                                        ->compatibilityAssessment
-                                )
-
-                                    <a
-                                        href="{{ route(
-                                            'admin.applications.show',
-                                            $application
-                                        ) }}"
-                                        class="font-semibold
-                                               text-orange-500
-                                               hover:text-orange-600"
-                                    >
-                                        View Application
-                                    </a>
-
-                                @else
-
-                                    <span class="text-sm text-gray-500">
-                                        Assessment not completed
-                                    </span>
-
-                                @endif
-
-                            </div>
-
-                        </div>
-
-                    @endforeach
+                        <button
+                            type="submit"
+                            class="rounded-full bg-red-500 px-6 py-3 font-semibold text-white hover:bg-red-600"
+                        >
+                            Reject Request
+                        </button>
+                    </form>
 
                 </div>
 
             @endif
-
         </div>
+    @endif
 
-    </section>
+    {{-- ADOPTION APPLICATIONS --}}
+    <div class="mt-8">
+
+        <h2 class="text-xl font-bold text-gray-900">
+            Adoption Applications
+        </h2>
+
+        @if ($adopter->adoptionApplications->isEmpty())
+
+            <div class="mt-4 rounded-2xl bg-white p-6 shadow-sm">
+                <p class="text-gray-600">
+                    This adopter has not submitted any applications.
+                </p>
+            </div>
+
+        @else
+
+            <div class="mt-4 space-y-4">
+
+                @foreach (
+                    $adopter->adoptionApplications->sortByDesc('created_at')
+                    as $application
+                )
+
+                    <div class="rounded-2xl bg-white p-6 shadow-sm">
+
+                        <div class="flex flex-wrap items-center justify-between gap-4">
+
+                            <div>
+                                <p class="font-semibold text-gray-900">
+                                    {{ $application->pet?->name ?? 'Pet unavailable' }}
+                                </p>
+
+                                <p class="mt-1 text-sm text-gray-600">
+                                    Status: {{ $application->status }}
+                                </p>
+
+                                @if ($application->compatibilityAssessment)
+
+                                    <p class="mt-1 text-sm text-gray-600">
+                                        Compatibility:
+                                        {{ $application->compatibilityAssessment->total_score }}%
+                                    </p>
+
+                                @endif
+                            </div>
+
+                            @if ($application->compatibilityAssessment)
+
+                                <a
+                                    href="{{ route('admin.applications.show', $application) }}"
+                                    class="font-semibold text-orange-500 hover:text-orange-600"
+                                >
+                                    View Application
+                                </a>
+
+                            @endif
+
+                        </div>
+                    </div>
+
+                @endforeach
+
+            </div>
+
+        @endif
+
+    </div>
+
+</section>
 
 @endsection

@@ -22,22 +22,18 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $user = $request->user();
+        $profile = $user->adopterProfile;
 
         $rules = [
             'name' => ['required', 'string', 'max:255'],
-
             'email' => [
                 'required',
                 'email',
                 'max:255',
                 Rule::unique('users', 'email')->ignore($user->id),
             ],
-
             'password' => [
-                'nullable',
-                'string',
-                'min:8',
-                'confirmed',
+                'nullable', 'string', 'min:8', 'confirmed',
             ],
         ];
 
@@ -77,53 +73,54 @@ class ProfileController extends Controller
 
             $rules['preferred_age_number'] = [
                 'nullable', 'integer', 'min:1',
-                'required_with:preferred_age_unit',
             ];
 
             $rules['preferred_age_unit'] = [
-                'nullable',
-                'required_with:preferred_age_number',
-                'in:Months,Years',
+                'nullable', 'in:Months,Years',
             ];
 
-            $rules['care_ability'] = [
-                'nullable', 'in:Limited,Moderate,High',
-            ];
+            // Only validate the assessment when editing is allowed.
+            if (
+                ! $profile?->assessment_locked_at
+                || $profile?->edit_permission_granted
+            ) {
+                $rules['care_ability'] = [
+                    'required', 'in:Limited,Moderate,High',
+                ];
 
-            $rules['available_time'] = [
-                'nullable', 'in:Low,Moderate,High',
-            ];
+                $rules['available_time'] = [
+                    'required', 'in:Low,Moderate,High',
+                ];
 
-            $rules['household_compatibility'] = [
-                'nullable',
-                'in:Living alone,Adults only,Family with children',
-            ];
+                $rules['household_compatibility'] = [
+                    'required',
+                    'in:Living alone,Adults only,Family with children',
+                ];
 
-            $rules['living_environment'] = [
-                'nullable', 'in:House,Apartment,Other',
-            ];
+                $rules['living_environment'] = [
+                    'required', 'in:House,Apartment,Other',
+                ];
 
-            $rules['pet_care_experience'] = [
-                'nullable', 'in:None,Some,Experienced',
-            ];
+                $rules['pet_care_experience'] = [
+                    'required', 'in:None,Some,Experienced',
+                ];
 
-            $rules['activity_level'] = [
-                'nullable', 'in:Low,Moderate,High',
-            ];
+                $rules['activity_level'] = [
+                    'required', 'in:Low,Moderate,High',
+                ];
+            }
         }
 
         $validated = $request->validate($rules);
 
-        if (
-            $user->role === 'adopter'
-            && ! empty($validated['preferred_age_number'])
-        ) {
-            $number = $validated['preferred_age_number'];
-            $unit = $validated['preferred_age_unit'];
+        if ($user->role === 'adopter') {
+            $number = $validated['preferred_age_number'] ?? null;
+            $unit = $validated['preferred_age_unit'] ?? null;
 
             if (
-                ($unit === 'Months' && $number > 11)
-                || ($unit === 'Years' && $number > 30)
+                ($number && ! $unit)
+                || ($number && $unit === 'Months' && $number > 11)
+                || ($number && $unit === 'Years' && $number > 30)
             ) {
                 return back()
                     ->withErrors([
@@ -153,52 +150,105 @@ class ProfileController extends Controller
                     . $validated['preferred_age_unit'];
             }
 
-            $user->adopterProfile()->updateOrCreate(
-                [],
-                [
-                    'age' => $validated['age'],
-                    'phone_number' => $validated['phone_number'],
-                    'address' => $validated['address'],
+            $data = [
+                'age' => $validated['age'],
+                'phone_number' => $validated['phone_number'],
+                'address' => $validated['address'],
 
-                    'animal_preference' =>
-                        $validated['animal_preference'] ?? null,
+                'animal_preference' =>
+                    $validated['animal_preference'] ?? null,
 
-                    'animal_preference_other' =>
-                        ($validated['animal_preference'] ?? null) === 'Other'
-                            ? $validated['animal_preference_other'] ?? null
-                            : null,
+                'animal_preference_other' =>
+                    ($validated['animal_preference'] ?? null) === 'Other'
+                        ? $validated['animal_preference_other'] ?? null
+                        : null,
 
-                    'preferred_breed' =>
-                        $validated['preferred_breed'] ?? null,
+                'preferred_breed' =>
+                    $validated['preferred_breed'] ?? null,
 
-                    'preferred_size' =>
-                        $validated['preferred_size'] ?? null,
+                'preferred_size' =>
+                    $validated['preferred_size'] ?? null,
 
-                    'preferred_age' => $preferredAge,
+                'preferred_age' => $preferredAge,
+            ];
 
-                    'care_ability' =>
-                        $validated['care_ability'] ?? null,
+            if (
+                ! $profile?->assessment_locked_at
+                || $profile?->edit_permission_granted
+            ) {
+                $data['care_ability'] =
+                    $validated['care_ability'];
 
-                    'available_time' =>
-                        $validated['available_time'] ?? null,
+                $data['available_time'] =
+                    $validated['available_time'];
 
-                    'household_compatibility' =>
-                        $validated['household_compatibility'] ?? null,
+                $data['household_compatibility'] =
+                    $validated['household_compatibility'];
 
-                    'living_environment' =>
-                        $validated['living_environment'] ?? null,
+                $data['living_environment'] =
+                    $validated['living_environment'];
 
-                    'pet_care_experience' =>
-                        $validated['pet_care_experience'] ?? null,
+                $data['pet_care_experience'] =
+                    $validated['pet_care_experience'];
 
-                    'activity_level' =>
-                        $validated['activity_level'] ?? null,
-                ]
-            );
+                $data['activity_level'] =
+                    $validated['activity_level'];
+
+                // Saving consumes the one-time editing permission.
+                $data['assessment_locked_at'] = now();
+                $data['edit_permission_granted'] = false;
+
+                if ($profile?->edit_permission_granted) {
+                    $data['edit_request_status'] = 'Completed';
+                }
+            }
+
+            $user->adopterProfile()->updateOrCreate([], $data);
         }
 
         return redirect()
             ->route('profile.edit')
             ->with('success', 'Profile updated successfully.');
+    }
+
+    public function requestEdit(Request $request)
+    {
+        if ($request->user()->role !== 'adopter') {
+            abort(403);
+        }
+
+        $profile = $request->user()->adopterProfile;
+
+        if (! $profile || ! $profile->assessment_locked_at) {
+            return back()->with(
+                'error',
+                'Complete your assessment first.'
+            );
+        }
+
+        if (
+            $profile->edit_request_status === 'Pending'
+            || $profile->edit_permission_granted
+        ) {
+            return back()->with(
+                'error',
+                'You already have a pending request or permission to edit.'
+            );
+        }
+
+        $validated = $request->validate([
+            'reason' => ['required', 'string', 'min:10', 'max:1000'],
+        ]);
+
+        $profile->update([
+            'edit_request_reason' => $validated['reason'],
+            'edit_request_status' => 'Pending',
+            'edit_permission_granted' => false,
+        ]);
+
+        return back()->with(
+            'success',
+            'Your request was submitted for administrator review.'
+        );
     }
 }

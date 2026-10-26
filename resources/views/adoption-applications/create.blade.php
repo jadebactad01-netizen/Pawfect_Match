@@ -43,7 +43,7 @@
                     Please check the information below.
                 </p>
 
-                <ul class="mt-2 list-inside list-disc text-sm">
+                <ul class="mt-2 list-inside list-disc">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -53,7 +53,6 @@
 
         @php
             $profile = auth()->user()->adopterProfile;
-            $ageParts = explode(' ', $profile->preferred_age ?? '');
         @endphp
 
         <form
@@ -99,7 +98,6 @@
                 </h2>
 
                 <div class="mt-6 grid gap-6 sm:grid-cols-2">
-
                     @foreach ([
                         'Name' => auth()->user()->name,
                         'Age' => $profile->age,
@@ -107,7 +105,6 @@
                         'Address' => $profile->address,
                         'Mobile Number' => $profile->phone_number,
                     ] as $label => $value)
-
                         <div>
                             <label class="font-semibold text-gray-700">
                                 {{ $label }}
@@ -120,9 +117,7 @@
                                 class="mt-2 w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-gray-600"
                             >
                         </div>
-
                     @endforeach
-
                 </div>
             </div>
 
@@ -133,7 +128,6 @@
                 </h2>
 
                 <div class="mt-6 grid gap-6 sm:grid-cols-3">
-
                     <div>
                         <label for="reference_name" class="font-semibold text-gray-700">
                             Name
@@ -143,8 +137,8 @@
                             type="text"
                             id="reference_name"
                             name="reference_name"
-                            value="{{ old('reference_name') }}"
                             required
+                            value="{{ old('reference_name') }}"
                             oninput="this.value = this.value.replace(/[^\p{L}\s.'-]/gu, '')"
                             class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3"
                         >
@@ -159,8 +153,8 @@
                             type="text"
                             id="reference_relationship"
                             name="reference_relationship"
-                            value="{{ old('reference_relationship') }}"
                             required
+                            value="{{ old('reference_relationship') }}"
                             oninput="this.value = this.value.replace(/[^\p{L}\s.'-]/gu, '')"
                             class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3"
                         >
@@ -177,13 +171,12 @@
                             name="reference_phone"
                             inputmode="numeric"
                             maxlength="11"
-                            value="{{ old('reference_phone') }}"
                             required
+                            value="{{ old('reference_phone') }}"
                             oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                             class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3"
                         >
                     </div>
-
                 </div>
             </div>
 
@@ -225,144 +218,90 @@
                         value="{{ old('shelter_source_other') }}"
                         @disabled(old('shelter_source') !== 'Other')
                         oninput="this.value = this.value.replace(/[^\p{L}\s.'-]/gu, '')"
-                        class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-gray-100"
+                        class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3 disabled:bg-gray-100 disabled:text-gray-400"
                     >
                 </div>
             </div>
 
-            {{-- ANIMAL PREFERENCE --}}
+            {{-- ANIMAL PREFERENCES --}}
             <div class="border-t border-gray-200 pt-8">
 
                 <h2 class="text-xl font-bold text-gray-900">
-                    Animal Preference
+                    Animal Preferences
                 </h2>
 
                 <p class="mt-2 text-sm text-gray-500">
-                    These answers are taken from your profile.
-                    You can review or change them for this application.
+                    This information is automatically filled from your profile.
+                    To change it, please update your animal preferences in My Profile.
                 </p>
 
                 <div class="mt-6 grid gap-6 sm:grid-cols-2">
+
                     <div>
-                        <label for="animal_preference" class="font-semibold text-gray-700">
+                        <label class="font-semibold text-gray-700">
                             Are you interested in a:
-                        </label>
-
-                        <select
-                            id="animal_preference"
-                            name="animal_preference"
-                            required
-                            onchange="document.getElementById('animal_preference_other').disabled = this.value !== 'Other'"
-                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3"
-                        >
-                            <option value="">Select an option</option>
-
-                            @foreach (['Cat', 'Kitten', 'Dog', 'Puppy', 'Other'] as $animal)
-                                <option
-                                    value="{{ $animal }}"
-                                    @selected(old('animal_preference', $profile->animal_preference) === $animal)
-                                >
-                                    {{ $animal }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="animal_preference_other" class="font-semibold text-gray-700">
-                            If Other, please specify
                         </label>
 
                         <input
                             type="text"
-                            id="animal_preference_other"
-                            name="animal_preference_other"
-                            value="{{ old('animal_preference_other', $profile->animal_preference_other) }}"
-                            @disabled(old('animal_preference', $profile->animal_preference) !== 'Other')
-                            oninput="this.value = this.value.replace(/[^\p{L}\s.'-]/gu, '')"
-                            class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-gray-100"
+                            value="{{ $profile->animal_preference }}"
+                            disabled
+                            class="mt-2 w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-gray-600"
                         >
                     </div>
 
+                    @if ($profile->animal_preference === 'Other')
+                        <div>
+                            <label class="font-semibold text-gray-700">
+                                Other Animal
+                            </label>
+
+                            <input
+                                type="text"
+                                value="{{ $profile->animal_preference_other }}"
+                                disabled
+                                class="mt-2 w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-gray-600"
+                            >
+                        </div>
+                    @endif
+
                     <div>
-                        <label for="preferred_breed" class="font-semibold text-gray-700">
+                        <label class="font-semibold text-gray-700">
                             Breed / Mix
                         </label>
 
                         <input
                             type="text"
-                            id="preferred_breed"
-                            name="preferred_breed"
-                            value="{{ old('preferred_breed', $profile->preferred_breed) }}"
-                            oninput="this.value = this.value.replace(/[^\p{L}\s'-]/gu, '')"
-                            class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3"
+                            value="{{ $profile->preferred_breed ?: 'Not specified' }}"
+                            disabled
+                            class="mt-2 w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-gray-600"
                         >
                     </div>
 
                     <div>
-                        <label for="preferred_size" class="font-semibold text-gray-700">
+                        <label class="font-semibold text-gray-700">
                             Preferred Size
                         </label>
 
-                        <select
-                            id="preferred_size"
-                            name="preferred_size"
-                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3"
+                        <input
+                            type="text"
+                            value="{{ $profile->preferred_size ?: 'Not specified' }}"
+                            disabled
+                            class="mt-2 w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-gray-600"
                         >
-                            <option value="">Select size</option>
-
-                            @foreach (['Small', 'Medium', 'Large', 'Extra Large'] as $size)
-                                <option
-                                    value="{{ $size }}"
-                                    @selected(old('preferred_size', $profile->preferred_size) === $size)
-                                >
-                                    {{ $size }}
-                                </option>
-                            @endforeach
-                        </select>
                     </div>
 
                     <div>
-                        <label for="preferred_age_number" class="font-semibold text-gray-700">
+                        <label class="font-semibold text-gray-700">
                             Preferred Age
                         </label>
 
-                        <div class="mt-2 flex gap-3">
-                            <input
-                                type="text"
-                                id="preferred_age_number"
-                                name="preferred_age_number"
-                                inputmode="numeric"
-                                maxlength="2"
-                                value="{{ old('preferred_age_number', $ageParts[0]) }}"
-                                placeholder="Age"
-                                oninput="
-                                    this.value = this.value.replace(/[^0-9]/g, '');
-                                    if (Number(this.value) > (document.getElementById('preferred_age_unit').value === 'Months' ? 11 : 30)) this.value = '';
-                                "
-                                class="min-w-0 w-full rounded-xl border border-gray-300 px-4 py-3"
-                            >
-
-                            <select
-                                id="preferred_age_unit"
-                                name="preferred_age_unit"
-                                onchange="document.getElementById('preferred_age_number').value = ''"
-                                class="rounded-xl border border-gray-300 bg-white px-4 py-3"
-                            >
-                                @foreach (['Months', 'Years'] as $unit)
-                                    <option
-                                        value="{{ $unit }}"
-                                        @selected(old('preferred_age_unit', $ageParts[1] ?? 'Months') === $unit)
-                                    >
-                                        {{ $unit }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <p class="mt-2 text-sm text-gray-500">
-                            Months: 1–11 • Years: 1–30
-                        </p>
+                        <input
+                            type="text"
+                            value="{{ $profile->preferred_age ?: 'Not specified' }}"
+                            disabled
+                            class="mt-2 w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-gray-600"
+                        >
                     </div>
 
                     <div>
@@ -380,6 +319,7 @@
                             </p>
                         </div>
                     </div>
+
                 </div>
             </div>
 
@@ -398,8 +338,8 @@
                 </div>
             </div>
 
-            {{-- BUTTONS --}}
-            <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
+            {{-- ACTIONS --}}
+            <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                 <a
                     href="{{ route('pets.show', $pet) }}"
                     class="rounded-full border border-gray-300 px-7 py-3 text-center font-semibold text-gray-700 hover:bg-gray-50"
@@ -416,6 +356,7 @@
             </div>
 
         </form>
+
     </div>
 
 </section>

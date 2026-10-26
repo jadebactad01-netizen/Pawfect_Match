@@ -24,9 +24,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'living_environment',
     'pet_care_experience',
     'activity_level',
+
+    'assessment_locked_at',
+    'edit_request_status',
+    'edit_request_reason',
+    'edit_permission_granted',
 ])]
 class AdopterProfile extends Model
 {
+    protected function casts(): array
+    {
+        return [
+            'assessment_locked_at' => 'datetime',
+            'edit_permission_granted' => 'boolean',
+        ];
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

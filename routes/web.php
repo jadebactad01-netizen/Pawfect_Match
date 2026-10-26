@@ -26,13 +26,11 @@ Route::get('/', function () {
     if (Auth::check()) {
 
         if (Auth::user()->role === 'super_admin') {
-            return redirect()
-                ->route('super-admin.dashboard');
+            return redirect()->route('super-admin.dashboard');
         }
 
         if (Auth::user()->role === 'admin') {
-            return redirect()
-                ->route('admin.dashboard');
+            return redirect()->route('admin.dashboard');
         }
 
         if (
@@ -40,10 +38,8 @@ Route::get('/', function () {
             && request()->routeIs('home')
             && request()->query('public') !== '1'
         ) {
-            return redirect()
-                ->route('adopter.dashboard');
+            return redirect()->route('adopter.dashboard');
         }
-
     }
 
     $featuredPets = \App\Models\Pet::where(
@@ -63,10 +59,6 @@ Route::get('/', function () {
 |--------------------------------------------------------------------------
 | PET ROUTES
 |--------------------------------------------------------------------------
-|
-| /pets       = show all available pets
-| /pets/{pet} = show one pet
-|
 */
 
 Route::get('/pets', [PetController::class, 'index'])
@@ -75,13 +67,11 @@ Route::get('/pets', [PetController::class, 'index'])
 Route::get('/pets/{pet}', [PetController::class, 'show'])
     ->name('pets.show');
 
-    /*
+
+/*
 |--------------------------------------------------------------------------
-| PROFILE ROUTES
+| AUTHENTICATED USER ROUTES
 |--------------------------------------------------------------------------
-|
-| Logged-in users can view and update their own profile.
-|
 */
 
 Route::middleware('auth')->group(function () {
@@ -91,6 +81,12 @@ Route::middleware('auth')->group(function () {
 
     Route::put('/profile', [ProfileController::class, 'update'])
         ->name('profile.update');
+
+    // Request permission to edit compatibility answers.
+    Route::post(
+        '/profile/request-assessment-edit',
+        [ProfileController::class, 'requestEdit']
+    )->name('profile.request-edit');
 
     Route::get(
         '/my-applications',
@@ -134,17 +130,15 @@ Route::middleware('auth')->group(function () {
         '/adopter/dashboard',
         [AdopterController::class, 'dashboard']
     )->name('adopter.dashboard');
-
 });
+
 
 /*
 |--------------------------------------------------------------------------
-| ADMIN PET ROUTES
+| ADMIN AND SUPER ADMIN ROUTES
 |--------------------------------------------------------------------------
-|
-| These routes are for shelter pet management.
-| Only Admin/Super Administrators can access
 */
+
 Route::middleware('admin')->group(function () {
 
     Route::get('/admin/pets', [AdminPetController::class, 'manage'])
@@ -190,6 +184,12 @@ Route::middleware('admin')->group(function () {
         [AdminAdopterController::class, 'show']
     )->name('admin.adopters.show');
 
+    // Admin/Super Admin review the private request.
+    Route::post(
+        '/admin/adopters/{adopter}/assessment-edit-request',
+        [AdminAdopterController::class, 'reviewEditRequest']
+    )->name('admin.adopters.review-edit-request');
+
     Route::get(
         '/admin/adoption-records',
         [AdminAdoptionRecordController::class, 'index']
@@ -204,16 +204,13 @@ Route::middleware('admin')->group(function () {
         '/admin/dashboard',
         [AdminController::class, 'dashboard']
     )->name('admin.dashboard');
-
 });
+
 
 /*
 |--------------------------------------------------------------------------
 | SUPER ADMIN ROUTES
 |--------------------------------------------------------------------------
-|
-| Only the Super Administrator can manage administrator accounts.
-|
 */
 
 Route::middleware('super_admin')->group(function () {
@@ -223,12 +220,10 @@ Route::middleware('super_admin')->group(function () {
         [SuperAdminController::class, 'index']
     )->name('super-admin.administrators.index');
 
-
     Route::get(
         '/super-admin/administrators/create',
         [SuperAdminController::class, 'create']
     )->name('super-admin.administrators.create');
-
 
     Route::post(
         '/super-admin/administrators',
@@ -240,12 +235,10 @@ Route::middleware('super_admin')->group(function () {
         [SuperAdminController::class, 'edit']
     )->name('super-admin.administrators.edit');
 
-
     Route::put(
         '/super-admin/administrators/{administrator}',
         [SuperAdminController::class, 'update']
     )->name('super-admin.administrators.update');
-
 
     Route::delete(
         '/super-admin/administrators/{administrator}',
@@ -257,4 +250,3 @@ Route::middleware('super_admin')->group(function () {
         [SuperAdminController::class, 'dashboard']
     )->name('super-admin.dashboard');
 });
-

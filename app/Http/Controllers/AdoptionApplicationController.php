@@ -44,10 +44,22 @@ class AdoptionApplicationController extends Controller
                 ->with('error', 'This pet is currently unavailable for adoption.');
         }
 
-        if (! $user->adopterProfile) {
+        $profile = $user->adopterProfile;
+
+        if (
+            ! $profile
+            || ! $profile->age
+            || ! $profile->phone_number
+            || ! $profile->address
+            || ! $profile->animal_preference
+            || ! $profile->assessment_locked_at
+        ) {
             return redirect()
                 ->route('profile.edit')
-                ->with('error', 'Please complete your adopter profile before applying.');
+                ->with(
+                    'error',
+                    'Please complete your adopter profile, animal preferences and compatibility assessment before applying.'
+                );
         }
 
         $existingApplication = $user->adoptionApplications()
@@ -82,10 +94,22 @@ class AdoptionApplicationController extends Controller
                 ->with('error', 'This pet is currently unavailable for adoption.');
         }
 
-        if (! $user->adopterProfile) {
+        $profile = $user->adopterProfile;
+
+        if (
+            ! $profile
+            || ! $profile->age
+            || ! $profile->phone_number
+            || ! $profile->address
+            || ! $profile->animal_preference
+            || ! $profile->assessment_locked_at
+        ) {
             return redirect()
                 ->route('profile.edit')
-                ->with('error', 'Please complete your adopter profile before applying.');
+                ->with(
+                    'error',
+                    'Please complete your profile and assessment before applying.'
+                );
         }
 
         $existingApplication = $user->adoptionApplications()
@@ -103,6 +127,7 @@ class AdoptionApplicationController extends Controller
                 ->with('error', 'You have already applied for this pet.');
         }
 
+        // Only validate the fields the adopter can actually edit.
         $validated = $request->validate([
             'reference_name' => [
                 'required',
@@ -117,8 +142,7 @@ class AdoptionApplicationController extends Controller
             ],
 
             'reference_phone' => [
-                'required',
-                'digits:11',
+                'required', 'digits:11',
             ],
 
             'shelter_source' => [
@@ -132,82 +156,27 @@ class AdoptionApplicationController extends Controller
                 'regex:/^[\pL\s.\'-]+$/u',
                 'max:255',
             ],
-
-            'animal_preference' => [
-                'required',
-                'in:Cat,Kitten,Dog,Puppy,Other',
-            ],
-
-            'animal_preference_other' => [
-                'required_if:animal_preference,Other',
-                'nullable',
-                'regex:/^[\pL\s.\'-]+$/u',
-                'max:255',
-            ],
-
-            'preferred_breed' => [
-                'nullable',
-                'regex:/^[\pL\s\'-]+$/u',
-                'max:255',
-            ],
-
-            'preferred_size' => [
-                'nullable',
-                'in:Small,Medium,Large,Extra Large',
-            ],
-
-            'preferred_age_number' => [
-                'nullable',
-                'integer',
-                'min:1',
-            ],
-
-            'preferred_age_unit' => [
-                'nullable',
-                'in:Months,Years',
-            ],
         ]);
-
-        $validated['age'] = $user->adopterProfile->age;
-        $validated['mobile_number'] = $user->adopterProfile->phone_number;
-
-        if (isset($validated['preferred_age_number'])) {
-            $number = $validated['preferred_age_number'];
-            $unit = $validated['preferred_age_unit'] ?? null;
-
-            if (
-                ! $unit
-                || ($unit === 'Months' && $number > 11)
-                || ($unit === 'Years' && $number > 30)
-            ) {
-                return back()
-                    ->withErrors([
-                        'preferred_age_number' =>
-                            'Months must be 1–11 and Years must be 1–30.',
-                    ])
-                    ->withInput();
-            }
-
-            $validated['preferred_age'] = $number . ' ' . $unit;
-        }
-
-        unset(
-            $validated['preferred_age_number'],
-            $validated['preferred_age_unit']
-        );
 
         if ($validated['shelter_source'] !== 'Other') {
             $validated['shelter_source_other'] = null;
         }
 
-        if ($validated['animal_preference'] !== 'Other') {
-            $validated['animal_preference_other'] = null;
-        }
-
+        // Copy protected information directly from the adopter profile.
         $application = AdoptionApplication::create([
             'user_id' => $user->id,
             'pet_id' => $pet->id,
             'status' => 'Pending',
+
+            'age' => $profile->age,
+            'mobile_number' => $profile->phone_number,
+
+            'animal_preference' => $profile->animal_preference,
+            'animal_preference_other' => $profile->animal_preference_other,
+            'preferred_breed' => $profile->preferred_breed,
+            'preferred_size' => $profile->preferred_size,
+            'preferred_age' => $profile->preferred_age,
+
             ...$validated,
         ]);
 
