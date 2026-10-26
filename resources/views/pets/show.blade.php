@@ -4,6 +4,21 @@
 
 @section('content')
 
+@php
+    $petUrl = route('pets.show', $pet);
+
+    $shareMessage = 'Meet ' . $pet->name .
+        '! This ' . strtolower($pet->type) .
+        ' is looking for a loving home through Pawfect Match. ' .
+        $petUrl;
+
+    $facebookShare = 'https://www.facebook.com/sharer/sharer.php?u=' .
+        urlencode($petUrl);
+
+    $whatsappShare = 'https://wa.me/?text=' .
+        urlencode($shareMessage);
+@endphp
+
 <section class="bg-orange-50">
     <div class="mx-auto max-w-7xl px-6 pt-10">
 
@@ -105,7 +120,7 @@
 
             </div>
 
-            {{-- NEW INTAKE INFORMATION --}}
+            {{-- PET INTAKE INFORMATION --}}
             <div class="mt-8">
 
                 <h2 class="text-xl font-bold text-gray-900">
@@ -137,7 +152,7 @@
                 </div>
             </div>
 
-            {{-- NEW VACCINATION INFORMATION --}}
+            {{-- VACCINATION INFORMATION --}}
             <div class="mt-8">
 
                 <h2 class="text-xl font-bold text-gray-900">
@@ -248,6 +263,73 @@
 
             </div>
 
+            {{-- SOCIAL MEDIA SHARING --}}
+            <div class="mt-8 rounded-2xl bg-white p-6 shadow-sm">
+
+                <h2 class="text-xl font-bold text-gray-900">
+                    Share {{ $pet->name }}'s Profile
+                </h2>
+
+                <p class="mt-2 text-sm text-gray-600">
+                    Help {{ $pet->name }} reach more people by sharing
+                    this pet's profile with your friends and family.
+                </p>
+
+                <div class="mt-5 flex flex-wrap gap-3">
+
+                    {{-- FACEBOOK --}}
+                    <a
+                        href="{{ $facebookShare }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700"
+                    >
+                        Share on Facebook
+                    </a>
+
+                    {{-- WHATSAPP --}}
+                    <a
+                        href="{{ $whatsappShare }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="rounded-full bg-green-600 px-5 py-3 text-sm font-semibold text-white hover:bg-green-700"
+                    >
+                        Share on WhatsApp
+                    </a>
+
+                    {{-- COPY LINK --}}
+                    <button
+                        type="button"
+                        id="copy-pet-link"
+                        onclick="copyPetLink()"
+                        class="rounded-full border border-orange-500 px-5 py-3 text-sm font-semibold text-orange-600 hover:bg-orange-50"
+                    >
+                        Copy Pet Link
+                    </button>
+
+                </div>
+
+                <div class="mt-5">
+
+                    <label for="pet-share-url" class="text-sm font-semibold text-gray-700">
+                        Shareable Pet Link
+                    </label>
+
+                    <input
+                        type="text"
+                        id="pet-share-url"
+                        value="{{ $petUrl }}"
+                        readonly
+                        onclick="this.select()"
+                        class="mt-2 w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-sm text-gray-600"
+                    >
+
+                    <p id="copy-message" class="mt-2 text-sm text-green-600" role="status"></p>
+
+                </div>
+
+            </div>
+
             <p class="mt-4 text-sm text-gray-500">
                 You will need an adopter account before submitting
                 an adoption application.
@@ -283,5 +365,31 @@
     </div>
 
 </section>
+
+<script>
+    async function copyPetLink() {
+        const input = document.getElementById('pet-share-url');
+        const message = document.getElementById('copy-message');
+
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(input.value);
+            } else {
+                input.select();
+                const copied = document.execCommand('copy');
+
+                if (! copied) {
+                    message.textContent = 'Please select and copy the link manually.';
+                    return;
+                }
+            }
+
+            message.textContent = 'Pet link copied successfully!';
+        } catch (error) {
+            input.select();
+            message.textContent = 'Please select and copy the link manually.';
+        }
+    }
+</script>
 
 @endsection
