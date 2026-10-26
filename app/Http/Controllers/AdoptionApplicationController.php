@@ -8,9 +8,6 @@ use Illuminate\Http\Request;
 
 class AdoptionApplicationController extends Controller
 {
-    /**
-     * Show the logged-in adopter's applications.
-     */
     public function index(Request $request)
     {
         $user = $request->user();
@@ -33,74 +30,44 @@ class AdoptionApplicationController extends Controller
         );
     }
 
-
-    /**
-     * Show the adoption application form.
-     */
     public function create(Request $request, Pet $pet)
     {
         $user = $request->user();
 
-        // Only adopter accounts can apply.
         if ($user->role !== 'adopter') {
             abort(403);
         }
 
-        // Only available pets can receive applications.
         if ($pet->status !== 'Available') {
             return redirect()
                 ->route('pets.show', $pet)
-                ->with(
-                    'error',
-                    'This pet is currently unavailable for adoption.'
-                );
+                ->with('error', 'This pet is currently unavailable for adoption.');
         }
 
-        // The adopter must complete their profile first.
         if (! $user->adopterProfile) {
             return redirect()
                 ->route('profile.edit')
-                ->with(
-                    'error',
-                    'Please complete your adopter profile before applying.'
-                );
+                ->with('error', 'Please complete your adopter profile before applying.');
         }
 
-        $existingApplication = $user
-            ->adoptionApplications()
+        $existingApplication = $user->adoptionApplications()
             ->where('pet_id', $pet->id)
             ->first();
 
         if ($existingApplication) {
-
-            // Application exists but assessment is not complete.
             if (! $existingApplication->compatibilityAssessment) {
                 return redirect()
-                    ->route(
-                        'compatibility-assessments.create',
-                        $existingApplication
-                    );
+                    ->route('compatibility-assessments.create', $existingApplication);
             }
 
-            // Application process is already complete.
             return redirect()
                 ->route('adoption-applications.index')
-                ->with(
-                    'error',
-                    'You have already applied for this pet.'
-                );
+                ->with('error', 'You have already applied for this pet.');
         }
 
-        return view(
-            'adoption-applications.create',
-            compact('pet')
-        );
+        return view('adoption-applications.create', compact('pet'));
     }
 
-
-    /**
-     * Save the adoption application.
-     */
     public function store(Request $request, Pet $pet)
     {
         $user = $request->user();
@@ -112,55 +79,40 @@ class AdoptionApplicationController extends Controller
         if ($pet->status !== 'Available') {
             return redirect()
                 ->route('pets.show', $pet)
-                ->with(
-                    'error',
-                    'This pet is currently unavailable for adoption.'
-                );
+                ->with('error', 'This pet is currently unavailable for adoption.');
         }
 
         if (! $user->adopterProfile) {
             return redirect()
                 ->route('profile.edit')
-                ->with(
-                    'error',
-                    'Please complete your adopter profile before applying.'
-                );
+                ->with('error', 'Please complete your adopter profile before applying.');
         }
 
-        $existingApplication = $user
-            ->adoptionApplications()
+        $existingApplication = $user->adoptionApplications()
             ->where('pet_id', $pet->id)
             ->first();
 
         if ($existingApplication) {
-
             if (! $existingApplication->compatibilityAssessment) {
                 return redirect()
-                    ->route(
-                        'compatibility-assessments.create',
-                        $existingApplication
-                    );
+                    ->route('compatibility-assessments.create', $existingApplication);
             }
 
             return redirect()
                 ->route('pets.show', $pet)
-                ->with(
-                    'error',
-                    'You have already applied for this pet.'
-                );
+                ->with('error', 'You have already applied for this pet.');
         }
 
         $validated = $request->validate([
-
             'reference_name' => [
                 'required',
-                'string',
+                'regex:/^[\pL\s.\'-]+$/u',
                 'max:255',
             ],
 
             'reference_relationship' => [
                 'required',
-                'string',
+                'regex:/^[\pL\s.\'-]+$/u',
                 'max:255',
             ],
 
@@ -175,8 +127,9 @@ class AdoptionApplicationController extends Controller
             ],
 
             'shelter_source_other' => [
+                'required_if:shelter_source,Other',
                 'nullable',
-                'string',
+                'regex:/^[\pL\s.\'-]+$/u',
                 'max:255',
             ],
 
@@ -186,14 +139,15 @@ class AdoptionApplicationController extends Controller
             ],
 
             'animal_preference_other' => [
+                'required_if:animal_preference,Other',
                 'nullable',
-                'string',
+                'regex:/^[\pL\s.\'-]+$/u',
                 'max:255',
             ],
 
             'preferred_breed' => [
                 'nullable',
-                'regex:/^[a-zA-Z\s\-]+$/',
+                'regex:/^[\pL\s\'-]+$/u',
                 'max:255',
             ],
 
@@ -214,50 +168,27 @@ class AdoptionApplicationController extends Controller
             ],
         ]);
 
-        $validated['age'] =
-            $user->adopterProfile->age;
+        $validated['age'] = $user->adopterProfile->age;
+        $validated['mobile_number'] = $user->adopterProfile->phone_number;
 
-        $validated['mobile_number'] =
-            $user->adopterProfile->phone_number;
-
-
-        // Check preferred age in months.
-        if (
-            isset($validated['preferred_age_number'])
-            && $validated['preferred_age_unit'] === 'Months'
-            && $validated['preferred_age_number'] > 11
-        ) {
-            return back()
-                ->withErrors([
-                    'preferred_age_number' =>
-                        'Age in months must be between 1 and 11.',
-                ])
-                ->withInput();
-        }
-
-
-        // Check preferred age in years.
-        if (
-            isset($validated['preferred_age_number'])
-            && $validated['preferred_age_unit'] === 'Years'
-            && $validated['preferred_age_number'] > 30
-        ) {
-            return back()
-                ->withErrors([
-                    'preferred_age_number' =>
-                        'Age in years must be between 1 and 30.',
-                ])
-                ->withInput();
-        }
-
-
-        // Combine preferred age number and unit.
         if (isset($validated['preferred_age_number'])) {
+            $number = $validated['preferred_age_number'];
+            $unit = $validated['preferred_age_unit'] ?? null;
 
-            $validated['preferred_age'] =
-                $validated['preferred_age_number']
-                . ' '
-                . $validated['preferred_age_unit'];
+            if (
+                ! $unit
+                || ($unit === 'Months' && $number > 11)
+                || ($unit === 'Years' && $number > 30)
+            ) {
+                return back()
+                    ->withErrors([
+                        'preferred_age_number' =>
+                            'Months must be 1–11 and Years must be 1–30.',
+                    ])
+                    ->withInput();
+            }
+
+            $validated['preferred_age'] = $number . ' ' . $unit;
         }
 
         unset(
@@ -265,53 +196,26 @@ class AdoptionApplicationController extends Controller
             $validated['preferred_age_unit']
         );
 
-
-        // Require description when Other is selected.
-        if (
-            $validated['shelter_source'] === 'Other'
-            && empty($validated['shelter_source_other'])
-        ) {
-            return back()
-                ->withErrors([
-                    'shelter_source_other' =>
-                        'Please tell us how you heard about the shelter.',
-                ])
-                ->withInput();
+        if ($validated['shelter_source'] !== 'Other') {
+            $validated['shelter_source_other'] = null;
         }
 
-
-        // Require animal description when Other is selected.
-        if (
-            $validated['animal_preference'] === 'Other'
-            && empty($validated['animal_preference_other'])
-        ) {
-            return back()
-                ->withErrors([
-                    'animal_preference_other' =>
-                        'Please specify your animal preference.',
-                ])
-                ->withInput();
+        if ($validated['animal_preference'] !== 'Other') {
+            $validated['animal_preference_other'] = null;
         }
-
 
         $application = AdoptionApplication::create([
             'user_id' => $user->id,
             'pet_id' => $pet->id,
             'status' => 'Pending',
-
             ...$validated,
         ]);
-
 
         $pet->update([
             'status' => 'Unavailable',
         ]);
 
-
         return redirect()
-            ->route(
-                'compatibility-assessments.create',
-                $application
-            );
+            ->route('compatibility-assessments.create', $application);
     }
 }

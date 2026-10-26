@@ -11,12 +11,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'age',
     'phone_number',
     'address',
+
+    'animal_preference',
+    'animal_preference_other',
+    'preferred_breed',
+    'preferred_size',
+    'preferred_age',
+
+    'care_ability',
+    'available_time',
+    'household_compatibility',
+    'living_environment',
+    'pet_care_experience',
+    'activity_level',
 ])]
 class AdopterProfile extends Model
 {
-    /**
-     * The user who owns this adopter profile.
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
