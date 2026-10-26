@@ -8,7 +8,7 @@
 
     <div class="mx-auto max-w-7xl px-6">
 
-        {{-- Heading --}}
+        {{-- HEADING --}}
         <div>
             <p class="font-semibold text-orange-500">
                 Super Administration
@@ -24,7 +24,7 @@
             </p>
         </div>
 
-        {{-- System counts --}}
+        {{-- SYSTEM COUNTS --}}
         <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
 
             <div class="rounded-2xl bg-white p-6 shadow-sm">
@@ -69,7 +69,7 @@
 
         </div>
 
-        {{-- Adoption Application Counts --}}
+        {{-- ADOPTION APPLICATION COUNTS --}}
         <div class="mt-8">
 
             <h2 class="text-xl font-bold text-gray-900">
@@ -109,10 +109,9 @@
                 </div>
 
             </div>
-
         </div>
 
-        {{-- Pending Compatibility Edit Requests --}}
+        {{-- PENDING COMPATIBILITY EDIT REQUESTS --}}
         <div class="mt-10">
 
             <div class="flex flex-wrap items-center justify-between gap-3">
@@ -143,78 +142,60 @@
 
             @else
 
-                <div class="mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+                <div class="mt-4 overflow-x-auto rounded-2xl bg-white shadow-sm">
 
-                    <div class="overflow-x-auto">
+                    <table class="w-full text-left">
 
-                        <table class="w-full text-left">
+                        <thead class="bg-orange-50">
+                            <tr>
+                                <th class="px-6 py-4">Adopter</th>
+                                <th class="px-6 py-4">Date Requested</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4 text-right">Action</th>
+                            </tr>
+                        </thead>
 
-                            <thead class="bg-orange-50">
+                        <tbody class="divide-y divide-gray-100">
+
+                            @foreach ($pendingEditRequests as $profile)
+
                                 <tr>
-                                    <th class="px-6 py-4">
-                                        Adopter
-                                    </th>
+                                    <td class="px-6 py-4 font-semibold">
+                                        {{ $profile->user->name }}
+                                    </td>
 
-                                    <th class="px-6 py-4">
-                                        Date Requested
-                                    </th>
+                                    <td class="px-6 py-4 text-gray-600">
+                                        {{ $profile->updated_at->format('M d, Y') }}
+                                    </td>
 
-                                    <th class="px-6 py-4">
-                                        Status
-                                    </th>
+                                    <td class="px-6 py-4">
+                                        <span class="rounded-full bg-yellow-100 px-3 py-1 text-sm font-semibold text-yellow-800">
+                                            Pending
+                                        </span>
+                                    </td>
 
-                                    <th class="px-6 py-4 text-right">
-                                        Action
-                                    </th>
+                                    <td class="px-6 py-4 text-right">
+                                        <a
+                                            href="{{ route('admin.adopters.show', $profile->user) }}"
+                                            class="font-semibold text-orange-500 hover:text-orange-600"
+                                        >
+                                            Review Request
+                                        </a>
+                                    </td>
                                 </tr>
-                            </thead>
 
-                            <tbody class="divide-y divide-gray-100">
+                            @endforeach
 
-                                @foreach ($pendingEditRequests as $profile)
+                        </tbody>
 
-                                    <tr>
-
-                                        <td class="px-6 py-4 font-semibold text-gray-900">
-                                            {{ $profile->user->name }}
-                                        </td>
-
-                                        <td class="px-6 py-4 text-gray-600">
-                                            {{ $profile->updated_at->format('M d, Y') }}
-                                        </td>
-
-                                        <td class="px-6 py-4">
-                                            <span class="rounded-full bg-yellow-100 px-3 py-1 text-sm font-semibold text-yellow-800">
-                                                Pending
-                                            </span>
-                                        </td>
-
-                                        <td class="px-6 py-4 text-right">
-                                            <a
-                                                href="{{ route('admin.adopters.show', $profile->user) }}"
-                                                class="font-semibold text-orange-500 hover:text-orange-600"
-                                            >
-                                                Review Request
-                                            </a>
-                                        </td>
-
-                                    </tr>
-
-                                @endforeach
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
+                    </table>
 
                 </div>
 
             @endif
-
         </div>
 
-        {{-- Recent Application Activity --}}
+        {{-- RECENT APPLICATION ACTIVITY --}}
         <div class="mt-10">
 
             <h2 class="text-xl font-bold text-gray-900">
@@ -222,8 +203,7 @@
             </h2>
 
             <p class="mt-1 text-sm text-gray-600">
-                Latest adoption applications recorded
-                in the system.
+                Latest adoption applications recorded in the system.
             </p>
 
             @if ($recentApplications->isEmpty())
@@ -236,79 +216,95 @@
 
             @else
 
-                <div class="mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+                <div class="mt-4 overflow-x-auto rounded-2xl bg-white shadow-sm">
 
-                    <div class="overflow-x-auto">
+                    <table class="w-full text-left">
 
-                        <table class="w-full text-left">
+                        <thead class="bg-orange-50">
+                            <tr>
+                                <th class="px-6 py-4">Adopter</th>
+                                <th class="px-6 py-4">Pet</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4">Date</th>
+                            </tr>
+                        </thead>
 
-                            <thead class="bg-orange-50">
+                        <tbody class="divide-y divide-gray-100">
+
+                            @foreach ($recentApplications as $application)
+
                                 <tr>
-                                    <th class="px-6 py-4">
-                                        Adopter
-                                    </th>
 
-                                    <th class="px-6 py-4">
-                                        Pet
-                                    </th>
+                                    <td class="px-6 py-4 font-semibold">
+                                        {{ $application->user->name }}
+                                    </td>
 
-                                    <th class="px-6 py-4">
-                                        Status
-                                    </th>
+                                    <td class="px-6 py-4">
+                                        {{ $application->pet->name }}
+                                    </td>
 
-                                    <th class="px-6 py-4">
-                                        Date
-                                    </th>
+                                    <td class="px-6 py-4">
+
+                                        <span class="rounded-full px-3 py-1 text-sm font-semibold
+                                            @if ($application->status === 'Approved')
+                                                bg-green-100 text-green-700
+                                            @elseif ($application->status === 'Rejected')
+                                                bg-red-100 text-red-700
+                                            @else
+                                                bg-yellow-100 text-yellow-700
+                                            @endif"
+                                        >
+                                            {{ $application->status }}
+                                        </span>
+
+                                    </td>
+
+                                    <td class="px-6 py-4 text-gray-600">
+                                        {{ $application->created_at->format('M d, Y') }}
+                                    </td>
+
                                 </tr>
-                            </thead>
 
-                            <tbody class="divide-y divide-gray-100">
+                            @endforeach
 
-                                @foreach ($recentApplications as $application)
-
-                                    <tr>
-
-                                        <td class="px-6 py-4 font-semibold">
-                                            {{ $application->user->name }}
-                                        </td>
-
-                                        <td class="px-6 py-4">
-                                            {{ $application->pet->name }}
-                                        </td>
-
-                                        <td class="px-6 py-4">
-
-                                            <span class="rounded-full px-3 py-1 text-sm font-semibold
-                                                @if ($application->status === 'Approved')
-                                                    bg-green-100 text-green-700
-                                                @elseif ($application->status === 'Rejected')
-                                                    bg-red-100 text-red-700
-                                                @else
-                                                    bg-yellow-100 text-yellow-700
-                                                @endif"
-                                            >
-                                                {{ $application->status }}
-                                            </span>
-
-                                        </td>
-
-                                        <td class="px-6 py-4 text-gray-600">
-                                            {{ $application->created_at->format('M d, Y') }}
-                                        </td>
-
-                                    </tr>
-
-                                @endforeach
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
+                        </tbody>
+                    </table>
 
                 </div>
 
             @endif
+        </div>
+
+        {{-- NEW: PRINTABLE REPORTS --}}
+        <div class="mt-10">
+
+            <h2 class="text-xl font-bold text-gray-900">
+                Reports
+            </h2>
+
+            <a
+                href="{{ route('admin.reports.index') }}"
+                class="mt-4 block rounded-2xl bg-white p-6 shadow-sm transition hover:shadow-md"
+            >
+                <div class="flex items-center justify-between gap-4">
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900">
+                            Printable Reports
+                        </h3>
+
+                        <p class="mt-2 text-sm text-gray-600">
+                            Generate pet inventory, adopter, application, and adoption records reports.
+                            Print directly or save as PDF.
+                        </p>
+                    </div>
+
+                    <span class="font-semibold text-orange-500">
+                        Open Reports →
+                    </span>
+
+                </div>
+            </a>
 
         </div>
 

@@ -11,8 +11,12 @@ use App\Http\Controllers\AdminAdoptionRecordController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdopterController;
+use App\Models\Pet;
+use App\Models\User;
+use App\Models\AdoptionApplication;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 
 /*
@@ -42,10 +46,7 @@ Route::get('/', function () {
         }
     }
 
-    $featuredPets = \App\Models\Pet::where(
-        'status',
-        'Available'
-    )
+    $featuredPets = Pet::where('status', 'Available')
         ->latest()
         ->take(3)
         ->get();
@@ -57,7 +58,7 @@ Route::get('/', function () {
 
 /*
 |--------------------------------------------------------------------------
-| PET ROUTES
+| PUBLIC PET ROUTES
 |--------------------------------------------------------------------------
 */
 
@@ -82,7 +83,6 @@ Route::middleware('auth')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])
         ->name('profile.update');
 
-    // Request permission to edit compatibility answers.
     Route::post(
         '/profile/request-assessment-edit',
         [ProfileController::class, 'requestEdit']
@@ -184,7 +184,6 @@ Route::middleware('admin')->group(function () {
         [AdminAdopterController::class, 'show']
     )->name('admin.adopters.show');
 
-    // Admin/Super Admin review the private request.
     Route::post(
         '/admin/adopters/{adopter}/assessment-edit-request',
         [AdminAdopterController::class, 'reviewEditRequest']
@@ -204,6 +203,87 @@ Route::middleware('admin')->group(function () {
         '/admin/dashboard',
         [AdminController::class, 'dashboard']
     )->name('admin.dashboard');
+
+    /*
+    |--------------------------------------------------------------------------
+    | PRINTABLE REPORTS
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/admin/reports', function (Request $request) {
+
+        $validated = $request->validate([
+            'type' => [
+                'nullable',
+                'in:pets,adopters,applications,records',
+            ],
+            'status' => [
+                'nullable',
+                'in:Available,Unavailable,Adopted,Pending,Approved,Rejected',
+            ],
+            'date_from' => ['nullable', 'date'],
+            'date_to' => ['nullable', 'date', 'after_or_equal:date_from'],
+        ]);
+
+        $type = $validated['type'] ?? 'pets';
+        $status = $validated['status'] ?? '';
+        $dateFrom = $validated['date_from'] ?? '';
+        $dateTo = $validated['date_to'] ?? '';
+
+        $query = match ($type) {
+            'pets' => Pet::query(),
+
+            'adopters' => User::where('role', 'adopter')
+                ->withCount('adoptionApplications'),
+
+            'applications' => AdoptionApplication::with([
+                'user',
+                'pet',
+                'compatibilityAssessment',
+            ]),
+
+            'records' => AdoptionApplication::with([
+                'user',
+                'pet',
+                'compatibilityAssessment',
+            ])->whereIn('status', ['Approved', 'Rejected']),
+        };
+
+        if (
+            $status
+            && $type === 'pets'
+            && in_array($status, ['Available', 'Unavailable', 'Adopted'])
+        ) {
+            $query->where('status', $status);
+        }
+
+        if (
+            $status
+            && in_array($type, ['applications', 'records'])
+            && in_array($status, ['Pending', 'Approved', 'Rejected'])
+        ) {
+            $query->where('status', $status);
+        }
+
+        if ($dateFrom) {
+            $query->whereDate('created_at', '>=', $dateFrom);
+        }
+
+        if ($dateTo) {
+            $query->whereDate('created_at', '<=', $dateTo);
+        }
+
+        $rows = $query->latest()->get();
+
+        return view('admin.reports.index', compact(
+            'rows',
+            'type',
+            'status',
+            'dateFrom',
+            'dateTo'
+        ));
+
+    })->name('admin.reports.index');
 });
 
 
