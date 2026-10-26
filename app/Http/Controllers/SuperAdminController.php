@@ -4,16 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\AdoptionApplication;
+use App\Models\AdopterProfile;
 use App\Models\Pet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class SuperAdminController extends Controller
 {
-
-    /**
-     * Show the Super Admin dashboard.
-     */
     public function dashboard()
     {
         $totalAdopters = User::where('role', 'adopter')->count();
@@ -47,6 +44,15 @@ class SuperAdminController extends Controller
             ->take(5)
             ->get();
 
+        // Pending compatibility assessment edit requests.
+        $pendingEditRequests = AdopterProfile::with('user')
+            ->where('edit_request_status', 'Pending')
+            ->whereHas('user', function ($query) {
+                $query->where('role', 'adopter');
+            })
+            ->latest('updated_at')
+            ->get();
+
         return view(
             'super-admin.dashboard',
             compact(
@@ -57,14 +63,12 @@ class SuperAdminController extends Controller
                 'pendingApplications',
                 'approvedApplications',
                 'rejectedApplications',
-                'recentApplications'
+                'recentApplications',
+                'pendingEditRequests'
             )
         );
     }
-    
-    /**
-     * Show administrator accounts.
-     */
+
     public function index()
     {
         $administrators = User::where('role', 'admin')
@@ -77,21 +81,11 @@ class SuperAdminController extends Controller
         );
     }
 
-
-    /**
-     * Show the create administrator form.
-     */
     public function create()
     {
-        return view(
-            'super-admin.administrators.create'
-        );
+        return view('super-admin.administrators.create');
     }
 
-
-    /**
-     * Create a new administrator account.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -132,12 +126,9 @@ class SuperAdminController extends Controller
             ->with(
                 'success',
                 'Administrator account created successfully.'
-            );  
+            );
     }
 
-    /**
-     * Show the edit administrator form.
-     */
     public function edit(User $administrator)
     {
         if ($administrator->role !== 'admin') {
@@ -150,10 +141,6 @@ class SuperAdminController extends Controller
         );
     }
 
-
-    /**
-     * Update an administrator account.
-     */
     public function update(
         Request $request,
         User $administrator
@@ -190,10 +177,6 @@ class SuperAdminController extends Controller
             );
     }
 
-
-    /**
-     * Delete an administrator account.
-     */
     public function destroy(User $administrator)
     {
         if ($administrator->role !== 'admin') {

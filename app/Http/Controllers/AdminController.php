@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdoptionApplication;
+use App\Models\AdopterProfile;
 use App\Models\Pet;
 use App\Models\User;
 
 class AdminController extends Controller
 {
-    /**
-     * Show the Admin dashboard.
-     */
     public function dashboard()
     {
         $pendingApplications = AdoptionApplication::whereHas(
@@ -39,13 +37,23 @@ class AdminController extends Controller
             ->take(5)
             ->get();
 
+        // Pending compatibility assessment edit requests.
+        $pendingEditRequests = AdopterProfile::with('user')
+            ->where('edit_request_status', 'Pending')
+            ->whereHas('user', function ($query) {
+                $query->where('role', 'adopter');
+            })
+            ->latest('updated_at')
+            ->get();
+
         return view(
             'admin.dashboard',
             compact(
                 'pendingApplications',
                 'availablePets',
                 'totalAdopters',
-                'recentPendingApplications'
+                'recentPendingApplications',
+                'pendingEditRequests'
             )
         );
     }
