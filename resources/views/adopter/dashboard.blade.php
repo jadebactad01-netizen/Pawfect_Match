@@ -6,203 +6,178 @@
 
 <section class="min-h-screen bg-gray-50 py-10">
 
-    <div class="mx-auto max-w-7xl px-6">
+    <div class="mx-auto max-w-7xl space-y-8 px-4 sm:px-6">
 
-        {{-- Welcome --}}
-        <div class="rounded-3xl bg-orange-500 p-8 text-white">
+        {{-- WELCOME --}}
+        <div class="rounded-3xl bg-orange-500 p-6 text-white shadow-sm sm:p-8">
 
-            <p class="font-semibold text-orange-100">
-                Welcome
+            <p class="text-sm font-semibold text-orange-100">
+                My Adoption Journey
             </p>
 
-            <h1 class="mt-1 text-3xl font-bold">
-                {{ auth()->user()->name }}
+            <h1 class="mt-2 text-3xl font-bold">
+                Welcome, {{ auth()->user()->name }}!
             </h1>
 
             <p class="mt-3 max-w-2xl text-orange-50">
-                Keep track of your adoption journey and
-                discover pets that may be a good match for you.
+                Find your pawfect companion, track your applications,
+                and discover pets that match your lifestyle.
             </p>
 
-        </div>
+            <div class="mt-6 flex flex-wrap gap-3">
 
+                <a href="{{ route('pets.index') }}"
+                   class="rounded-full bg-white px-5 py-3 text-sm font-bold text-orange-600 hover:bg-orange-50">
+                    Browse Available Pets
+                </a>
 
-        {{-- Adoption overview --}}
-        <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-
-            <div class="rounded-2xl bg-white p-6 shadow-sm">
-
-                <p class="text-sm font-semibold text-gray-500">
+                <a href="{{ route('adoption-applications.index') }}"
+                   class="rounded-full border border-white px-5 py-3 text-sm font-bold text-white hover:bg-orange-600">
                     My Applications
-                </p>
-
-                <p class="mt-2 text-3xl font-bold text-gray-900">
-                    {{ $applications->count() }}
-                </p>
-
-                <a
-                    href="{{ route('adoption-applications.index') }}"
-                    class="mt-4 inline-block text-sm font-semibold
-                           text-orange-500 hover:text-orange-600"
-                >
-                    View Applications →
                 </a>
 
             </div>
 
+        </div>
 
-            <div class="rounded-2xl bg-white p-6 shadow-sm">
+        {{-- APPLICATION OVERVIEW --}}
+        <div>
 
-                <p class="text-sm font-semibold text-gray-500">
-                    Pending
-                </p>
+            <h2 class="mb-4 text-xl font-bold text-gray-900">
+                Application Overview
+            </h2>
 
-                <p class="mt-2 text-3xl font-bold text-yellow-600">
-                    {{ $pendingApplications }}
-                </p>
+            <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
 
-                <p class="mt-2 text-sm text-gray-500">
-                    Applications waiting for a decision.
-                </p>
+                <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                    <p class="text-sm font-medium text-gray-500">
+                        Total Applications
+                    </p>
 
-            </div>
+                    <p class="mt-3 text-3xl font-bold text-gray-900">
+                        {{ $applications->count() }}
+                    </p>
+                </div>
 
+                <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                    <p class="text-sm font-medium text-gray-500">
+                        Pending
+                    </p>
 
-            <div class="rounded-2xl bg-white p-6 shadow-sm">
+                    <p class="mt-3 text-3xl font-bold text-amber-600">
+                        {{ $pendingApplications }}
+                    </p>
+                </div>
 
-                <p class="text-sm font-semibold text-gray-500">
-                    Approved
-                </p>
+                <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                    <p class="text-sm font-medium text-gray-500">
+                        Approved
+                    </p>
 
-                <p class="mt-2 text-3xl font-bold text-green-600">
-                    {{ $approvedApplications }}
-                </p>
+                    <p class="mt-3 text-3xl font-bold text-green-600">
+                        {{ $approvedApplications }}
+                    </p>
+                </div>
 
-                <p class="mt-2 text-sm text-gray-500">
-                    Approved adoption applications.
-                </p>
+                <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                    <p class="text-sm font-medium text-gray-500">
+                        Rejected
+                    </p>
 
-            </div>
-
-            <div class="rounded-2xl bg-white p-6 shadow-sm">
-
-                <p class="text-sm font-semibold text-gray-500">
-                    Rejected
-                </p>
-
-                <p class="mt-2 text-3xl font-bold text-red-600">
-                    {{ $rejectedApplications }}
-                </p>
-
-                <p class="mt-2 text-sm text-gray-500">
-                    Rejected adoption applications.
-                </p>
+                    <p class="mt-3 text-3xl font-bold text-red-600">
+                        {{ $rejectedApplications }}
+                    </p>
+                </div>
 
             </div>
 
         </div>
 
+        {{-- LATEST APPLICATION AND SHORTCUTS --}}
+        <div class="grid gap-6 lg:grid-cols-3">
 
-        {{-- Current adoption journey --}}
-        <div class="mt-10">
+            <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm lg:col-span-2">
 
-            <h2 class="text-xl font-bold text-gray-900">
-                My Adoption Journey
-            </h2>
+                <div class="flex flex-wrap items-center justify-between gap-3">
 
-            @if ($latestApplication)
+                    <h2 class="text-xl font-bold text-gray-900">
+                        Latest Application
+                    </h2>
 
-                <div class="mt-4 rounded-2xl bg-white p-6 shadow-sm">
+                    <a href="{{ route('adoption-applications.index') }}"
+                       class="text-sm font-semibold text-orange-500 hover:text-orange-600">
+                        View All →
+                    </a>
 
-                    <div class="flex flex-col gap-6
-                                sm:flex-row sm:items-center">
+                </div>
 
-                        @if ($latestApplication->pet->photo)
+                @if ($latestApplication)
+
+                    <div class="mt-6 flex flex-col gap-5 sm:flex-row">
+
+                        @if ($latestApplication->pet?->photo)
 
                             <img
-                                src="{{ asset(
-                                    'storage/' . $latestApplication->pet->photo
-                                ) }}"
+                                src="{{ asset('storage/' . $latestApplication->pet->photo) }}"
                                 alt="{{ $latestApplication->pet->name }}"
-                                class="h-24 w-24 shrink-0 rounded-2xl object-cover"
+                                class="h-40 w-full rounded-2xl object-cover sm:w-40"
                             >
 
                         @else
 
-                            <div class="flex h-24 w-24 shrink-0 items-center
-                                        justify-center rounded-2xl bg-orange-50
-                                        text-center text-xs text-gray-400">
-                                No photo
+                            <div class="flex h-40 w-full items-center justify-center rounded-2xl bg-orange-50 text-sm text-gray-400 sm:w-40">
+                                No photo available
                             </div>
 
                         @endif
 
                         <div class="flex-1">
 
-                            <p class="text-sm font-semibold text-gray-500">
-                                Latest Application
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                                Pet Applied For
                             </p>
 
-                            <h3 class="mt-1 text-xl font-bold text-gray-900">
-                                {{ $latestApplication->pet->name }}
+                            <h3 class="mt-2 text-2xl font-bold text-gray-900">
+                                {{ $latestApplication->pet?->name ?? 'Pet unavailable' }}
                             </h3>
 
-                            <p class="mt-1 text-sm text-gray-600">
-                                {{ $latestApplication->pet->type }}
-                                •
-                                {{ $latestApplication->pet->sex }}
-                                •
-                                {{ $latestApplication->pet->age }}
+                            <p class="mt-2 text-sm text-gray-500">
+                                Submitted {{ $latestApplication->created_at->format('M d, Y') }}
                             </p>
 
-                            <div class="mt-3">
+                            <div class="mt-4">
 
-                                <span class="rounded-full bg-orange-100
-                                             px-3 py-1 text-sm font-semibold
-                                             text-orange-700">
-
+                                <span class="rounded-full px-3 py-1 text-sm font-semibold
+                                    @if ($latestApplication->status === 'Approved')
+                                        bg-green-100 text-green-700
+                                    @elseif ($latestApplication->status === 'Rejected')
+                                        bg-red-100 text-red-700
+                                    @else
+                                        bg-amber-100 text-amber-700
+                                    @endif">
                                     {{ $latestApplication->status }}
-
                                 </span>
 
                             </div>
 
+                            @if ($latestApplication->compatibilityAssessment)
 
-                            @if (
-                                $latestApplication
-                                    ->compatibilityAssessment
-                            )
-
-                                <p class="mt-4 text-sm text-gray-600">
-                                    Compatibility:
+                                <p class="mt-5 text-sm text-gray-600">
+                                    Compatibility Score:
                                     <span class="font-bold text-gray-900">
-                                        {{
-                                            $latestApplication
-                                                ->compatibilityAssessment
-                                                ->total_score
-                                        }}%
+                                        {{ $latestApplication->compatibilityAssessment->total_score }}%
                                     </span>
+                                </p>
 
-                                    —
-                                    {{
-                                        $latestApplication
-                                            ->compatibilityAssessment
-                                            ->classification
-                                    }}
+                                <p class="mt-1 text-sm text-gray-500">
+                                    {{ $latestApplication->compatibilityAssessment->classification }}
                                 </p>
 
                             @else
 
                                 <a
-                                    href="{{
-                                        route(
-                                            'compatibility-assessments.create',
-                                            $latestApplication
-                                        )
-                                    }}"
-                                    class="mt-4 inline-block font-semibold
-                                           text-orange-500
-                                           hover:text-orange-600"
+                                    href="{{ route('compatibility-assessments.create', $latestApplication) }}"
+                                    class="mt-5 inline-block font-semibold text-orange-500 hover:text-orange-600"
                                 >
                                     Complete Compatibility Assessment →
                                 </a>
@@ -213,79 +188,102 @@
 
                     </div>
 
-                </div>
+                @else
 
-            @else
+                    <div class="mt-6 rounded-2xl bg-orange-50 p-6">
 
-                <div class="mt-4 rounded-2xl bg-white p-8 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-900">
+                            Your adoption journey starts here!
+                        </h3>
 
-                    <h3 class="font-bold text-gray-900">
-                        Start your adoption journey
-                    </h3>
+                        <p class="mt-2 text-sm text-gray-600">
+                            You haven't submitted an application yet.
+                            Browse available pets and find your perfect companion.
+                        </p>
 
-                    <p class="mt-2 text-gray-600">
-                        You haven't submitted an adoption
-                        application yet.
-                    </p>
+                        <a href="{{ route('pets.index') }}"
+                           class="mt-4 inline-block rounded-full bg-orange-500 px-5 py-3 text-sm font-semibold text-white hover:bg-orange-600">
+                            Find a Pet →
+                        </a>
 
-                    <a
-                        href="{{ route('pets.index') }}"
-                        class="mt-4 inline-block rounded-full
-                               bg-orange-500 px-5 py-2
-                               font-semibold text-white
-                               hover:bg-orange-600"
-                    >
-                        Browse Available Pets
+                    </div>
+
+                @endif
+
+            </div>
+
+            {{-- QUICK LINKS --}}
+            <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+
+                <h2 class="text-xl font-bold text-gray-900">
+                    Quick Links
+                </h2>
+
+                <p class="mt-1 text-sm text-gray-500">
+                    Everything you need in one place
+                </p>
+
+                <div class="mt-5 space-y-3">
+
+                    <a href="{{ route('pets.index') }}"
+                       class="flex items-center justify-between rounded-xl bg-orange-50 px-4 py-3 font-semibold text-orange-700 hover:bg-orange-100">
+                        <span>Find a Pet</span>
+                        <span>→</span>
+                    </a>
+
+                    <a href="{{ route('adoption-applications.index') }}"
+                       class="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 font-semibold text-gray-700 hover:bg-gray-100">
+                        <span>My Applications</span>
+                        <span>→</span>
+                    </a>
+
+                    <a href="{{ route('profile.edit') }}"
+                       class="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 font-semibold text-gray-700 hover:bg-gray-100">
+                        <span>My Profile</span>
+                        <span>→</span>
                     </a>
 
                 </div>
 
-            @endif
+            </div>
 
         </div>
 
-        {{-- Recommendations --}}
+        {{-- RECOMMENDED PETS --}}
         @if ($recommendedPets->isNotEmpty())
 
-            <div class="mt-10">
+            <div>
 
-                <div>
+                <div class="mb-4">
                     <h2 class="text-xl font-bold text-gray-900">
                         Recommended for You
                     </h2>
 
-                    <p class="mt-1 text-sm text-gray-600">
-                        Based on your latest compatibility assessment.
+                    <p class="mt-1 text-sm text-gray-500">
+                        Suggested pets based on your latest compatibility assessment
                     </p>
                 </div>
 
-                <div class="mt-4 grid gap-6
-                            sm:grid-cols-2 lg:grid-cols-3">
+                <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
 
                     @foreach ($recommendedPets as $recommendation)
 
                         <a
                             href="{{ route('pets.show', $recommendation->pet) }}"
-                            class="mx-auto w-full max-w-sm overflow-hidden
-                                rounded-2xl bg-white shadow-sm transition
-                                hover:-translate-y-1 hover:shadow-md"
+                            class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
                         >
 
                             @if ($recommendation->pet->photo)
 
                                 <img
-                                    src="{{ asset(
-                                        'storage/' . $recommendation->pet->photo
-                                    ) }}"
+                                    src="{{ asset('storage/' . $recommendation->pet->photo) }}"
                                     alt="{{ $recommendation->pet->name }}"
-                                    class="h-40 w-full object-cover"
+                                    class="h-44 w-full object-cover"
                                 >
 
                             @else
 
-                                <div class="flex h-40 w-full items-center
-                                            justify-center bg-orange-50
-                                            text-gray-400">
+                                <div class="flex h-44 items-center justify-center bg-orange-50 text-sm text-gray-400">
                                     No photo available
                                 </div>
 
@@ -293,24 +291,25 @@
 
                             <div class="p-5">
 
-                                <h3 class="text-lg font-bold text-gray-900">
-                                    {{ $recommendation->pet->name }}
-                                </h3>
+                                <div class="flex items-start justify-between gap-3">
 
-                                <p class="mt-1 text-sm text-gray-500">
+                                    <h3 class="text-lg font-bold text-gray-900">
+                                        {{ $recommendation->pet->name }}
+                                    </h3>
+
+                                    <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">
+                                        {{ $recommendation->compatibility_score }}%
+                                    </span>
+
+                                </div>
+
+                                <p class="mt-2 text-sm text-gray-500">
                                     {{ $recommendation->pet->type }}
-                                    •
-                                    {{ $recommendation->pet->sex }}
-                                    •
-                                    {{ $recommendation->pet->age }}
+                                    • {{ $recommendation->pet->sex }}
+                                    • {{ $recommendation->pet->age }}
                                 </p>
 
-                                <p class="mt-3 font-semibold text-orange-500">
-                                    {{ $recommendation->compatibility_score }}%
-                                    Match
-                                </p>
-
-                                <p class="mt-1 text-sm text-gray-600">
+                                <p class="mt-3 text-sm font-medium text-orange-600">
                                     {{ $recommendation->classification }}
                                 </p>
 
@@ -326,85 +325,86 @@
 
         @endif
 
-        {{-- Available Pets --}}
-        <div class="mt-10">
+        {{-- AVAILABLE PETS --}}
+        <div>
 
-            <div class="flex items-end justify-between gap-4">
+            <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
 
                 <div>
-
                     <h2 class="text-xl font-bold text-gray-900">
-                        Available Pets
+                        Meet Available Pets
                     </h2>
 
-                    <p class="mt-1 text-sm text-gray-600">
-                        Meet some of the pets currently
-                        looking for a home.
+                    <p class="mt-1 text-sm text-gray-500">
+                        These pets are currently looking for a loving home
                     </p>
-
                 </div>
 
-                <a
-                    href="{{ route('pets.index') }}"
-                    class="text-sm font-semibold text-orange-500
-                        hover:text-orange-600"
-                >
-                    View All
+                <a href="{{ route('pets.index') }}"
+                   class="text-sm font-semibold text-orange-500 hover:text-orange-600">
+                    View All Pets →
                 </a>
 
             </div>
 
-            <div class="mt-4 grid gap-6
-                        sm:grid-cols-2 lg:grid-cols-3">
+            @if ($availablePets->isEmpty())
 
-                @foreach ($availablePets as $pet)
+                <div class="rounded-2xl bg-white p-8 text-center text-gray-500 shadow-sm">
+                    No pets are currently available for adoption.
+                </div>
 
-                    <a
-                        href="{{ route('pets.show', $pet) }}"
-                        class="mx-auto w-full max-w-sm overflow-hidden
-                            rounded-2xl bg-white shadow-sm transition
-                            hover:-translate-y-1 hover:shadow-md"
-                    >
+            @else
 
-                        @if ($pet->photo)
+                <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
 
-                            <img
-                                src="{{ asset('storage/' . $pet->photo) }}"
-                                alt="{{ $pet->name }}"
-                                class="h-40 w-full object-cover"
-                            >
+                    @foreach ($availablePets as $pet)
 
-                        @else
+                        <a
+                            href="{{ route('pets.show', $pet) }}"
+                            class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                        >
 
-                            <div class="flex h-40 w-full items-center
-                                        justify-center bg-orange-50
-                                        text-gray-400">
-                                No photo available
+                            @if ($pet->photo)
+
+                                <img
+                                    src="{{ asset('storage/' . $pet->photo) }}"
+                                    alt="{{ $pet->name }}"
+                                    class="h-44 w-full object-cover"
+                                >
+
+                            @else
+
+                                <div class="flex h-44 items-center justify-center bg-orange-50 text-sm text-gray-400">
+                                    No photo available
+                                </div>
+
+                            @endif
+
+                            <div class="p-5">
+
+                                <h3 class="text-lg font-bold text-gray-900">
+                                    {{ $pet->name }}
+                                </h3>
+
+                                <p class="mt-2 text-sm text-gray-500">
+                                    {{ $pet->type }}
+                                    • {{ $pet->sex }}
+                                    • {{ $pet->age }}
+                                </p>
+
+                                <span class="mt-4 inline-block text-sm font-semibold text-orange-500">
+                                    View Pet Details →
+                                </span>
+
                             </div>
 
-                        @endif
+                        </a>
 
-                        <div class="p-5">
+                    @endforeach
 
-                            <h3 class="text-lg font-bold text-gray-900">
-                                {{ $pet->name }}
-                            </h3>
+                </div>
 
-                            <p class="mt-1 text-sm text-gray-500">
-                                {{ $pet->type }}
-                                •
-                                {{ $pet->sex }}
-                                •
-                                {{ $pet->age }}
-                            </p>
-
-                        </div>
-
-                    </a>
-
-                @endforeach
-
-            </div>
+            @endif
 
         </div>
 

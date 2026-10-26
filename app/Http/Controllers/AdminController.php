@@ -17,6 +17,16 @@ class AdminController extends Controller
             ->where('status', 'Pending')
             ->count();
 
+        $approvedApplications = AdoptionApplication::where(
+            'status',
+            'Approved'
+        )->count();
+
+        $rejectedApplications = AdoptionApplication::where(
+            'status',
+            'Rejected'
+        )->count();
+
         $availablePets = Pet::where(
             'status',
             'Available'
@@ -37,7 +47,6 @@ class AdminController extends Controller
             ->take(5)
             ->get();
 
-        // Pending compatibility assessment edit requests.
         $pendingEditRequests = AdopterProfile::with('user')
             ->where('edit_request_status', 'Pending')
             ->whereHas('user', function ($query) {
@@ -46,15 +55,14 @@ class AdminController extends Controller
             ->latest('updated_at')
             ->get();
 
-        return view(
-            'admin.dashboard',
-            compact(
-                'pendingApplications',
-                'availablePets',
-                'totalAdopters',
-                'recentPendingApplications',
-                'pendingEditRequests'
-            )
-        );
+        return view('admin.dashboard', compact(
+            'pendingApplications',
+            'approvedApplications',
+            'rejectedApplications',
+            'availablePets',
+            'totalAdopters',
+            'recentPendingApplications',
+            'pendingEditRequests'
+        ));
     }
 }
