@@ -2,271 +2,229 @@
 
 @section('title', $pet->name . ' - Pawfect Match')
 
-
 @section('content')
 
-
-<!-- =========================================
-     BACK BUTTON
-========================================== -->
-
 <section class="bg-orange-50">
-
     <div class="mx-auto max-w-7xl px-6 pt-10">
 
         <a href="{{ route('pets.index') }}"
            class="font-semibold text-orange-500 hover:text-orange-600">
-
             ← Back to Available Pets
-
         </a>
 
     </div>
-
 </section>
 
 @if (session('success') || session('error'))
 
     <div class="bg-orange-50 px-6 pt-6">
-
         <div class="mx-auto max-w-7xl">
 
             @if (session('success'))
-                <div class="rounded-xl border border-green-200
-                            bg-green-50 px-5 py-4 text-green-700">
+                <div class="rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-green-700">
                     {{ session('success') }}
                 </div>
             @endif
 
             @if (session('error'))
-                <div class="rounded-xl border border-red-200
-                            bg-red-50 px-5 py-4 text-red-700">
+                <div class="rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-red-700">
                     {{ session('error') }}
                 </div>
             @endif
 
         </div>
-
     </div>
 
 @endif
 
-<!-- =========================================
-     PET PROFILE
-========================================== -->
-
+{{-- PET PROFILE --}}
 <section class="bg-orange-50 py-12">
 
-    <div class="mx-auto grid max-w-7xl gap-12 px-6
-                lg:grid-cols-2">
+    <div class="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-2">
 
-
-        <!-- PET IMAGE -->
+        {{-- PET IMAGE --}}
         <div>
-
             <div class="overflow-hidden rounded-3xl bg-orange-100">
 
                 @if ($pet->photo)
-
                     <img
                         src="{{ asset('storage/' . $pet->photo) }}"
                         alt="{{ $pet->name }}"
-                        class="h-[400px] w-full object-cover
-                            lg:h-[500px]"
+                        class="h-[400px] w-full object-cover lg:h-[500px]"
                     >
-
                 @else
-
-                    <div class="flex min-h-[400px] items-center
-                                justify-center text-gray-400">
+                    <div class="flex min-h-[400px] items-center justify-center text-gray-400">
                         No photo available
                     </div>
-
                 @endif
 
             </div>
-
         </div>
 
-
-
-        <!-- PET INFORMATION -->
+        {{-- PET INFORMATION --}}
         <div>
 
-
-            <!-- Status -->
-            <span class="inline-block rounded-full
-                        px-4 py-2 text-sm font-semibold
-                        {{ $pet->status === 'Available'
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-red-100 text-red-700' }}">
-
+            <span class="inline-block rounded-full px-4 py-2 text-sm font-semibold
+                {{ $pet->status === 'Available'
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-red-100 text-red-700' }}">
                 {{ $pet->status }}
-
             </span>
 
-
-
-            <!-- Name -->
-            <h1 class="mt-4 text-4xl font-bold text-gray-900
-                       sm:text-5xl">
-
+            <h1 class="mt-4 text-4xl font-bold text-gray-900 sm:text-5xl">
                 {{ $pet->name }}
-
             </h1>
 
-
-
-            <!-- Short Description -->
             <p class="mt-5 text-lg leading-8 text-gray-600">
-
                 {{ $pet->description }}
-
             </p>
 
-
-
-            <!-- =========================================
-                 BASIC INFORMATION
-            ========================================== -->
-
+            {{-- BASIC INFORMATION --}}
             <div class="mt-8 grid grid-cols-2 gap-4">
 
+                @foreach ([
+                    'Type' => $pet->type,
+                    'Sex' => $pet->sex,
+                    'Age' => $pet->age,
+                    'Adoption Status' => $pet->status,
+                ] as $label => $value)
 
-                <!-- Type -->
-                <div class="rounded-2xl bg-white p-5 shadow-sm">
+                    <div class="rounded-2xl bg-white p-5 shadow-sm">
 
-                    <p class="text-sm text-gray-500">
-                        Type
-                    </p>
+                        <p class="text-sm text-gray-500">
+                            {{ $label }}
+                        </p>
 
-                    <p class="mt-1 font-bold text-gray-900">
-                        {{ $pet->type }}
-                    </p>
+                        <p class="mt-1 font-bold text-gray-900">
+                            {{ $value }}
+                        </p>
 
-                </div>
+                    </div>
 
-
-
-                <!-- Sex -->
-                <div class="rounded-2xl bg-white p-5 shadow-sm">
-
-                    <p class="text-sm text-gray-500">
-                        Sex
-                    </p>
-
-                    <p class="mt-1 font-bold text-gray-900">
-                        {{ $pet->sex }}
-                    </p>
-
-                </div>
-
-
-
-                <!-- Age -->
-                <div class="rounded-2xl bg-white p-5 shadow-sm">
-
-                    <p class="text-sm text-gray-500">
-                        Age
-                    </p>
-
-                    <p class="mt-1 font-bold text-gray-900">
-                        {{ $pet->age }}
-                    </p>
-
-                </div>
-
-
-
-                <!-- Adoption Status -->
-                <div class="rounded-2xl bg-white p-5 shadow-sm">
-
-                    <p class="text-sm text-gray-500">
-                        Adoption Status
-                    </p>
-
-                    <p class="mt-1 font-bold
-                        {{ $pet->status === 'Available'
-                            ? 'text-green-600'
-                            : 'text-red-600' }}">
-
-                        {{ $pet->status }}
-
-                    </p>
-
-                </div>
-
+                @endforeach
 
             </div>
 
+            {{-- NEW INTAKE INFORMATION --}}
+            <div class="mt-8">
 
+                <h2 class="text-xl font-bold text-gray-900">
+                    Pet Intake Details
+                </h2>
 
-            <!-- =========================================
-                 BUTTONS
-            ========================================== -->
+                <div class="mt-4 grid grid-cols-2 gap-4">
 
+                    <div class="rounded-2xl bg-white p-5 shadow-sm">
+                        <p class="text-sm text-gray-500">
+                            Pet Origin
+                        </p>
+
+                        <p class="mt-1 font-bold text-gray-900">
+                            {{ $pet->intake_type ?: 'Not recorded' }}
+                        </p>
+                    </div>
+
+                    <div class="rounded-2xl bg-white p-5 shadow-sm">
+                        <p class="text-sm text-gray-500">
+                            Date Rescued / Surrendered
+                        </p>
+
+                        <p class="mt-1 font-bold text-gray-900">
+                            {{ $pet->intake_date?->format('M d, Y') ?? 'Not recorded' }}
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- NEW VACCINATION INFORMATION --}}
+            <div class="mt-8">
+
+                <h2 class="text-xl font-bold text-gray-900">
+                    Vaccination Details
+                </h2>
+
+                <div class="mt-4 grid grid-cols-2 gap-4">
+
+                    <div class="rounded-2xl bg-white p-5 shadow-sm">
+                        <p class="text-sm text-gray-500">
+                            Vaccination Type
+                        </p>
+
+                        <p class="mt-1 font-bold text-gray-900">
+                            {{ $pet->vaccination_type ?: 'Not recorded' }}
+                        </p>
+                    </div>
+
+                    <div class="rounded-2xl bg-white p-5 shadow-sm">
+                        <p class="text-sm text-gray-500">
+                            Vaccination Date
+                        </p>
+
+                        <p class="mt-1 font-bold text-gray-900">
+                            {{ $pet->vaccination_date?->format('M d, Y') ?? 'Not recorded' }}
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- ADOPTION BUTTONS --}}
             <div class="mt-8 flex flex-wrap gap-4">
 
-            @if ($pet->status === 'Available')
+                @if ($pet->status === 'Available')
 
-                @guest
+                    @guest
 
-                    <a
-                        href="{{ route(
-                            'login',
-                            ['pet' => $pet->id]
-                        ) }}"
-                        class="rounded-full border border-orange-500
-                            bg-white px-7 py-3 font-semibold
-                            text-orange-500 hover:bg-orange-50"
-                    >
-                        Log In to Apply
-                    </a>
+                        <a
+                            href="{{ route('login', ['pet' => $pet->id]) }}"
+                            class="rounded-full border border-orange-500 bg-white px-7 py-3 font-semibold text-orange-500 hover:bg-orange-50"
+                        >
+                            Log In to Apply
+                        </a>
 
-                @else
+                    @else
 
-                    @if (auth()->user()->role === 'adopter')
+                        @if (auth()->user()->role === 'adopter')
 
-                        @if ($profile)
+                            @if ($profile)
 
-                            @if ($existingApplication)
+                                @if ($existingApplication)
 
-                                @if (! $existingApplication->compatibilityAssessment)
+                                    @if (! $existingApplication->compatibilityAssessment)
 
-                                    <a
-                                        href="{{ route(
-                                            'compatibility-assessments.create',
-                                            $existingApplication
-                                        ) }}"
-                                        class="rounded-full border border-orange-300
-                                            bg-orange-50 px-7 py-3 font-semibold
-                                            text-orange-700 hover:bg-orange-100"
-                                    >
-                                        Continue Compatibility Assessment
-                                    </a>
+                                        <a
+                                            href="{{ route('compatibility-assessments.create', $existingApplication) }}"
+                                            class="rounded-full border border-orange-300 bg-orange-50 px-7 py-3 font-semibold text-orange-700 hover:bg-orange-100"
+                                        >
+                                            Continue Compatibility Assessment
+                                        </a>
+
+                                    @else
+
+                                        <a
+                                            href="{{ route('adoption-applications.index') }}"
+                                            class="rounded-full border px-7 py-3 font-semibold
+                                                @if ($existingApplication->status === 'Approved')
+                                                    border-green-300 bg-green-50 text-green-700 hover:bg-green-100
+                                                @elseif ($existingApplication->status === 'Rejected')
+                                                    border-red-300 bg-red-50 text-red-700 hover:bg-red-100
+                                                @else
+                                                    border-yellow-300 bg-yellow-50 text-yellow-700 hover:bg-yellow-100
+                                                @endif"
+                                        >
+                                            Already Applied ({{ $existingApplication->status }})
+                                        </a>
+
+                                    @endif
 
                                 @else
 
                                     <a
-                                        href="{{ route('adoption-applications.index') }}"
-                                        class="rounded-full border px-7 py-3 font-semibold
-
-                                            @if ($existingApplication->status === 'Approved')
-                                                border-green-300 bg-green-50
-                                                text-green-700 hover:bg-green-100
-
-                                            @elseif ($existingApplication->status === 'Rejected')
-                                                border-red-300 bg-red-50
-                                                text-red-700 hover:bg-red-100
-
-                                            @else
-                                                border-yellow-300 bg-yellow-50
-                                                text-yellow-700 hover:bg-yellow-100
-                                            @endif
-                                        "
+                                        href="{{ route('adoption-applications.create', $pet) }}"
+                                        class="rounded-full border border-orange-500 bg-white px-7 py-3 font-semibold text-orange-500 hover:bg-orange-50"
                                     >
-                                        Already Applied
-                                        ({{ $existingApplication->status }})
+                                        Apply for Adoption
                                     </a>
 
                                 @endif
@@ -274,50 +232,26 @@
                             @else
 
                                 <a
-                                    href="{{ route(
-                                        'adoption-applications.create',
-                                        $pet
-                                    ) }}"
-                                    class="rounded-full border border-orange-500
-                                        bg-white px-7 py-3 font-semibold
-                                        text-orange-500 hover:bg-orange-50"
+                                    href="{{ route('profile.edit') }}"
+                                    class="rounded-full border border-orange-500 bg-white px-7 py-3 font-semibold text-orange-500 hover:bg-orange-50"
                                 >
-                                    Apply for Adoption
+                                    Complete Profile to Apply
                                 </a>
 
                             @endif
 
-                        @else
-
-                            <a
-                                href="{{ route('profile.edit') }}"
-                                class="rounded-full border border-orange-500
-                                    bg-white px-7 py-3 font-semibold
-                                    text-orange-500 hover:bg-orange-50"
-                            >
-                                Complete Profile to Apply
-                            </a>
-
                         @endif
 
-                    @endif
+                    @endguest
 
-                @endguest
-
-            @endif
-
+                @endif
 
             </div>
 
-
-            <!-- Explanation -->
             <p class="mt-4 text-sm text-gray-500">
-
                 You will need an adopter account before submitting
                 an adoption application.
-
             </p>
-
 
         </div>
 
@@ -325,16 +259,10 @@
 
 </section>
 
-
-
-<!-- =========================================
-     ABOUT THIS PET
-========================================== -->
-
+{{-- ABOUT THIS PET --}}
 <section class="bg-white py-16">
 
     <div class="mx-auto max-w-7xl px-6">
-
 
         <div class="max-w-3xl">
 
@@ -347,13 +275,10 @@
             </h2>
 
             <p class="mt-5 leading-8 text-gray-600">
-
                 {{ $pet->description }}
-
             </p>
 
         </div>
-
 
     </div>
 

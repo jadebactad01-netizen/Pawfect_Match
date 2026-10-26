@@ -16,6 +16,11 @@ use Illuminate\Database\Eloquent\Model;
     'description',
     'photo',
 
+    'intake_type',
+    'intake_date',
+    'vaccination_type',
+    'vaccination_date',
+
     'care_requirement',
     'time_requirement',
     'household_compatibility',
@@ -27,9 +32,14 @@ class Pet extends Model
 {
     use HasFactory;
 
-    /**
-     * Adoption applications submitted for this pet.
-     */
+    protected function casts(): array
+    {
+        return [
+            'intake_date' => 'date',
+            'vaccination_date' => 'date',
+        ];
+    }
+
     public function adoptionApplications(): HasMany
     {
         return $this->hasMany(AdoptionApplication::class);
