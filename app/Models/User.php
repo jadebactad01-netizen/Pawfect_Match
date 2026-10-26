@@ -11,38 +11,37 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role',])]
-#[Hidden(['password', 'remember_token'])]
+#[Fillable([
+    'name',
+    'email',
+    'password',
+    'role',
+    'valid_id_path',
+    'approval_status',
+])]
+#[Hidden([
+    'password',
+    'remember_token',
+    'valid_id_path',
+])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * Get the adopter profile for this user.
-     */
     public function adopterProfile(): HasOne
     {
         return $this->hasOne(AdopterProfile::class);
     }
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    public function adoptionApplications(): HasMany
+    {
+        return $this->hasMany(AdoptionApplication::class);
+    }
+
     protected function casts(): array
     {
         return [
             'password' => 'hashed',
         ];
-    }
-
-    /**
-     * Adoption applications submitted by this user.
-     */
-    public function adoptionApplications(): HasMany
-    {
-        return $this->hasMany(AdoptionApplication::class);
     }
 }

@@ -11,19 +11,13 @@ use App\Http\Controllers\AdminAdoptionRecordController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdopterController;
+use App\Http\Controllers\AdminAccountApprovalController;
 use App\Models\Pet;
 use App\Models\User;
 use App\Models\AdoptionApplication;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-
-
-/*
-|--------------------------------------------------------------------------
-| HOME PAGE
-|--------------------------------------------------------------------------
-*/
 
 Route::get('/', function () {
 
@@ -76,6 +70,22 @@ Route::get('/pets/{pet}', [PetController::class, 'show'])
 */
 
 Route::middleware('auth')->group(function () {
+
+    Route::get('/account-pending', function () {
+
+        $user = Auth::user();
+
+        if (! $user || $user->role !== 'adopter') {
+            abort(403);
+        }
+
+        if ($user->approval_status === 'Approved') {
+            return redirect()->route('adopter.dashboard');
+        }
+
+        return view('auth.account-pending');
+
+    })->middleware('auth')->name('account.pending');
 
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
@@ -188,6 +198,33 @@ Route::middleware('admin')->group(function () {
         '/admin/adopters/{adopter}/assessment-edit-request',
         [AdminAdopterController::class, 'reviewEditRequest']
     )->name('admin.adopters.review-edit-request');
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADOPTER ACCOUNT APPROVALS
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/admin/adopter-approvals',
+        [AdminAccountApprovalController::class, 'index']
+    )->name('admin.account-approvals.index');
+
+    Route::get(
+        '/admin/adopter-approvals/{user}/id',
+        [AdminAccountApprovalController::class, 'showId']
+    )->name('admin.account-approvals.id');
+
+    Route::post(
+        '/admin/adopter-approvals/{user}',
+        [AdminAccountApprovalController::class, 'review']
+    )->name('admin.account-approvals.review');
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADOPTION RECORDS
+    |--------------------------------------------------------------------------
+    */
 
     Route::get(
         '/admin/adoption-records',

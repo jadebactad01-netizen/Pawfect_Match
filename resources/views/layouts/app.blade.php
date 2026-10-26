@@ -208,6 +208,20 @@
                     </a>
 
 
+                    <!-- ACCOUNT APPROVALS -->
+                    <a
+                        href="{{ route('admin.account-approvals.index') }}"
+                        class="rounded-lg px-3 py-2 font-medium
+                            {{
+                                request()->routeIs('admin.account-approvals.*')
+                                    ? 'bg-orange-100 text-orange-600'
+                                    : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                            }}"
+                    >
+                        Account Approvals
+                    </a>
+
+
                     <a
                         href="{{ route('admin.applications.index') }}"
                         class="rounded-lg px-3 py-2 font-medium
@@ -483,6 +497,20 @@
                     </a>
 
 
+                    <!-- ACCOUNT APPROVALS -->
+                    <a
+                        href="{{ route('admin.account-approvals.index') }}"
+                        class="rounded-lg px-3 py-2 font-medium
+                            {{
+                                request()->routeIs('admin.account-approvals.*')
+                                    ? 'bg-orange-100 text-orange-600'
+                                    : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                            }}"
+                    >
+                        Account Approvals
+                    </a>
+
+
                     <a
                         href="{{ route('admin.applications.index') }}"
                         class="rounded-lg px-3 py-2 font-medium
@@ -635,7 +663,7 @@
 
                 <h3 class="mb-4 flex items-center gap-2
                            text-xl font-bold text-white">
-                           
+
                     Pawfect Match
 
                 </h3>
