@@ -6,11 +6,26 @@ use App\Models\AdoptionApplication;
 use App\Models\AdopterProfile;
 use App\Models\Pet;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-    public function dashboard()
+    public function dashboard(Request $request)
     {
+        // Validate the graph date filters.
+        $validated = $request->validate([
+            'date_from' => ['nullable', 'date'],
+            'date_to' => [
+                'nullable',
+                'date',
+                'after_or_equal:date_from',
+            ],
+        ]);
+
+        $dateFrom = $validated['date_from'] ?? '';
+        $dateTo = $validated['date_to'] ?? '';
+
+        // All-time dashboard counts.
         $pendingApplications = AdoptionApplication::whereHas(
             'compatibilityAssessment'
         )
@@ -37,6 +52,39 @@ class AdminController extends Controller
             'adopter'
         )->count();
 
+        // Graph data filtered by application submission date.
+        $chartQuery = AdoptionApplication::query();
+
+        if ($dateFrom) {
+            $chartQuery->whereDate(
+                'created_at',
+                '>=',
+                $dateFrom
+            );
+        }
+
+        if ($dateTo) {
+            $chartQuery->whereDate(
+                'created_at',
+                '<=',
+                $dateTo
+            );
+        }
+
+        $chartPending = (clone $chartQuery)
+            ->where('status', 'Pending')
+            ->whereHas('compatibilityAssessment')
+            ->count();
+
+        $chartApproved = (clone $chartQuery)
+            ->where('status', 'Approved')
+            ->count();
+
+        $chartRejected = (clone $chartQuery)
+            ->where('status', 'Rejected')
+            ->count();
+
+        // Recent pending applications.
         $recentPendingApplications = AdoptionApplication::with([
             'user',
             'pet',
@@ -47,6 +95,7 @@ class AdminController extends Controller
             ->take(5)
             ->get();
 
+        // Pending compatibility edit requests.
         $pendingEditRequests = AdopterProfile::with('user')
             ->where('edit_request_status', 'Pending')
             ->whereHas('user', function ($query) {
@@ -62,7 +111,12 @@ class AdminController extends Controller
             'availablePets',
             'totalAdopters',
             'recentPendingApplications',
-            'pendingEditRequests'
+            'pendingEditRequests',
+            'chartPending',
+            'chartApproved',
+            'chartRejected',
+            'dateFrom',
+            'dateTo'
         ));
     }
 }
