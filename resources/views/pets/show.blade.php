@@ -19,347 +19,302 @@
         urlencode($shareMessage);
 @endphp
 
-<section class="bg-orange-50">
-    <div class="mx-auto max-w-7xl px-6 pt-10">
+<section class="min-h-screen bg-orange-50 py-10">
 
-        <a href="{{ route('pets.index') }}"
-           class="font-semibold text-orange-500 hover:text-orange-600">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6">
+
+        {{-- BACK BUTTON --}}
+        <a
+            href="{{ route('pets.index') }}"
+            class="inline-flex items-center gap-2 font-semibold text-orange-500 hover:text-orange-600"
+        >
             ← Back to Available Pets
         </a>
 
-    </div>
-</section>
-
-@if (session('success') || session('error'))
-
-    <div class="bg-orange-50 px-6 pt-6">
-        <div class="mx-auto max-w-7xl">
-
-            @if (session('success'))
-                <div class="rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-green-700">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div class="rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-red-700">
-                    {{ session('error') }}
-                </div>
-            @endif
-
-        </div>
-    </div>
-
-@endif
-
-{{-- PET PROFILE --}}
-<section class="bg-orange-50 py-12">
-
-    <div class="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-2">
-
-        {{-- PET IMAGE --}}
-        <div>
-            <div class="overflow-hidden rounded-3xl bg-orange-100">
-
-                @if ($pet->photo)
-                    <img
-                        src="{{ asset('storage/' . $pet->photo) }}"
-                        alt="{{ $pet->name }}"
-                        class="h-[400px] w-full object-cover lg:h-[500px]"
-                    >
-                @else
-                    <div class="flex min-h-[400px] items-center justify-center text-gray-400">
-                        No photo available
-                    </div>
-                @endif
-
+        {{-- NOTIFICATIONS --}}
+        @if (session('success'))
+            <div class="mt-6 rounded-xl border border-green-200 bg-green-50 p-4 text-green-700">
+                {{ session('success') }}
             </div>
-        </div>
+        @endif
 
-        {{-- PET INFORMATION --}}
-        <div>
-
-            <span class="inline-block rounded-full px-4 py-2 text-sm font-semibold
-                {{ $pet->status === 'Available'
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-red-100 text-red-700' }}">
-                {{ $pet->status }}
-            </span>
-
-            <h1 class="mt-4 text-4xl font-bold text-gray-900 sm:text-5xl">
-                {{ $pet->name }}
-            </h1>
-
-            <p class="mt-5 text-lg leading-8 text-gray-600">
-                {{ $pet->description }}
-            </p>
-
-            {{-- BASIC INFORMATION --}}
-            <div class="mt-8 grid grid-cols-2 gap-4">
-
-                @foreach ([
-                    'Type' => $pet->type,
-                    'Sex' => $pet->sex,
-                    'Age' => $pet->age,
-                    'Adoption Status' => $pet->status,
-                ] as $label => $value)
-
-                    <div class="rounded-2xl bg-white p-5 shadow-sm">
-
-                        <p class="text-sm text-gray-500">
-                            {{ $label }}
-                        </p>
-
-                        <p class="mt-1 font-bold text-gray-900">
-                            {{ $value }}
-                        </p>
-
-                    </div>
-
-                @endforeach
-
+        @if (session('error'))
+            <div class="mt-6 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
+                {{ session('error') }}
             </div>
+        @endif
 
-            {{-- PET INTAKE INFORMATION --}}
-            <div class="mt-8">
+        <div class="mt-8 rounded-3xl bg-white p-4 shadow-sm sm:p-6">
+            <div class="grid gap-8 lg:grid-cols-2">
 
-                <h2 class="text-xl font-bold text-gray-900">
-                    Pet Intake Details
-                </h2>
+                {{-- LEFT SIDE --}}
+                <div class="lg:pt-6">
 
-                <div class="mt-4 grid grid-cols-2 gap-4">
-
-                    <div class="rounded-2xl bg-white p-5 shadow-sm">
-                        <p class="text-sm text-gray-500">
-                            Pet Origin
-                        </p>
-
-                        <p class="mt-1 font-bold text-gray-900">
-                            {{ $pet->intake_type ?: 'Not recorded' }}
-                        </p>
+                    {{-- PET IMAGE --}}
+                    <div class="overflow-hidden rounded-2xl bg-orange-100">
+                        @if ($pet->photo)
+                            <img
+                                src="{{ asset('storage/' . $pet->photo) }}"
+                                alt="{{ $pet->name }}"
+                                class="h-[80px] w-full object-cover object-center sm:h-[380px] lg:h-[500px]"
+                            >
+                        @else
+                            <div class="flex h-[280px] items-center justify-center text-gray-400 sm:h-[380px] lg:h-[500px]">
+                                No photo available
+                            </div>
+                        @endif
                     </div>
 
-                    <div class="rounded-2xl bg-white p-5 shadow-sm">
-                        <p class="text-sm text-gray-500">
-                            Date Rescued / Surrendered
-                        </p>
-
-                        <p class="mt-1 font-bold text-gray-900">
-                            {{ $pet->intake_date?->format('M d, Y') ?? 'Not recorded' }}
-                        </p>
-                    </div>
-
-                </div>
-            </div>
-
-            {{-- VACCINATION INFORMATION --}}
-            <div class="mt-8">
-
-                <h2 class="text-xl font-bold text-gray-900">
-                    Vaccination Details
-                </h2>
-
-                <div class="mt-4 grid grid-cols-2 gap-4">
-
-                    <div class="rounded-2xl bg-white p-5 shadow-sm">
-                        <p class="text-sm text-gray-500">
-                            Vaccination Type
-                        </p>
-
-                        <p class="mt-1 font-bold text-gray-900">
-                            {{ $pet->vaccination_type ?: 'Not recorded' }}
-                        </p>
-                    </div>
-
-                    <div class="rounded-2xl bg-white p-5 shadow-sm">
-                        <p class="text-sm text-gray-500">
-                            Vaccination Date
-                        </p>
-
-                        <p class="mt-1 font-bold text-gray-900">
-                            {{ $pet->vaccination_date?->format('M d, Y') ?? 'Not recorded' }}
-                        </p>
-                    </div>
-
-                </div>
-            </div>
-
-            {{-- ADOPTION BUTTONS --}}
-            <div class="mt-8 flex flex-wrap gap-4">
-
-                @if ($pet->status === 'Available')
-
-                    @guest
+                    {{-- SHARE BUTTONS --}}
+                    <div class="mt-5 flex flex-wrap items-center gap-4">
 
                         <a
-                            href="{{ route('login', ['pet' => $pet->id]) }}"
-                            class="rounded-full border border-orange-500 bg-white px-7 py-3 font-semibold text-orange-500 hover:bg-orange-50"
+                            href="{{ $facebookShare }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-2xl font-bold text-white hover:bg-blue-700"
+                            title="Share on Facebook"
                         >
-                            Log In to Apply
+                            f
                         </a>
 
-                    @else
+                        <a
+                            href="{{ $whatsappShare }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="flex h-14 w-14 items-center justify-center rounded-full bg-green-600 text-lg font-bold text-white hover:bg-green-700"
+                            title="Share on WhatsApp"
+                        >
+                            W
+                        </a>
 
-                        @if (auth()->user()->role === 'adopter')
+                        <button
+                            type="button"
+                            onclick="copyPetLink()"
+                            class="flex h-14 w-14 items-center justify-center rounded-full border-4 border-black bg-white text-2xl hover:bg-gray-100"
+                            title="Copy Pet Link"
+                        >
+                            🔗
+                        </button>
 
-                            @if ($profile)
+                    </div>
 
-                                @if ($existingApplication)
-
-                                    @if (! $existingApplication->compatibilityAssessment)
-
-                                        <a
-                                            href="{{ route('compatibility-assessments.create', $existingApplication) }}"
-                                            class="rounded-full border border-orange-300 bg-orange-50 px-7 py-3 font-semibold text-orange-700 hover:bg-orange-100"
-                                        >
-                                            Continue Compatibility Assessment
-                                        </a>
-
-                                    @else
-
-                                        <a
-                                            href="{{ route('adoption-applications.index') }}"
-                                            class="rounded-full border px-7 py-3 font-semibold
-                                                @if ($existingApplication->status === 'Approved')
-                                                    border-green-300 bg-green-50 text-green-700 hover:bg-green-100
-                                                @elseif ($existingApplication->status === 'Rejected')
-                                                    border-red-300 bg-red-50 text-red-700 hover:bg-red-100
-                                                @else
-                                                    border-yellow-300 bg-yellow-50 text-yellow-700 hover:bg-yellow-100
-                                                @endif"
-                                        >
-                                            Already Applied ({{ $existingApplication->status }})
-                                        </a>
-
-                                    @endif
-
-                                @else
-
-                                    <a
-                                        href="{{ route('adoption-applications.create', $pet) }}"
-                                        class="rounded-full border border-orange-500 bg-white px-7 py-3 font-semibold text-orange-500 hover:bg-orange-50"
-                                    >
-                                        Apply for Adoption
-                                    </a>
-
-                                @endif
-
-                            @else
-
-                                <a
-                                    href="{{ route('profile.edit') }}"
-                                    class="rounded-full border border-orange-500 bg-white px-7 py-3 font-semibold text-orange-500 hover:bg-orange-50"
-                                >
-                                    Complete Profile to Apply
-                                </a>
-
-                            @endif
-
-                        @endif
-
-                    @endguest
-
-                @endif
-
-            </div>
-
-            {{-- SOCIAL MEDIA SHARING --}}
-            <div class="mt-8 rounded-2xl bg-white p-6 shadow-sm">
-
-                <h2 class="text-xl font-bold text-gray-900">
-                    Share {{ $pet->name }}'s Profile
-                </h2>
-
-                <p class="mt-2 text-sm text-gray-600">
-                    Help {{ $pet->name }} reach more people by sharing
-                    this pet's profile with your friends and family.
-                </p>
-
-                <div class="mt-5 flex flex-wrap gap-3">
-
-                    {{-- FACEBOOK --}}
-                    <a
-                        href="{{ $facebookShare }}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700"
-                    >
-                        Share on Facebook
-                    </a>
-
-                    {{-- WHATSAPP --}}
-                    <a
-                        href="{{ $whatsappShare }}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="rounded-full bg-green-600 px-5 py-3 text-sm font-semibold text-white hover:bg-green-700"
-                    >
-                        Share on WhatsApp
-                    </a>
-
-                    {{-- COPY LINK --}}
-                    <button
-                        type="button"
-                        id="copy-pet-link"
-                        onclick="copyPetLink()"
-                        class="rounded-full border border-orange-500 px-5 py-3 text-sm font-semibold text-orange-600 hover:bg-orange-50"
-                    >
-                        Copy Pet Link
-                    </button>
-
-                </div>
-
-                <div class="mt-5">
-
-                    <label for="pet-share-url" class="text-sm font-semibold text-gray-700">
-                        Shareable Pet Link
-                    </label>
-
+                    {{-- HIDDEN SHARE LINK --}}
                     <input
                         type="text"
                         id="pet-share-url"
                         value="{{ $petUrl }}"
                         readonly
-                        onclick="this.select()"
-                        class="mt-2 w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-sm text-gray-600"
+                        class="sr-only"
                     >
 
-                    <p id="copy-message" class="mt-2 text-sm text-green-600" role="status"></p>
+                    <p
+                        id="copy-message"
+                        class="mt-3 text-sm text-green-600"
+                        role="status"
+                    ></p>
+
+                </div>
+
+                {{-- RIGHT SIDE --}}
+                <div>
+
+                    {{-- STATUS --}}
+                    <span class="inline-block rounded-full px-4 py-2 text-sm font-semibold
+                        {{ $pet->status === 'Available'
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-red-100 text-red-700' }}">
+                        {{ $pet->status }}
+                    </span>
+
+                    {{-- NAME --}}
+                    <h1 class="mt-4 text-4xl font-bold text-gray-900">
+                        {{ $pet->name }}
+                    </h1>
+
+                    {{-- DESCRIPTION --}}
+                    <p class="mt-2 text-lg text-gray-600">
+                        {{ $pet->description }}
+                    </p>
+
+                    {{-- BASIC INFO --}}
+                    <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+
+                        <div class="rounded-xl bg-orange-50 p-4">
+                            <p class="text-sm text-gray-500">Pet Type</p>
+                            <p class="mt-1 text-lg font-bold text-gray-900">
+                                {{ $pet->type }}
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl bg-orange-50 p-4">
+                            <p class="text-sm text-gray-500">Sex</p>
+                            <p class="mt-1 text-lg font-bold text-gray-900">
+                                {{ $pet->sex }}
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl bg-orange-50 p-4">
+                            <p class="text-sm text-gray-500">Age</p>
+                            <p class="mt-1 text-lg font-bold text-gray-900">
+                                {{ $pet->age }}
+                            </p>
+                        </div>
+
+                    </div>
+
+                    {{-- PET INTAKE DETAILS --}}
+                    <div class="mt-8">
+                        <h2 class="text-2xl font-bold text-gray-900">
+                            Pet Intake Details
+                        </h2>
+
+                        <p class="mt-1 text-sm text-gray-500">
+                            Information about the pet's arrival at the shelter
+                        </p>
+
+                        <div class="mt-4 space-y-4">
+
+                            <div class="flex items-center justify-between border-b border-gray-200 pb-3">
+                                <p class="text-sm text-gray-500">Pet Origin</p>
+                                <p class="font-semibold text-gray-900">
+                                    {{ $pet->intake_type ?: 'Not recorded' }}
+                                </p>
+                            </div>
+
+                            <div class="flex items-center justify-between border-b border-gray-200 pb-3">
+                                <p class="text-sm text-gray-500">
+                                    Date Rescued / Surrendered
+                                </p>
+                                <p class="font-semibold text-gray-900">
+                                    {{ $pet->intake_date?->format('M d, Y') ?? 'Not recorded' }}
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {{-- VACCINATION DETAILS --}}
+                    <div class="mt-8">
+                        <h2 class="text-2xl font-bold text-gray-900">
+                            Vaccination Details
+                        </h2>
+
+                        <p class="mt-1 text-sm text-gray-500">
+                            Available vaccination records for this pet
+                        </p>
+
+                        <div class="mt-4 space-y-4">
+
+                            <div class="flex items-center justify-between border-b border-gray-200 pb-3">
+                                <p class="text-sm text-gray-500">Vaccination Type</p>
+                                <p class="font-semibold text-gray-900">
+                                    {{ $pet->vaccination_type ?: 'Not recorded' }}
+                                </p>
+                            </div>
+
+                            <div class="flex items-center justify-between border-b border-gray-200 pb-3">
+                                <p class="text-sm text-gray-500">Vaccination Date</p>
+                                <p class="font-semibold text-gray-900">
+                                    {{ $pet->vaccination_date?->format('M d, Y') ?? 'Not recorded' }}
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {{-- APPLY BUTTON --}}
+                    <div class="mt-8">
+
+                        @if ($pet->status === 'Available')
+
+                            @guest
+
+                                <a
+                                    href="{{ route('login', ['pet' => $pet->id]) }}"
+                                    class="inline-block rounded-full bg-orange-500 px-8 py-3 font-semibold text-white hover:bg-orange-600"
+                                >
+                                    Log In to Apply
+                                </a>
+
+                            @else
+
+                                @if (auth()->user()->role === 'adopter')
+
+                                    @if ($profile)
+
+                                        @if ($existingApplication)
+
+                                            @if (! $existingApplication->compatibilityAssessment)
+
+                                                <a
+                                                    href="{{ route('compatibility-assessments.create', $existingApplication) }}"
+                                                    class="inline-block rounded-full bg-orange-500 px-8 py-3 font-semibold text-white hover:bg-orange-600"
+                                                >
+                                                    Continue Compatibility Assessment
+                                                </a>
+
+                                            @else
+
+                                                <a
+                                                    href="{{ route('adoption-applications.index') }}"
+                                                    class="inline-block rounded-full px-8 py-3 font-semibold
+                                                        @if ($existingApplication->status === 'Approved')
+                                                            bg-green-100 text-green-700 hover:bg-green-200
+                                                        @elseif ($existingApplication->status === 'Rejected')
+                                                            bg-red-100 text-red-700 hover:bg-red-200
+                                                        @else
+                                                            bg-yellow-100 text-yellow-700 hover:bg-yellow-200
+                                                        @endif"
+                                                >
+                                                    Already Applied ({{ $existingApplication->status }})
+                                                </a>
+
+                                            @endif
+
+                                        @else
+
+                                            <a
+                                                href="{{ route('adoption-applications.create', $pet) }}"
+                                                class="inline-block rounded-full bg-orange-500 px-8 py-3 font-semibold text-white hover:bg-orange-600"
+                                            >
+                                                Apply for Adoption
+                                            </a>
+
+                                        @endif
+
+                                    @else
+
+                                        <a
+                                            href="{{ route('profile.edit') }}"
+                                            class="inline-block rounded-full bg-orange-500 px-8 py-3 font-semibold text-white hover:bg-orange-600"
+                                        >
+                                            Complete Profile to Apply
+                                        </a>
+
+                                    @endif
+
+                                @endif
+
+                            @endguest
+
+                        @else
+
+                            <p class="inline-block rounded-xl bg-gray-100 px-5 py-3 font-semibold text-gray-600">
+                                This pet is currently not available for adoption.
+                            </p>
+
+                        @endif
+
+                        <p class="mt-4 text-sm text-gray-500">
+                            An approved adopter account is required to submit an adoption application.
+                        </p>
+
+                    </div>
 
                 </div>
 
             </div>
-
-            <p class="mt-4 text-sm text-gray-500">
-                You will need an adopter account before submitting
-                an adoption application.
-            </p>
-
-        </div>
-
-    </div>
-
-</section>
-
-{{-- ABOUT THIS PET --}}
-<section class="bg-white py-16">
-
-    <div class="mx-auto max-w-7xl px-6">
-
-        <div class="max-w-3xl">
-
-            <p class="font-semibold text-orange-500">
-                Pet Profile
-            </p>
-
-            <h2 class="mt-2 text-3xl font-bold text-gray-900">
-                About {{ $pet->name }}
-            </h2>
-
-            <p class="mt-5 leading-8 text-gray-600">
-                {{ $pet->description }}
-            </p>
-
         </div>
 
     </div>
@@ -375,19 +330,23 @@
             if (navigator.clipboard && window.isSecureContext) {
                 await navigator.clipboard.writeText(input.value);
             } else {
-                input.select();
-                const copied = document.execCommand('copy');
+                const tempInput = document.createElement('input');
+                tempInput.value = input.value;
+                document.body.appendChild(tempInput);
+                tempInput.select();
 
-                if (! copied) {
-                    message.textContent = 'Please select and copy the link manually.';
+                const copied = document.execCommand('copy');
+                document.body.removeChild(tempInput);
+
+                if (!copied) {
+                    message.textContent = 'Please copy the link manually.';
                     return;
                 }
             }
 
             message.textContent = 'Pet link copied successfully!';
         } catch (error) {
-            input.select();
-            message.textContent = 'Please select and copy the link manually.';
+            message.textContent = 'Please copy the link manually.';
         }
     }
 </script>
