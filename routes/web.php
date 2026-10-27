@@ -17,6 +17,7 @@ use App\Models\User;
 use App\Models\AdoptionApplication;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
 Route::get('/', function () {
@@ -85,7 +86,78 @@ Route::middleware('auth')->group(function () {
 
         return view('auth.account-pending');
 
-    })->middleware('auth')->name('account.pending');
+    })->name('account.pending');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | RESUBMIT VALID ID AFTER REJECTION
+    |--------------------------------------------------------------------------
+    */
+
+    Route::post('/account-pending/resubmit', function (Request $request) {
+
+        $user = $request->user();
+
+        if (
+            ! $user
+            || $user->role !== 'adopter'
+            || $user->approval_status !== 'Rejected'
+        ) {
+            abort(403);
+        }
+
+        // Use the same file requirements as registration.
+        $validated = $request->validate([
+            'valid_id' => [
+                'required',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:5120',
+            ],
+        ]);
+
+        // Save the replacement ID privately.
+        $newPath = $validated['valid_id']->store(
+            'valid-ids',
+            'local'
+        );
+
+        if (! $newPath) {
+            return back()->withErrors([
+                'valid_id' => 'Unable to upload the ID. Please try again.',
+            ]);
+        }
+
+        $oldPath = $user->valid_id_path;
+
+        try {
+            // Return the same account to Pending for another review.
+            $user->update([
+                'valid_id_path' => $newPath,
+                'approval_status' => 'Pending',
+                'rejection_reason' => null,
+            ]);
+        } catch (\Throwable $e) {
+            Storage::disk('local')->delete($newPath);
+
+            throw $e;
+        }
+
+        // Remove the previous rejected ID after the new ID is saved.
+        if ($oldPath && $oldPath !== $newPath) {
+            Storage::disk('local')->delete($oldPath);
+        }
+
+        return redirect()
+            ->route('account.pending')
+            ->with(
+                'success',
+                'Your valid ID has been resubmitted successfully. Your account is now pending approval.'
+            );
+
+    })->name('account.resubmit');
+
 
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
@@ -199,6 +271,7 @@ Route::middleware('admin')->group(function () {
         [AdminAdopterController::class, 'reviewEditRequest']
     )->name('admin.adopters.review-edit-request');
 
+
     /*
     |--------------------------------------------------------------------------
     | ADOPTER ACCOUNT APPROVALS
@@ -220,6 +293,7 @@ Route::middleware('admin')->group(function () {
         [AdminAccountApprovalController::class, 'review']
     )->name('admin.account-approvals.review');
 
+
     /*
     |--------------------------------------------------------------------------
     | ADOPTION RECORDS
@@ -240,6 +314,7 @@ Route::middleware('admin')->group(function () {
         '/admin/dashboard',
         [AdminController::class, 'dashboard']
     )->name('admin.dashboard');
+
 
     /*
     |--------------------------------------------------------------------------

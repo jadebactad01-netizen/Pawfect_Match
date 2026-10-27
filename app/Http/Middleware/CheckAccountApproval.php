@@ -19,6 +19,7 @@ class CheckAccountApproval
             && $user->role === 'adopter'
             && $user->approval_status !== 'Approved'
             && ! $request->routeIs('account.pending')
+            && ! $request->routeIs('account.resubmit')
             && ! $request->is('logout')
         ) {
             return redirect()->route('account.pending');
