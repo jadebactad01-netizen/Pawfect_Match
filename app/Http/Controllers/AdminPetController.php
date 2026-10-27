@@ -12,7 +12,9 @@ class AdminPetController extends Controller
     {
         $search = $request->query('search');
 
-        $query = Pet::latest();
+        // Exclude adopted pets from Manage Pets.
+        $query = Pet::where('status', '!=', 'Adopted')
+            ->latest();
 
         if ($search) {
             $query->where(
@@ -147,7 +149,7 @@ class AdminPetController extends Controller
                 'max:5120',
             ],
 
-            // New pet intake information
+            // Pet intake information.
             'intake_type' => [
                 'nullable',
                 'required_with:intake_date',
@@ -161,7 +163,7 @@ class AdminPetController extends Controller
                 'before_or_equal:today',
             ],
 
-            // New vaccination information
+            // Vaccination information.
             'vaccination_type' => [
                 'nullable',
                 'required_with:vaccination_date',

@@ -52,6 +52,7 @@
 
                     {{-- PET IMAGE --}}
                     <div class="overflow-hidden rounded-2xl bg-orange-100">
+
                         @if ($pet->photo)
                             <img
                                 src="{{ asset('storage/' . $pet->photo) }}"
@@ -63,6 +64,7 @@
                                 No photo available
                             </div>
                         @endif
+
                     </div>
 
                     {{-- SHARE BUTTONS --}}
@@ -119,15 +121,15 @@
                 {{-- RIGHT SIDE --}}
                 <div>
 
-                    {{-- STATUS --}}
+                    {{-- PET STATUS --}}
                     <span class="inline-block rounded-full px-4 py-2 text-sm font-semibold
-                        {{ $pet->status === 'Available'
+                        {{ in_array($pet->status, ['Available', 'Adopted'])
                             ? 'bg-green-100 text-green-700'
                             : 'bg-red-100 text-red-700' }}">
                         {{ $pet->status }}
                     </span>
 
-                    {{-- NAME --}}
+                    {{-- PET NAME --}}
                     <h1 class="mt-4 text-4xl font-bold text-gray-900">
                         {{ $pet->name }}
                     </h1>
@@ -165,6 +167,7 @@
 
                     {{-- PET INTAKE DETAILS --}}
                     <div class="mt-8">
+
                         <h2 class="text-2xl font-bold text-gray-900">
                             Pet Intake Details
                         </h2>
@@ -176,7 +179,10 @@
                         <div class="mt-4 space-y-4">
 
                             <div class="flex items-center justify-between border-b border-gray-200 pb-3">
-                                <p class="text-sm text-gray-500">Pet Origin</p>
+                                <p class="text-sm text-gray-500">
+                                    Pet Origin
+                                </p>
+
                                 <p class="font-semibold text-gray-900">
                                     {{ $pet->intake_type ?: 'Not recorded' }}
                                 </p>
@@ -186,6 +192,7 @@
                                 <p class="text-sm text-gray-500">
                                     Date Rescued / Surrendered
                                 </p>
+
                                 <p class="font-semibold text-gray-900">
                                     {{ $pet->intake_date?->format('M d, Y') ?? 'Not recorded' }}
                                 </p>
@@ -196,6 +203,7 @@
 
                     {{-- VACCINATION DETAILS --}}
                     <div class="mt-8">
+
                         <h2 class="text-2xl font-bold text-gray-900">
                             Vaccination Details
                         </h2>
@@ -207,14 +215,20 @@
                         <div class="mt-4 space-y-4">
 
                             <div class="flex items-center justify-between border-b border-gray-200 pb-3">
-                                <p class="text-sm text-gray-500">Vaccination Type</p>
+                                <p class="text-sm text-gray-500">
+                                    Vaccination Type
+                                </p>
+
                                 <p class="font-semibold text-gray-900">
                                     {{ $pet->vaccination_type ?: 'Not recorded' }}
                                 </p>
                             </div>
 
                             <div class="flex items-center justify-between border-b border-gray-200 pb-3">
-                                <p class="text-sm text-gray-500">Vaccination Date</p>
+                                <p class="text-sm text-gray-500">
+                                    Vaccination Date
+                                </p>
+
                                 <p class="font-semibold text-gray-900">
                                     {{ $pet->vaccination_date?->format('M d, Y') ?? 'Not recorded' }}
                                 </p>
@@ -223,7 +237,7 @@
                         </div>
                     </div>
 
-                    {{-- APPLY BUTTON --}}
+                    {{-- ADOPTION STATUS AND ACTION --}}
                     <div class="mt-8">
 
                         @if ($pet->status === 'Available')
@@ -298,17 +312,21 @@
 
                             @endguest
 
+                        @elseif ($pet->status === 'Adopted')
+
+                            {{-- NEW: MESSAGE FOR ADOPTED PETS --}}
+                            <p class="inline-block rounded-xl bg-green-100 px-5 py-3 font-semibold text-green-700">
+                                This pet has already been adopted.
+                            </p>
+
                         @else
 
+                            {{-- EXISTING MESSAGE FOR UNAVAILABLE PETS --}}
                             <p class="inline-block rounded-xl bg-gray-100 px-5 py-3 font-semibold text-gray-600">
                                 This pet is currently not available for adoption.
                             </p>
 
                         @endif
-
-                        <p class="mt-4 text-sm text-gray-500">
-                            An approved adopter account is required to submit an adoption application.
-                        </p>
 
                     </div>
 
