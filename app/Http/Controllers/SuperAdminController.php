@@ -11,8 +11,22 @@ use Illuminate\Support\Facades\Hash;
 
 class SuperAdminController extends Controller
 {
-    public function dashboard()
+    public function dashboard(Request $request)
     {
+        // Date filters for the graph.
+        $validated = $request->validate([
+            'date_from' => ['nullable', 'date'],
+            'date_to' => [
+                'nullable',
+                'date',
+                'after_or_equal:date_from',
+            ],
+        ]);
+
+        $dateFrom = $validated['date_from'] ?? '';
+        $dateTo = $validated['date_to'] ?? '';
+
+        // System-wide statistics.
         $totalAdopters = User::where('role', 'adopter')->count();
 
         $totalAdministrators = User::where('role', 'admin')->count();
@@ -36,6 +50,39 @@ class SuperAdminController extends Controller
             'Rejected'
         )->count();
 
+        // Use the same graph filters as the Admin dashboard.
+        $chartQuery = AdoptionApplication::query();
+
+        if ($dateFrom) {
+            $chartQuery->whereDate(
+                'created_at',
+                '>=',
+                $dateFrom
+            );
+        }
+
+        if ($dateTo) {
+            $chartQuery->whereDate(
+                'created_at',
+                '<=',
+                $dateTo
+            );
+        }
+
+        $chartPending = (clone $chartQuery)
+            ->where('status', 'Pending')
+            ->whereHas('compatibilityAssessment')
+            ->count();
+
+        $chartApproved = (clone $chartQuery)
+            ->where('status', 'Approved')
+            ->count();
+
+        $chartRejected = (clone $chartQuery)
+            ->where('status', 'Rejected')
+            ->count();
+
+        // Recent application activity.
         $recentApplications = AdoptionApplication::with([
             'user',
             'pet',
@@ -64,7 +111,12 @@ class SuperAdminController extends Controller
                 'approvedApplications',
                 'rejectedApplications',
                 'recentApplications',
-                'pendingEditRequests'
+                'pendingEditRequests',
+                'chartPending',
+                'chartApproved',
+                'chartRejected',
+                'dateFrom',
+                'dateTo'
             )
         );
     }
