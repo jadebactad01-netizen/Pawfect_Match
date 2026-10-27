@@ -18,6 +18,7 @@ use Illuminate\Notifications\Notifiable;
     'role',
     'valid_id_path',
     'approval_status',
+    'rejection_reason',
 ])]
 #[Hidden([
     'password',

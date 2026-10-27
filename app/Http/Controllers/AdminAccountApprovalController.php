@@ -58,17 +58,30 @@ class AdminAccountApprovalController extends Controller
                 'required',
                 Rule::in(['Approved', 'Rejected']),
             ],
+
+            'rejection_reason' => [
+                'required_if:decision,Rejected',
+                'nullable',
+                'string',
+                'max:1000',
+            ],
         ]);
 
         $user->update([
             'approval_status' => $validated['decision'],
+
+            'rejection_reason' => $validated['decision'] === 'Rejected'
+                ? trim($validated['rejection_reason'])
+                : null,
         ]);
 
         return redirect()
             ->route('admin.account-approvals.index')
             ->with(
                 'success',
-                'Account ' . strtolower($validated['decision']) . ' successfully.'
+                'Account ' .
+                strtolower($validated['decision']) .
+                ' successfully.'
             );
     }
 }
