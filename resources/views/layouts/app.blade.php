@@ -655,101 +655,53 @@
 
     <footer class="bg-gray-900 text-gray-300">
 
-        <div class="mx-auto grid max-w-7xl gap-10 px-6 py-12
-                    md:grid-cols-3">
+        <div class="mx-auto max-w-7xl px-6 py-10">
 
-            <!-- Pawfect Match -->
-            <div>
+            <div class="flex flex-col gap-6
+                        md:flex-row md:items-center
+                        md:justify-between">
 
-                <h3 class="mb-4 flex items-center gap-2
-                           text-xl font-bold text-white">
+                {{-- PAWFECT MATCH BRANDING --}}
+                <div class="flex items-center gap-4">
 
-                    Pawfect Match
-
-                </h3>
-
-                <p class="leading-7 text-gray-400">
-                    Helping adopters find pets that better match
-                    their lifestyle and home environment.
-                </p>
-
-            </div>
-
-
-            <!-- Quick Links -->
-            <div>
-
-                <h3 class="mb-4 font-semibold text-white">
-                    Quick Links
-                </h3>
-
-                <div class="flex flex-col gap-3">
-
-                    <a
-                        href="{{ route('home') }}"
-                        class="hover:text-orange-400"
+                    <img
+                        src="{{ asset('images/pawfect-logo.png') }}"
+                        alt="Pawfect Match Logo"
+                        class="h-14 w-14 rounded-full object-cover"
                     >
-                        Home
-                    </a>
 
-                    <a
-                        href="{{ route('pets.index') }}"
-                        class="hover:text-orange-400"
-                    >
-                        Available Pets
-                    </a>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">
+                            Pawfect Match
+                        </h3>
 
-                    <a
-                        href="{{
-                            auth()->check()
-                            && auth()->user()->role === 'adopter'
-                                ? route('home', ['public' => 1]) . '#how-it-works'
-                                : route('home') . '#how-it-works'
-                        }}"
-                        class="hover:text-orange-400"
-                    >
-                        How It Works
-                    </a>
+                        <p class="mt-1 text-sm text-gray-400">
+                            Bayambang Animal Shelter
+                        </p>
+                    </div>
 
-                    <a
-                        href="{{
-                            auth()->check()
-                            && auth()->user()->role === 'adopter'
-                                ? route('home', ['public' => 1]) . '#about'
-                                : route('home') . '#about'
-                        }}"
-                        class="hover:text-orange-400"
-                    >
-                        About Us
-                    </a>
+                </div>
+
+                {{-- SHELTER LOCATION --}}
+                <div class="md:text-right">
+
+                    <p class="font-semibold text-white">
+                        Bayambang, Pangasinan
+                    </p>
+
+                    <p class="mt-2 text-sm text-gray-400">
+                        Give a pet a second chance at a loving home.
+                    </p>
 
                 </div>
 
             </div>
 
-
-            <!-- Shelter -->
-            <div>
-
-                <h3 class="mb-4 font-semibold text-white">
-                    Bayambang Animal Shelter
-                </h3>
-
-                <p class="leading-7 text-gray-400">
-                    Bayambang, Pangasinan
-                </p>
-
-                <p class="mt-2 text-gray-400">
-                    Give a pet a second chance at a loving home.
-                </p>
-
-            </div>
-
         </div>
 
-
-        <div class="border-t border-gray-800 px-6 py-5 text-center
-                    text-sm text-gray-500">
+        {{-- COPYRIGHT --}}
+        <div class="border-t border-gray-800 px-6 py-5
+                    text-center text-sm text-gray-500">
 
             © {{ date('Y') }} Pawfect Match.
             All rights reserved.
@@ -757,7 +709,6 @@
         </div>
 
     </footer>
-
 
     <!-- =========================
          SIMPLE MOBILE MENU SCRIPT
