@@ -58,11 +58,21 @@ class AdminPetController extends Controller
 
     public function edit(Pet $pet)
     {
+        // Prevent editing adopted pets.
+        if ($pet->status === 'Adopted') {
+            abort(403, 'Adopted pets cannot be edited.');
+        }
+
         return view('admin.pets.edit', compact('pet'));
     }
 
     public function update(Request $request, Pet $pet)
     {
+        // Prevent updating adopted pets.
+        if ($pet->status === 'Adopted') {
+            abort(403, 'Adopted pets cannot be updated.');
+        }
+
         $validated = $request->validate($this->petRules());
 
         $validated = $this->preparePetData($validated);
@@ -89,6 +99,11 @@ class AdminPetController extends Controller
 
     public function destroy(Pet $pet)
     {
+        // Prevent deleting adopted pets.
+        if ($pet->status === 'Adopted') {
+            abort(403, 'Adopted pets cannot be deleted.');
+        }
+
         if ($pet->photo) {
             Storage::disk('public')->delete($pet->photo);
         }
