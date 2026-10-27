@@ -169,7 +169,7 @@
 
                                 <span class="rounded-full px-3 py-1
                                             text-sm font-semibold
-                                            {{ $pet->status === 'Available'
+                                            {{ in_array($pet->status, ['Available', 'Adopted'])
                                                 ? 'bg-green-100 text-green-700'
                                                 : 'bg-red-100 text-red-700' }}">
 
