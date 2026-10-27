@@ -12,6 +12,8 @@
     ];
 
     $chartMax = max(1, $chartPending, $chartApproved, $chartRejected);
+    $monthlyMax = max(1, max(array_column($monthlyApplications, 'count')));
+    $monthlyTotal = array_sum(array_column($monthlyApplications, 'count'));
 @endphp
 
 <section class="min-h-screen bg-gray-50 py-10">
@@ -20,7 +22,6 @@
 
         {{-- WELCOME HEADER --}}
         <div class="rounded-3xl bg-orange-500 p-6 text-white shadow-sm sm:p-8">
-
             <p class="text-sm font-semibold text-orange-100">
                 System Administration
             </p>
@@ -37,10 +38,9 @@
             <p class="mt-4 text-sm text-orange-100">
                 {{ now()->format('l, F d, Y') }}
             </p>
-
         </div>
 
-        {{-- SYSTEM STATISTICS --}}
+        {{-- SYSTEM OVERVIEW --}}
         <div>
 
             <h2 class="mb-4 text-xl font-bold text-gray-900">
@@ -58,10 +58,8 @@
                         {{ $totalAdopters }}
                     </p>
 
-                    <a
-                        href="{{ route('admin.adopters.index') }}"
-                        class="mt-4 inline-block text-sm font-semibold text-orange-500 hover:text-orange-600"
-                    >
+                    <a href="{{ route('admin.adopters.index') }}"
+                       class="mt-4 inline-block text-sm font-semibold text-orange-500 hover:text-orange-600">
                         View Adopters →
                     </a>
                 </div>
@@ -75,10 +73,8 @@
                         {{ $totalAdministrators }}
                     </p>
 
-                    <a
-                        href="{{ route('super-admin.administrators.index') }}"
-                        class="mt-4 inline-block text-sm font-semibold text-orange-500 hover:text-orange-600"
-                    >
+                    <a href="{{ route('super-admin.administrators.index') }}"
+                       class="mt-4 inline-block text-sm font-semibold text-orange-500 hover:text-orange-600">
                         Manage Accounts →
                     </a>
                 </div>
@@ -92,10 +88,8 @@
                         {{ $totalPets }}
                     </p>
 
-                    <a
-                        href="{{ route('admin.pets.manage') }}"
-                        class="mt-4 inline-block text-sm font-semibold text-orange-500 hover:text-orange-600"
-                    >
+                    <a href="{{ route('admin.pets.manage') }}"
+                       class="mt-4 inline-block text-sm font-semibold text-orange-500 hover:text-orange-600">
                         Manage Pets →
                     </a>
                 </div>
@@ -115,20 +109,16 @@
                 </div>
 
             </div>
-
         </div>
 
-        {{-- APPLICATION GRAPH AND QUICK ACTIONS --}}
+        {{-- APPLICATION STATUS GRAPH AND QUICK ACTIONS --}}
         <div class="grid gap-6 lg:grid-cols-3">
 
-            {{-- BAR GRAPH --}}
             <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6 lg:col-span-2">
 
-                {{-- TITLE AND DATE FILTER --}}
                 <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
 
                     <div class="xl:w-[44%]">
-
                         <h2 class="text-xl font-bold leading-snug text-gray-900">
                             Adoption Application Statistics
                         </h2>
@@ -136,23 +126,19 @@
                         <p class="mt-1 text-sm text-gray-500">
                             Current application status distribution
                         </p>
-
                     </div>
 
-                    {{-- DATE FILTER --}}
+                    {{-- EXISTING DATE FILTER --}}
                     <form
                         action="{{ route('super-admin.dashboard') }}"
                         method="GET"
                         class="w-full xl:w-[56%]"
                     >
-
                         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
 
                             <div>
-                                <label
-                                    for="date_from"
-                                    class="mb-1 block text-xs font-semibold text-gray-600"
-                                >
+                                <label for="date_from"
+                                       class="mb-1 block text-xs font-semibold text-gray-600">
                                     From Date
                                 </label>
 
@@ -166,10 +152,8 @@
                             </div>
 
                             <div>
-                                <label
-                                    for="date_to"
-                                    class="mb-1 block text-xs font-semibold text-gray-600"
-                                >
+                                <label for="date_to"
+                                       class="mb-1 block text-xs font-semibold text-gray-600">
                                     To Date
                                 </label>
 
@@ -198,7 +182,6 @@
                         @enderror
 
                         <div class="mt-3 flex flex-wrap items-center gap-2">
-
                             <button
                                 type="submit"
                                 class="rounded-full bg-black px-5 py-2 text-xs font-semibold text-white hover:bg-gray-800"
@@ -212,22 +195,18 @@
                             >
                                 Reset
                             </a>
-
                         </div>
-
                     </form>
 
                 </div>
 
-                {{-- GRAPH BARS --}}
+                {{-- EXISTING STATUS GRAPH --}}
                 <div class="mt-7 space-y-5">
 
                     @foreach ($chartData as $bar)
-
                         <div>
 
                             <div class="mb-2 flex items-center justify-between">
-
                                 <span class="text-base font-semibold text-gray-700">
                                     {{ $bar['label'] }}
                                 </span>
@@ -235,7 +214,6 @@
                                 <span class="text-base font-bold text-gray-900">
                                     {{ $bar['count'] }}
                                 </span>
-
                             </div>
 
                             <div
@@ -246,28 +224,23 @@
                                 aria-valuemin="0"
                                 aria-valuemax="{{ $chartMax }}"
                             >
-
                                 <div
                                     class="h-full rounded-lg {{ $bar['color'] }}"
                                     @style([
                                         'width: ' . ($bar['count'] / $chartMax * 100) . '%'
                                     ])
                                 ></div>
-
                             </div>
 
                         </div>
-
                     @endforeach
 
                 </div>
 
                 @if ($chartPending + $chartApproved + $chartRejected === 0)
-
                     <p class="mt-5 rounded-lg bg-gray-50 p-4 text-center text-sm text-gray-500">
                         No applications found for the selected date range.
                     </p>
-
                 @endif
 
                 <p class="mt-6 text-xs text-gray-500">
@@ -290,48 +263,107 @@
 
                 <div class="mt-5 space-y-3">
 
-                    <a
-                        href="{{ route('super-admin.administrators.index') }}"
-                        class="flex items-center justify-between rounded-xl bg-orange-50 px-4 py-3 font-semibold text-orange-700 hover:bg-orange-100"
-                    >
+                    <a href="{{ route('super-admin.administrators.index') }}"
+                       class="flex items-center justify-between rounded-xl bg-orange-50 px-4 py-3 font-semibold text-orange-700 hover:bg-orange-100">
                         <span>Manage Administrators</span>
                         <span>→</span>
                     </a>
 
-                    <a
-                        href="{{ route('admin.pets.manage') }}"
-                        class="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 font-semibold text-gray-700 hover:bg-gray-100"
-                    >
+                    <a href="{{ route('admin.pets.manage') }}"
+                       class="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 font-semibold text-gray-700 hover:bg-gray-100">
                         <span>Manage Pets</span>
                         <span>→</span>
                     </a>
 
-                    <a
-                        href="{{ route('admin.applications.index') }}"
-                        class="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 font-semibold text-gray-700 hover:bg-gray-100"
-                    >
+                    <a href="{{ route('admin.applications.index') }}"
+                       class="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 font-semibold text-gray-700 hover:bg-gray-100">
                         <span>Review Applications</span>
                         <span>→</span>
                     </a>
 
-                    <a
-                        href="{{ route('admin.adoption-records.index') }}"
-                        class="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 font-semibold text-gray-700 hover:bg-gray-100"
-                    >
+                    <a href="{{ route('admin.adoption-records.index') }}"
+                       class="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 font-semibold text-gray-700 hover:bg-gray-100">
                         <span>Adoption Records</span>
                         <span>→</span>
                     </a>
 
-                    <a
-                        href="{{ route('admin.reports.index') }}"
-                        class="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 font-semibold text-gray-700 hover:bg-gray-100"
-                    >
+                    <a href="{{ route('admin.reports.index') }}"
+                       class="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 font-semibold text-gray-700 hover:bg-gray-100">
                         <span>Printable Reports</span>
                         <span>→</span>
                     </a>
 
                 </div>
+            </div>
 
+        </div>
+
+        {{-- NEW: MONTHLY ADOPTION APPLICATIONS GRAPH --}}
+        <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
+
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900">
+                        Monthly Adoption Applications
+                    </h2>
+
+                    <p class="mt-1 text-sm text-gray-500">
+                        Number of adoption applications submitted each month
+                    </p>
+                </div>
+
+                <span class="rounded-full bg-orange-50 px-4 py-2 text-sm font-semibold text-orange-600">
+                    Last 12 Months
+                </span>
+            </div>
+
+            <div class="mt-8 overflow-x-auto pb-2">
+
+                <div class="flex min-w-[620px] items-end gap-3">
+
+                    @foreach ($monthlyApplications as $month)
+                        <div class="flex min-w-0 flex-1 flex-col items-center">
+
+                            <span class="mb-2 text-xs font-bold text-gray-700">
+                                {{ $month['count'] }}
+                            </span>
+
+                            <div class="flex h-44 w-full items-end justify-center rounded-lg bg-gray-50 px-1">
+                                <div
+                                    class="w-full max-w-10 rounded-t-md bg-orange-400"
+                                    @style([
+                                        'height: ' . ($month['count'] / $monthlyMax * 100) . '%'
+                                    ])
+                                    title="{{ $month['label'] }} {{ $month['year'] }}: {{ $month['count'] }} applications"
+                                ></div>
+                            </div>
+
+                            <span class="mt-3 text-xs font-semibold text-gray-700">
+                                {{ $month['label'] }}
+                            </span>
+
+                            <span class="mt-1 text-xs text-gray-400">
+                                {{ $month['year'] }}
+                            </span>
+
+                        </div>
+                    @endforeach
+
+                </div>
+            </div>
+
+            <div class="mt-6 border-t border-gray-100 pt-4">
+                <p class="text-sm text-gray-600">
+                    <span class="font-bold text-orange-600">
+                        {{ $monthlyTotal }}
+                    </span>
+                    applications submitted in the last 12 calendar months.
+                </p>
+
+                <p class="mt-2 text-xs text-gray-500">
+                    Includes all application statuses. This graph is independent
+                    of the status graph's date filter.
+                </p>
             </div>
 
         </div>
@@ -358,17 +390,13 @@
             </div>
 
             @if ($pendingEditRequests->isEmpty())
-
                 <p class="mt-6 rounded-xl bg-gray-50 p-5 text-sm text-gray-500">
                     No pending assessment edit requests.
                 </p>
-
             @else
-
                 <div class="mt-5 overflow-x-auto">
 
                     <table class="w-full text-left text-sm">
-
                         <thead class="border-b bg-gray-50 text-gray-600">
                             <tr>
                                 <th class="px-4 py-3">Adopter</th>
@@ -379,11 +407,8 @@
                         </thead>
 
                         <tbody class="divide-y divide-gray-100">
-
                             @foreach ($pendingEditRequests as $profile)
-
                                 <tr>
-
                                     <td class="px-4 py-4 font-semibold text-gray-900">
                                         {{ $profile->user->name }}
                                     </td>
@@ -399,24 +424,17 @@
                                     </td>
 
                                     <td class="px-4 py-4 text-right">
-                                        <a
-                                            href="{{ route('admin.adopters.show', $profile->user) }}"
-                                            class="font-semibold text-orange-500 hover:text-orange-600"
-                                        >
+                                        <a href="{{ route('admin.adopters.show', $profile->user) }}"
+                                           class="font-semibold text-orange-500 hover:text-orange-600">
                                             Review Request →
                                         </a>
                                     </td>
-
                                 </tr>
-
                             @endforeach
-
                         </tbody>
 
                     </table>
-
                 </div>
-
             @endif
 
         </div>
@@ -425,7 +443,6 @@
         <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
 
             <div class="flex flex-wrap items-center justify-between gap-3">
-
                 <div>
                     <h2 class="text-xl font-bold text-gray-900">
                         Recent Application Activity
@@ -436,27 +453,20 @@
                     </p>
                 </div>
 
-                <a
-                    href="{{ route('admin.reports.index', ['type' => 'applications']) }}"
-                    class="text-sm font-semibold text-orange-500 hover:text-orange-600"
-                >
+                <a href="{{ route('admin.reports.index', ['type' => 'applications']) }}"
+                   class="text-sm font-semibold text-orange-500 hover:text-orange-600">
                     Full Report →
                 </a>
-
             </div>
 
             @if ($recentApplications->isEmpty())
-
                 <p class="mt-6 rounded-xl bg-gray-50 p-5 text-sm text-gray-500">
                     No application activity recorded yet.
                 </p>
-
             @else
 
                 <div class="mt-5 overflow-x-auto">
-
                     <table class="w-full text-left text-sm">
-
                         <thead class="border-b bg-gray-50 text-gray-600">
                             <tr>
                                 <th class="px-4 py-3">Adopter</th>
@@ -467,11 +477,8 @@
                         </thead>
 
                         <tbody class="divide-y divide-gray-100">
-
                             @foreach ($recentApplications as $application)
-
                                 <tr>
-
                                     <td class="px-4 py-4 font-semibold text-gray-900">
                                         {{ $application->user?->name ?? 'Unavailable' }}
                                     </td>
@@ -481,7 +488,6 @@
                                     </td>
 
                                     <td class="px-4 py-4">
-
                                         <span class="rounded-full px-3 py-1 text-xs font-semibold
                                             @if ($application->status === 'Approved')
                                                 bg-green-100 text-green-700
@@ -489,25 +495,18 @@
                                                 bg-red-100 text-red-700
                                             @else
                                                 bg-amber-100 text-amber-700
-                                            @endif"
-                                        >
+                                            @endif">
                                             {{ $application->status }}
                                         </span>
-
                                     </td>
 
                                     <td class="px-4 py-4 text-gray-600">
                                         {{ $application->created_at->format('M d, Y') }}
                                     </td>
-
                                 </tr>
-
                             @endforeach
-
                         </tbody>
-
                     </table>
-
                 </div>
 
             @endif
