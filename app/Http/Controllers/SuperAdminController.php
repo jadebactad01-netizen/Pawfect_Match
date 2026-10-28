@@ -7,6 +7,7 @@ use App\Models\AdoptionApplication;
 use App\Models\AdopterProfile;
 use App\Models\Pet;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class SuperAdminController extends Controller
@@ -21,17 +22,28 @@ class SuperAdminController extends Controller
         $dateFrom = $validated['date_from'] ?? '';
         $dateTo = $validated['date_to'] ?? '';
 
-        // Existing system statistics.
+        // SYSTEM OVERVIEW
         $totalAdopters = User::where('role', 'adopter')->count();
+
         $totalAdministrators = User::where('role', 'admin')->count();
+
         $totalPets = Pet::count();
+
         $availablePets = Pet::where('status', 'Available')->count();
 
-        $pendingApplications = AdoptionApplication::where('status', 'Pending')->count();
+        $pendingApplications = AdoptionApplication::where('status', 'Pending')
+            ->whereHas('compatibilityAssessment')
+            ->count();
+
         $approvedApplications = AdoptionApplication::where('status', 'Approved')->count();
+
         $rejectedApplications = AdoptionApplication::where('status', 'Rejected')->count();
 
-        // Existing filtered status graph.
+        $pendingAccountApprovals = User::where('role', 'adopter')
+            ->where('approval_status', 'Pending')
+            ->count();
+
+        // APPLICATION STATISTICS
         $chartQuery = AdoptionApplication::query();
 
         if ($dateFrom) {
@@ -48,12 +60,14 @@ class SuperAdminController extends Controller
             ->count();
 
         $chartApproved = (clone $chartQuery)
-            ->where('status', 'Approved')->count();
+            ->where('status', 'Approved')
+            ->count();
 
         $chartRejected = (clone $chartQuery)
-            ->where('status', 'Rejected')->count();
+            ->where('status', 'Rejected')
+            ->count();
 
-        // NEW: Same monthly statistics as the Admin dashboard.
+        // MONTHLY APPLICATIONS
         $monthlyStart = now()->startOfMonth()->subMonths(11);
 
         $monthlyCounts = AdoptionApplication::where(
@@ -78,18 +92,68 @@ class SuperAdminController extends Controller
             ];
         }
 
-        // Existing recent activity.
+        // RECENT APPLICATION ACTIVITY
         $recentApplications = AdoptionApplication::with(['user', 'pet'])
             ->latest()
             ->take(5)
             ->get();
 
-        // Existing compatibility edit requests.
+        // PENDING COMPATIBILITY EDIT REQUESTS
         $pendingEditRequests = AdopterProfile::with('user')
             ->where('edit_request_status', 'Pending')
             ->whereHas('user', fn ($query) => $query->where('role', 'adopter'))
             ->latest('updated_at')
             ->get();
+
+        // RECENT SHELTER ACTIVITY
+        $recentActivities = DB::table('shelter_activities')
+            ->orderByDesc('id')
+            ->limit(4)
+            ->get()
+            ->map(function ($activity) {
+
+                $link = match ($activity->activity_type) {
+                    'pet_added' =>
+                        route('pets.show', $activity->subject_id),
+
+                    'application_submitted' =>
+                        route('admin.applications.index'),
+
+                    'application_approved',
+                    'application_rejected' =>
+                        route('admin.adoption-records.show', $activity->subject_id),
+
+                    'account_approved',
+                    'account_rejected',
+                    'edit_requested',
+                    'edit_approved',
+                    'edit_rejected' =>
+                        route('admin.adopters.show', $activity->subject_id),
+
+                    default => route('super-admin.dashboard'),
+                };
+
+                $color = match ($activity->activity_type) {
+                    'application_approved',
+                    'account_approved',
+                    'edit_approved' => 'green',
+
+                    'application_rejected',
+                    'account_rejected',
+                    'edit_rejected' => 'red',
+
+                    'edit_requested' => 'amber',
+
+                    default => 'orange',
+                };
+
+                return [
+                    'title' => $activity->title,
+                    'description' => $activity->description,
+                    'link' => $link,
+                    'color' => $color,
+                ];
+            });
 
         return view('super-admin.dashboard', compact(
             'totalAdopters',
@@ -99,8 +163,10 @@ class SuperAdminController extends Controller
             'pendingApplications',
             'approvedApplications',
             'rejectedApplications',
+            'pendingAccountApprovals',
             'recentApplications',
             'pendingEditRequests',
+            'recentActivities',
             'chartPending',
             'chartApproved',
             'chartRejected',
