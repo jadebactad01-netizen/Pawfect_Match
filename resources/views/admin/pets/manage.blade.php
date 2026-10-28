@@ -2,259 +2,271 @@
 
 @section('title', 'Manage Pets - Pawfect Match')
 
-
 @section('content')
 
+<section class="min-h-screen bg-orange-50/40 py-10">
 
-<section class="bg-orange-50 py-12">
+    <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6">
 
-    <div class="mx-auto max-w-7xl px-6">
-
-        <div class="flex flex-wrap items-center
-                    justify-between gap-4">
+        {{-- PAGE HEADER --}}
+        <div class="flex flex-col gap-5 rounded-3xl border border-orange-200 bg-orange-100 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
 
             <div>
 
-                <p class="font-semibold text-orange-500">
+                <p class="text-xs font-semibold uppercase tracking-wider text-orange-600">
                     Shelter Management
                 </p>
 
-                <h1 class="mt-2 text-4xl font-bold text-gray-900">
+                <h1 class="mt-2 text-3xl font-bold text-gray-900">
                     Manage Pets
                 </h1>
 
-                <p class="mt-3 text-gray-600">
-                    Add and manage pets in the Pawfect Match system.
+                <p class="mt-3 text-sm leading-6 text-gray-600">
+                    Add, update, and manage pets registered in the Pawfect Match system.
                 </p>
 
             </div>
 
-
-            <a href="{{ route('admin.pets.add') }}"
-               class="rounded-full bg-orange-500
-                      px-6 py-3 font-semibold text-white
-                      hover:bg-orange-600">
-
+            <a
+                href="{{ route('admin.pets.add') }}"
+                class="inline-flex shrink-0 items-center justify-center rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+            >
                 + Add Pet
-
             </a>
 
         </div>
 
-    </div>
+        {{-- PET MANAGEMENT LIST --}}
+        <div class="rounded-2xl border border-orange-100 bg-white p-5 shadow-sm sm:p-6">
 
-</section>
+            {{-- SECTION HEADER --}}
+            <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
 
+                <div>
 
+                    <p class="text-xs font-semibold uppercase tracking-wider text-orange-500">
+                        Pet Records
+                    </p>
 
-<section class="bg-white py-12">
+                    <h2 class="mt-1 text-xl font-bold text-gray-900">
+                        Registered Pets
+                    </h2>
 
-    <div class="mx-auto max-w-7xl px-6">
+                    <p class="mt-1 text-sm text-gray-500">
+                        View and manage all non-adopted pets in the shelter.
+                    </p>
 
+                </div>
 
-        <!-- SUCCESS MESSAGE -->
-
-        @if (session('success'))
-
-            <div class="mb-6 rounded-2xl
-                        bg-green-100 px-5 py-4
-                        text-green-700">
-
-                {{ session('success') }}
+                <span class="rounded-full border border-orange-200 bg-orange-50 px-4 py-2 text-sm font-semibold text-orange-600">
+                    {{ $pets->count() }} {{ $pets->count() === 1 ? 'Pet' : 'Pets' }}
+                </span>
 
             </div>
 
-        @endif
+            {{-- SUCCESS MESSAGE --}}
+            @if (session('success'))
 
+                <div class="mb-5 rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-medium text-green-700">
+                    {{ session('success') }}
+                </div>
 
-        <!-- SEARCH -->
+            @endif
 
-        <form
-            action="{{ route('admin.pets.manage') }}"
-            method="GET"
-            class="mb-6 flex max-w-md"
-        >
-
-            <input
-                type="text"
-                name="search"
-                value="{{ request('search') }}"
-                placeholder="Search pet name..."
-                class="min-w-0 flex-1 rounded-l-xl
-                       border border-gray-300
-                       px-4 py-2 outline-none
-                       focus:border-orange-500"
+            {{-- SEARCH BAR --}}
+            <form
+                action="{{ route('admin.pets.manage') }}"
+                method="GET"
+                class="mb-5 flex w-full flex-wrap items-center gap-3 sm:flex-nowrap"
             >
 
-            <button
-                type="submit"
-                class="rounded-r-xl bg-orange-500
-                       px-5 py-2 font-semibold text-white
-                       hover:bg-orange-600"
-            >
-                Search
-            </button>
+                <input
+                    type="text"
+                    name="search"
+                    value="{{ $search }}"
+                    placeholder="Search pet name..."
+                    aria-label="Search pet name"
+                    class="min-w-0 flex-1 rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                >
 
-        </form>
+                <button
+                    type="submit"
+                    class="rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+                >
+                    Search
+                </button>
 
+                @if ($search)
 
-        <div class="overflow-x-auto rounded-2xl
-                    border border-gray-200">
+                    <a
+                        href="{{ route('admin.pets.manage') }}"
+                        class="rounded-full border border-orange-200 bg-white px-5 py-3 text-sm font-semibold text-gray-600 transition hover:bg-orange-50"
+                    >
+                        Clear
+                    </a>
 
-            <table class="min-w-full bg-white">
+                @endif
 
-                <thead class="bg-gray-50">
+            </form>
 
-                    <tr class="text-left text-sm text-gray-600">
+            {{-- PETS TABLE --}}
+            <div class="overflow-x-auto rounded-xl border border-orange-100">
 
-                        <th class="px-6 py-4">
-                            Name
-                        </th>
+                <table class="min-w-full bg-white text-left text-sm">
 
-                        <th class="px-6 py-4">
-                            Type
-                        </th>
-
-                        <th class="px-6 py-4">
-                            Sex
-                        </th>
-
-                        <th class="px-6 py-4">
-                            Age
-                        </th>
-
-                        <th class="px-6 py-4">
-                            Status
-                        </th>
-
-                        <th class="px-6 py-4">
-                            Actions
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody class="divide-y divide-gray-100">
-
-                    @forelse ($pets as $pet)
+                    <thead class="border-b border-orange-100 bg-orange-50/70 text-gray-700">
 
                         <tr>
 
-                            <td class="px-6 py-4 font-semibold
-                                       text-gray-900">
+                            <th class="whitespace-nowrap px-5 py-4 font-semibold">
+                                Name
+                            </th>
 
-                                {{ $pet->name }}
+                            <th class="whitespace-nowrap px-5 py-4 font-semibold">
+                                Type
+                            </th>
 
-                            </td>
+                            <th class="whitespace-nowrap px-5 py-4 font-semibold">
+                                Sex
+                            </th>
 
+                            <th class="whitespace-nowrap px-5 py-4 font-semibold">
+                                Age
+                            </th>
 
-                            <td class="px-6 py-4 text-gray-600">
-                                {{ $pet->type }}
-                            </td>
+                            <th class="whitespace-nowrap px-5 py-4 font-semibold">
+                                Status
+                            </th>
 
+                            <th class="whitespace-nowrap px-5 py-4 text-right font-semibold">
+                                Actions
+                            </th>
 
-                            <td class="px-6 py-4 text-gray-600">
-                                {{ $pet->sex }}
-                            </td>
+                        </tr>
 
+                    </thead>
 
-                            <td class="px-6 py-4 text-gray-600">
-                                {{ $pet->age }}
-                            </td>
+                    <tbody class="divide-y divide-orange-100">
 
+                        @forelse ($pets as $pet)
 
-                            <td class="px-6 py-4">
+                            <tr class="transition hover:bg-orange-50/40">
 
-                                <span class="rounded-full px-3 py-1
-                                            text-sm font-semibold
-                                            {{ in_array($pet->status, ['Available', 'Adopted'])
-                                                ? 'bg-green-100 text-green-700'
-                                                : 'bg-red-100 text-red-700' }}">
+                                {{-- PET NAME --}}
+                                <td class="px-5 py-4 font-semibold text-gray-900">
+                                    {{ $pet->name }}
+                                </td>
 
-                                    {{ $pet->status }}
+                                {{-- TYPE --}}
+                                <td class="px-5 py-4 text-gray-600">
+                                    {{ $pet->type }}
+                                </td>
 
-                                </span>
+                                {{-- SEX --}}
+                                <td class="px-5 py-4 text-gray-600">
+                                    {{ $pet->sex }}
+                                </td>
 
-                            </td>
+                                {{-- AGE --}}
+                                <td class="whitespace-nowrap px-5 py-4 text-gray-600">
+                                    {{ $pet->age }}
+                                </td>
 
+                                {{-- STATUS --}}
+                                <td class="px-5 py-4">
 
-                            <td class="px-6 py-4">
-
-                                <div class="flex items-center gap-3">
-
-                                    <a
-                                        href="{{ route(
-                                            'admin.pets.edit',
-                                            $pet
-                                        ) }}"
-                                        class="rounded-full border
-                                               border-orange-500
-                                               px-4 py-2 text-sm
-                                               font-semibold text-orange-500
-                                               hover:bg-orange-50"
+                                    <span class="inline-block whitespace-nowrap rounded-full border px-3 py-1 text-xs font-semibold
+                                        {{
+                                            $pet->status === 'Available'
+                                                ? 'border-green-200 bg-green-50 text-green-700'
+                                                : 'border-red-200 bg-red-50 text-red-700'
+                                        }}"
                                     >
-                                        Edit
-                                    </a>
+                                        {{ $pet->status }}
+                                    </span>
 
+                                </td>
 
-                                    <form
-                                        action="{{ route(
-                                            'admin.pets.destroy',
-                                            $pet
-                                        ) }}"
-                                        method="POST"
-                                    >
+                                {{-- ACTIONS --}}
+                                <td class="px-5 py-4">
 
-                                        @csrf
-                                        @method('DELETE')
+                                    <div class="flex items-center justify-end gap-2">
 
-                                        <button
-                                            type="submit"
-                                            onclick="return confirm('Are you sure you want to delete this pet?')"
-                                            class="rounded-full border
-                                                   border-red-500
-                                                   px-4 py-2 text-sm
-                                                   font-semibold text-red-500
-                                                   hover:bg-red-50"
+                                        <a
+                                            href="{{ route('admin.pets.edit', $pet) }}"
+                                            class="rounded-full border border-orange-300 bg-white px-4 py-2 text-xs font-semibold text-orange-600 transition hover:bg-orange-50"
                                         >
-                                            Delete
-                                        </button>
+                                            Edit
+                                        </a>
 
-                                    </form>
+                                        <form
+                                            action="{{ route('admin.pets.destroy', $pet) }}"
+                                            method="POST"
+                                        >
+                                            @csrf
+                                            @method('DELETE')
 
-                                </div>
+                                            <button
+                                                type="submit"
+                                                onclick="return confirm('Are you sure you want to delete this pet?')"
+                                                class="rounded-full border border-red-200 bg-white px-4 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-50"
+                                            >
+                                                Delete
+                                            </button>
 
-                            </td>
+                                        </form>
 
-                        </tr>
+                                    </div>
 
-                    @empty
+                                </td>
 
-                        <tr>
+                            </tr>
 
-                            <td
-                                colspan="6"
-                                class="px-6 py-12 text-center
-                                       text-gray-500"
-                            >
-                                No pets found.
-                            </td>
+                        @empty
 
-                        </tr>
+                            <tr>
 
-                    @endforelse
+                                <td colspan="6" class="px-6 py-12 text-center">
 
-                </tbody>
+                                    <p class="font-semibold text-gray-700">
+                                        No pets found
+                                    </p>
 
-            </table>
+                                    <p class="mt-2 text-sm text-gray-500">
+                                        @if ($search)
+                                            No pets match your search. Try another pet name.
+                                        @else
+                                            There are no pets registered in this list yet.
+                                        @endif
+                                    </p>
+
+                                    @if ($search)
+
+                                        <a
+                                            href="{{ route('admin.pets.manage') }}"
+                                            class="mt-4 inline-block text-sm font-semibold text-orange-600 hover:text-orange-700"
+                                        >
+                                            Clear Search
+                                        </a>
+
+                                    @endif
+
+                                </td>
+
+                            </tr>
+
+                        @endforelse
+
+                    </tbody>
+
+                </table>
+
+            </div>
 
         </div>
 
     </div>
 
 </section>
-
 
 @endsection

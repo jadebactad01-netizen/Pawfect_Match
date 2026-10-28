@@ -1,131 +1,175 @@
 @extends('layouts.app')
 
-@section('title', 'Manage Adopters')
+@section('title', 'Registered Adopters - Pawfect Match')
 
 @section('content')
 
-<section class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+<section class="min-h-screen bg-orange-50/40 py-10">
 
-    <div class="mb-8">
+    <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6">
 
-        <p class="text-sm font-semibold uppercase tracking-wider text-orange-500">
-            Administration
-        </p>
+        {{-- PAGE HEADER --}}
+        <div class="rounded-3xl border border-orange-200 bg-orange-100 p-6 sm:p-8">
 
-        <h1 class="mt-2 text-3xl font-bold text-gray-900">
-            Registered Adopters
-        </h1>
+            <p class="text-xs font-semibold uppercase tracking-wider text-orange-600">
+                Shelter Management
+            </p>
 
-        <p class="mt-2 text-gray-600">
-            View registered adopter accounts and their adoption activity.
-        </p>
+            <h1 class="mt-2 text-3xl font-bold text-gray-900">
+                Registered Adopters
+            </h1>
 
-    </div>
-
-    {{-- SEARCH --}}
-    <form
-        action="{{ route('admin.adopters.index') }}"
-        method="GET"
-        class="mb-6 flex max-w-md"
-    >
-        <input
-            type="text"
-            name="search"
-            value="{{ request('search') }}"
-            placeholder="Search adopter name..."
-            class="min-w-0 flex-1 rounded-l-xl border border-gray-300 bg-white px-4 py-2 outline-none focus:border-orange-500"
-        >
-
-        <button
-            type="submit"
-            class="rounded-r-xl bg-orange-500 px-5 py-2 font-semibold text-white hover:bg-orange-600"
-        >
-            Search
-        </button>
-    </form>
-
-    @if ($adopters->isEmpty())
-
-        <div class="rounded-2xl bg-white p-8 shadow-sm">
-
-            <p class="text-gray-600">
-                No registered adopters found.
+            <p class="mt-3 text-sm leading-6 text-gray-600">
+                View registered adopter accounts, application history, and verification status.
             </p>
 
         </div>
 
-    @else
+        {{-- ADOPTERS LIST --}}
+        <div class="rounded-2xl border border-orange-100 bg-white p-5 shadow-sm sm:p-6">
 
-        <div class="overflow-hidden rounded-2xl bg-white shadow-sm">
+            {{-- SECTION HEADER --}}
+            <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
 
-            <div class="overflow-x-auto">
+                <div>
 
-                <table class="w-full text-left">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-orange-500">
+                        Adopter Records
+                    </p>
 
-                    <thead class="bg-orange-50 text-sm text-gray-700">
+                    <h2 class="mt-1 text-xl font-bold text-gray-900">
+                        Adopter List
+                    </h2>
+
+                    <p class="mt-1 text-sm text-gray-500">
+                        Review registered adopters and their adoption activity.
+                    </p>
+
+                </div>
+
+                <span class="rounded-full border border-orange-200 bg-orange-50 px-4 py-2 text-sm font-semibold text-orange-600">
+                    {{ $adopters->count() }}
+                    {{ $adopters->count() === 1 ? 'Adopter' : 'Adopters' }}
+                </span>
+
+            </div>
+
+            {{-- SEARCH BAR --}}
+            <form
+                action="{{ route('admin.adopters.index') }}"
+                method="GET"
+                class="mb-5 flex w-full flex-wrap items-center gap-3 sm:flex-nowrap"
+            >
+
+                <input
+                    type="text"
+                    name="search"
+                    value="{{ $search }}"
+                    placeholder="Search adopter name..."
+                    aria-label="Search adopter name"
+                    class="min-w-0 flex-1 rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                >
+
+                <button
+                    type="submit"
+                    class="rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+                >
+                    Search
+                </button>
+
+                @if ($search)
+
+                    <a
+                        href="{{ route('admin.adopters.index') }}"
+                        class="rounded-full border border-orange-200 bg-white px-5 py-3 text-sm font-semibold text-gray-600 transition hover:bg-orange-50"
+                    >
+                        Clear
+                    </a>
+
+                @endif
+
+            </form>
+
+            {{-- ADOPTERS TABLE --}}
+            <div class="overflow-x-auto rounded-xl border border-orange-100">
+
+                <table class="min-w-full bg-white text-left text-sm">
+
+                    <thead class="border-b border-orange-100 bg-orange-50/70 text-gray-700">
 
                         <tr>
-                            <th class="px-6 py-4">
+
+                            <th class="whitespace-nowrap px-5 py-4 font-semibold">
                                 Name
                             </th>
 
-                            <th class="px-6 py-4">
+                            <th class="whitespace-nowrap px-5 py-4 font-semibold">
                                 Email
                             </th>
 
-                            <th class="px-6 py-4">
+                            <th class="whitespace-nowrap px-5 py-4 font-semibold">
                                 Applications
                             </th>
 
-                            <th class="px-6 py-4">
+                            <th class="whitespace-nowrap px-5 py-4 font-semibold">
                                 Account Status
                             </th>
 
-                            <th class="px-6 py-4">
+                            <th class="whitespace-nowrap px-5 py-4 text-right font-semibold">
                                 Action
                             </th>
+
                         </tr>
 
                     </thead>
 
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-orange-100">
 
-                        @foreach ($adopters as $adopter)
+                        @forelse ($adopters as $adopter)
 
-                            <tr>
+                            <tr class="transition hover:bg-orange-50/40">
 
-                                <td class="px-6 py-4 font-semibold text-gray-900">
+                                {{-- NAME --}}
+                                <td class="px-5 py-4 font-semibold text-gray-900">
                                     {{ $adopter->name }}
                                 </td>
 
-                                <td class="px-6 py-4 text-gray-600">
+                                {{-- EMAIL --}}
+                                <td class="px-5 py-4 text-gray-600">
                                     {{ $adopter->email }}
                                 </td>
 
-                                <td class="px-6 py-4 text-gray-600">
+                                {{-- APPLICATION COUNT --}}
+                                <td class="px-5 py-4 text-gray-600">
                                     {{ $adopter->adoption_applications_count }}
                                 </td>
 
-                                <td class="px-6 py-4">
-                                    <span class="rounded-full px-3 py-1 text-xs font-semibold
+                                {{-- ACCOUNT STATUS --}}
+                                <td class="px-5 py-4">
+
+                                    <span
+                                        class="inline-block whitespace-nowrap rounded-full border px-3 py-1 text-xs font-semibold
                                         @if ($adopter->approval_status === 'Approved')
-                                            bg-green-100 text-green-700
+                                            border-green-200 bg-green-50 text-green-700
                                         @elseif ($adopter->approval_status === 'Rejected')
-                                            bg-red-100 text-red-700
+                                            border-red-200 bg-red-50 text-red-700
                                         @else
-                                            bg-yellow-100 text-yellow-700
-                                        @endif">
-                                        {{ $adopter->approval_status }}
+                                            border-amber-200 bg-amber-50 text-amber-700
+                                        @endif"
+                                    >
+                                        {{ $adopter->approval_status ?? 'Pending' }}
                                     </span>
+
                                 </td>
 
-                                <td class="px-6 py-4">
+                                {{-- ACTION --}}
+                                <td class="px-5 py-4 text-right">
 
                                     @if ($adopter->approval_status === 'Approved')
 
                                         <a
                                             href="{{ route('admin.adopters.show', $adopter) }}"
-                                            class="font-semibold text-orange-500 hover:text-orange-600"
+                                            class="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-orange-300 bg-white px-4 py-2 text-xs font-semibold text-orange-600 transition hover:bg-orange-50"
                                         >
                                             View Details
                                         </a>
@@ -134,7 +178,7 @@
 
                                         <a
                                             href="{{ route('admin.account-approvals.index') }}"
-                                            class="font-semibold text-orange-500 hover:text-orange-600"
+                                            class="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-orange-300 bg-white px-4 py-2 text-xs font-semibold text-orange-600 transition hover:bg-orange-50"
                                         >
                                             Review Account
                                         </a>
@@ -145,7 +189,42 @@
 
                             </tr>
 
-                        @endforeach
+                        @empty
+
+                            <tr>
+
+                                <td colspan="5" class="px-6 py-12 text-center">
+
+                                    <p class="font-semibold text-gray-700">
+                                        No registered adopters found
+                                    </p>
+
+                                    <p class="mt-2 text-sm text-gray-500">
+
+                                        @if ($search)
+                                            No adopters match your search. Try another name.
+                                        @else
+                                            There are no registered adopters yet.
+                                        @endif
+
+                                    </p>
+
+                                    @if ($search)
+
+                                        <a
+                                            href="{{ route('admin.adopters.index') }}"
+                                            class="mt-4 inline-block text-sm font-semibold text-orange-600 hover:text-orange-700"
+                                        >
+                                            Clear Search
+                                        </a>
+
+                                    @endif
+
+                                </td>
+
+                            </tr>
+
+                        @endforelse
 
                     </tbody>
 
@@ -155,7 +234,7 @@
 
         </div>
 
-    @endif
+    </div>
 
 </section>
 

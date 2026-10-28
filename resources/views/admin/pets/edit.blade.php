@@ -4,17 +4,14 @@
 
 @section('content')
 
-<section class="bg-orange-50 py-12">
-    <div class="mx-auto max-w-3xl px-6">
+<section class="min-h-screen bg-orange-50/40 py-10">
 
-        <a href="{{ route('admin.pets.manage') }}"
-           class="font-semibold text-orange-500 hover:text-orange-600">
-            ← Back to Manage Pets
-        </a>
+    <div class="mx-auto max-w-5xl space-y-6 px-4 sm:px-6">
 
-        <div class="mt-8 rounded-3xl bg-white p-6 shadow-sm sm:p-10">
+        {{-- PAGE HEADER --}}
+        <div class="rounded-3xl border border-orange-200 bg-orange-100 p-6 sm:p-8">
 
-            <p class="font-semibold text-orange-500">
+            <p class="text-xs font-semibold uppercase tracking-wider text-orange-600">
                 Shelter Management
             </p>
 
@@ -22,287 +19,493 @@
                 Edit Pet
             </h1>
 
-            <p class="mt-3 text-gray-600">
-                Update {{ $pet->name }}'s information below.
+            <p class="mt-2 text-sm leading-6 text-gray-600">
+                Update {{ $pet->name }}'s information, health details, and compatibility requirements.
             </p>
 
-            @if ($errors->any())
-                <div class="mt-6 rounded-2xl bg-red-50 p-5 text-red-700">
-                    <p class="font-semibold">
-                        Please check the information below.
+            <a
+                href="{{ route('admin.pets.manage') }}"
+                class="mt-4 inline-flex items-center text-sm font-semibold text-orange-600 hover:text-orange-700"
+            >
+                ← Back to Manage Pets
+            </a>
+
+        </div>
+
+        {{-- VALIDATION ERRORS --}}
+        @if ($errors->any())
+
+            <div class="rounded-2xl border border-red-200 bg-red-50 p-5 text-red-700">
+
+                <p class="font-semibold">
+                    Please check the information below.
+                </p>
+
+                <ul class="mt-2 list-disc space-y-1 pl-5 text-sm">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+
+            </div>
+
+        @endif
+
+        {{-- EDIT PET FORM --}}
+        <form
+            action="{{ route('admin.pets.update', $pet) }}"
+            method="POST"
+            enctype="multipart/form-data"
+            class="space-y-6"
+        >
+
+            @csrf
+            @method('PUT')
+
+            {{-- BASIC INFORMATION --}}
+            <div class="rounded-2xl border border-orange-100 bg-white p-6 shadow-sm sm:p-8">
+
+                <div class="border-b border-orange-100 pb-4">
+
+                    <p class="text-xs font-semibold uppercase tracking-wider text-orange-500">
+                        Pet Information
                     </p>
 
-                    <ul class="mt-2 list-disc pl-5">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+                    <h2 class="mt-1 text-xl font-bold text-gray-900">
+                        Basic Information
+                    </h2>
 
-            <form action="{{ route('admin.pets.update', $pet) }}"
-                  method="POST"
-                  enctype="multipart/form-data"
-                  class="mt-8 space-y-6">
-
-                @csrf
-                @method('PUT')
-
-                {{-- NAME --}}
-                <div>
-                    <label for="name" class="font-semibold text-gray-700">
-                        Pet Name
-                    </label>
-
-                    <input type="text"
-                           id="name"
-                           name="name"
-                           value="{{ old('name', $pet->name) }}"
-                           required
-                           class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3">
-                </div>
-
-                {{-- TYPE AND SEX --}}
-                <div class="grid gap-6 sm:grid-cols-2">
-
-                    <div>
-                        <label for="type" class="font-semibold text-gray-700">
-                            Type
-                        </label>
-
-                        <select id="type" name="type" required
-                                class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3">
-
-                            @foreach (['Dog', 'Cat'] as $option)
-                                <option value="{{ $option }}"
-                                    @selected(old('type', $pet->type) === $option)>
-                                    {{ $option }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="sex" class="font-semibold text-gray-700">
-                            Sex
-                        </label>
-
-                        <select id="sex" name="sex" required
-                                class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3">
-
-                            @foreach (['Male', 'Female'] as $option)
-                                <option value="{{ $option }}"
-                                    @selected(old('sex', $pet->sex) === $option)>
-                                    {{ $option }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                    <p class="mt-1 text-sm text-gray-500">
+                        Update the pet's basic details and current availability.
+                    </p>
 
                 </div>
 
-                {{-- AGE --}}
                 @php
                     $ageParts = explode(' ', $pet->age);
                 @endphp
 
-                <div>
-                    <label for="age_number" class="font-semibold text-gray-700">
-                        Age
-                    </label>
+                <div class="mt-5 grid gap-5 sm:grid-cols-2">
 
-                    <div class="mt-2 flex gap-3">
+                    {{-- PET NAME --}}
+                    <div class="sm:col-span-2">
 
-                        <input type="text"
-                               id="age_number"
-                               name="age_number"
-                               inputmode="numeric"
-                               maxlength="2"
-                               required
-                               value="{{ old('age_number', $ageParts[0] ?? '') }}"
-                               oninput="
-                                   this.value = this.value.replace(/[^0-9]/g, '');
-                                   let limit = document.getElementById('age_unit').value === 'Months' ? 11 : 30;
-                                   if (Number(this.value) > limit) this.value = limit;
-                               "
-                               class="min-w-0 flex-1 rounded-xl border border-gray-300 px-4 py-3">
+                        <label for="name" class="block text-sm font-semibold text-gray-700">
+                            Pet Name <span class="text-red-500">*</span>
+                        </label>
 
-                        <select id="age_unit"
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            value="{{ old('name', $pet->name) }}"
+                            required
+                            maxlength="255"
+                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                        >
+
+                    </div>
+
+                    {{-- PET TYPE --}}
+                    <div>
+
+                        <label for="type" class="block text-sm font-semibold text-gray-700">
+                            Type <span class="text-red-500">*</span>
+                        </label>
+
+                        <select
+                            id="type"
+                            name="type"
+                            required
+                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                        >
+
+                            @foreach (['Dog', 'Cat'] as $option)
+
+                                <option
+                                    value="{{ $option }}"
+                                    @selected(old('type', $pet->type) === $option)
+                                >
+                                    {{ $option }}
+                                </option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+                    {{-- SEX --}}
+                    <div>
+
+                        <label for="sex" class="block text-sm font-semibold text-gray-700">
+                            Sex <span class="text-red-500">*</span>
+                        </label>
+
+                        <select
+                            id="sex"
+                            name="sex"
+                            required
+                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                        >
+
+                            @foreach (['Male', 'Female'] as $option)
+
+                                <option
+                                    value="{{ $option }}"
+                                    @selected(old('sex', $pet->sex) === $option)
+                                >
+                                    {{ $option }}
+                                </option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+                    {{-- AGE --}}
+                    <div>
+
+                        <label for="age_number" class="block text-sm font-semibold text-gray-700">
+                            Age <span class="text-red-500">*</span>
+                        </label>
+
+                        <div class="mt-2 flex gap-3">
+
+                            <input
+                                type="text"
+                                id="age_number"
+                                name="age_number"
+                                inputmode="numeric"
+                                maxlength="2"
+                                required
+                                value="{{ old('age_number', $ageParts[0] ?? '') }}"
+                                oninput="
+                                    this.value = this.value.replace(/[^0-9]/g, '');
+                                    let limit = document.getElementById('age_unit').value === 'Months' ? 11 : 30;
+                                    if (Number(this.value) > limit) this.value = limit;
+                                "
+                                class="min-w-0 flex-1 rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                            >
+
+                            <select
+                                id="age_unit"
                                 name="age_unit"
                                 required
                                 onchange="document.getElementById('age_number').value = ''"
-                                class="rounded-xl border border-gray-300 bg-white px-4 py-3">
+                                class="rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                            >
 
-                            @foreach (['Months', 'Years'] as $unit)
-                                <option value="{{ $unit }}"
-                                    @selected(old('age_unit', $ageParts[1] ?? 'Months') === $unit)>
-                                    {{ $unit }}
-                                </option>
-                            @endforeach
-                        </select>
+                                @foreach (['Months', 'Years'] as $unit)
+
+                                    <option
+                                        value="{{ $unit }}"
+                                        @selected(old('age_unit', $ageParts[1] ?? 'Months') === $unit)
+                                    >
+                                        {{ $unit }}
+                                    </option>
+
+                                @endforeach
+
+                            </select>
+
+                        </div>
+
+                        <p class="mt-2 text-xs text-gray-500">
+                            Months: 1–11 | Years: 1–30
+                        </p>
+
                     </div>
 
-                    <p class="mt-2 text-sm text-gray-500">
-                        Months: 1–11 • Years: 1–30
+                    {{-- ADOPTION STATUS --}}
+                    <div>
+
+                        <label for="status" class="block text-sm font-semibold text-gray-700">
+                            Adoption Status <span class="text-red-500">*</span>
+                        </label>
+
+                        <select
+                            id="status"
+                            name="status"
+                            required
+                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                        >
+
+                            @foreach (['Available', 'Unavailable'] as $option)
+
+                                <option
+                                    value="{{ $option }}"
+                                    @selected(old('status', $pet->status) === $option)
+                                >
+                                    {{ $option }}
+                                </option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {{-- PET INTAKE DETAILS --}}
+            <div class="rounded-2xl border border-orange-100 bg-white p-6 shadow-sm sm:p-8">
+
+                <div class="border-b border-orange-100 pb-4">
+
+                    <p class="text-xs font-semibold uppercase tracking-wider text-orange-500">
+                        Shelter Records
                     </p>
-                </div>
 
-                {{-- ADOPTION STATUS --}}
-                <div>
-                    <label for="status" class="font-semibold text-gray-700">
-                        Adoption Status
-                    </label>
-
-                    <select id="status" name="status" required
-                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3">
-
-                        @foreach (['Available', 'Unavailable'] as $option)
-                            <option value="{{ $option }}"
-                                @selected(old('status', $pet->status) === $option)>
-                                {{ $option }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                {{-- PET INTAKE DETAILS --}}
-                <div class="border-t border-gray-200 pt-8">
-
-                    <h2 class="text-xl font-bold text-gray-900">
+                    <h2 class="mt-1 text-xl font-bold text-gray-900">
                         Pet Intake Details
                     </h2>
 
-                    <p class="mt-2 text-sm text-gray-500">
-                        Record whether this pet was rescued or surrendered,
-                        and the corresponding date.
+                    <p class="mt-1 text-sm text-gray-500">
+                        Update how the pet arrived at the shelter.
                     </p>
 
-                    <div class="mt-5 grid gap-6 sm:grid-cols-2">
-
-                        <div>
-                            <label for="intake_type" class="font-semibold text-gray-700">
-                                Pet Origin
-                            </label>
-
-                            <select id="intake_type"
-                                    name="intake_type"
-                                    class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3">
-
-                                <option value="">Select origin</option>
-
-                                @foreach (['Rescued', 'Surrendered'] as $option)
-                                    <option value="{{ $option }}"
-                                        @selected(old('intake_type', $pet->intake_type) === $option)>
-                                        {{ $option }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div>
-                            <label for="intake_date" class="font-semibold text-gray-700">
-                                Date Rescued / Surrendered
-                            </label>
-
-                            <input type="date"
-                                   id="intake_date"
-                                   name="intake_date"
-                                   max="{{ now()->toDateString() }}"
-                                   value="{{ old('intake_date', $pet->intake_date?->format('Y-m-d')) }}"
-                                   class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3">
-                        </div>
-
-                    </div>
                 </div>
 
-                {{-- VACCINATION DETAILS --}}
-                <div class="border-t border-gray-200 pt-8">
+                <div class="mt-5 grid gap-5 sm:grid-cols-2">
 
-                    <h2 class="text-xl font-bold text-gray-900">
+                    {{-- PET ORIGIN --}}
+                    <div>
+
+                        <label for="intake_type" class="block text-sm font-semibold text-gray-700">
+                            Pet Origin
+                        </label>
+
+                        <select
+                            id="intake_type"
+                            name="intake_type"
+                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                        >
+
+                            <option value="">Select origin</option>
+
+                            @foreach (['Rescued', 'Surrendered'] as $option)
+
+                                <option
+                                    value="{{ $option }}"
+                                    @selected(old('intake_type', $pet->intake_type) === $option)
+                                >
+                                    {{ $option }}
+                                </option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+                    {{-- INTAKE DATE --}}
+                    <div>
+
+                        <label for="intake_date" class="block text-sm font-semibold text-gray-700">
+                            Date Rescued / Surrendered
+                        </label>
+
+                        <input
+                            type="date"
+                            id="intake_date"
+                            name="intake_date"
+                            max="{{ now()->toDateString() }}"
+                            value="{{ old('intake_date', $pet->intake_date?->format('Y-m-d')) }}"
+                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                        >
+
+                    </div>
+
+                </div>
+
+                <p class="mt-3 text-xs text-gray-500">
+                    Provide both the origin and its corresponding intake date when updating these details.
+                </p>
+
+            </div>
+
+            {{-- VACCINATION DETAILS --}}
+            <div class="rounded-2xl border border-orange-100 bg-white p-6 shadow-sm sm:p-8">
+
+                <div class="border-b border-orange-100 pb-4">
+
+                    <p class="text-xs font-semibold uppercase tracking-wider text-orange-500">
+                        Health Information
+                    </p>
+
+                    <h2 class="mt-1 text-xl font-bold text-gray-900">
                         Vaccination Details
                     </h2>
 
-                    <p class="mt-2 text-sm text-gray-500">
-                        Enter the vaccine administered and its date.
+                    <p class="mt-1 text-sm text-gray-500">
+                        Update the pet's vaccination information, if available.
                     </p>
 
-                    <div class="mt-5 grid gap-6 sm:grid-cols-2">
+                </div>
 
-                        <div>
-                            <label for="vaccination_type" class="font-semibold text-gray-700">
-                                Vaccination Type
-                            </label>
+                <div class="mt-5 grid gap-5 sm:grid-cols-2">
 
-                            <input type="text"
-                                   id="vaccination_type"
-                                   name="vaccination_type"
-                                   value="{{ old('vaccination_type', $pet->vaccination_type) }}"
-                                   placeholder="e.g., Anti-Rabies"
-                                   class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3">
-                        </div>
+                    {{-- VACCINATION TYPE --}}
+                    <div>
 
-                        <div>
-                            <label for="vaccination_date" class="font-semibold text-gray-700">
-                                Vaccination Date
-                            </label>
+                        <label for="vaccination_type" class="block text-sm font-semibold text-gray-700">
+                            Vaccination Type
+                        </label>
 
-                            <input type="date"
-                                   id="vaccination_date"
-                                   name="vaccination_date"
-                                   max="{{ now()->toDateString() }}"
-                                   value="{{ old('vaccination_date', $pet->vaccination_date?->format('Y-m-d')) }}"
-                                   class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3">
-                        </div>
+                        <input
+                            type="text"
+                            id="vaccination_type"
+                            name="vaccination_type"
+                            value="{{ old('vaccination_type', $pet->vaccination_type) }}"
+                            maxlength="255"
+                            placeholder="e.g., Anti-Rabies"
+                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                        >
 
                     </div>
+
+                    {{-- VACCINATION DATE --}}
+                    <div>
+
+                        <label for="vaccination_date" class="block text-sm font-semibold text-gray-700">
+                            Vaccination Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="vaccination_date"
+                            name="vaccination_date"
+                            max="{{ now()->toDateString() }}"
+                            value="{{ old('vaccination_date', $pet->vaccination_date?->format('Y-m-d')) }}"
+                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                        >
+
+                    </div>
+
                 </div>
 
-                {{-- PET PHOTO --}}
-                <div class="border-t border-gray-200 pt-8">
+                <p class="mt-3 text-xs text-gray-500">
+                    Leave both fields blank if vaccination information is unavailable.
+                </p>
 
-                    <label for="photo" class="font-semibold text-gray-700">
-                        Pet Photo
-                    </label>
+            </div>
 
-                    @if ($pet->photo)
-                        <img src="{{ asset('storage/' . $pet->photo) }}"
-                             alt="{{ $pet->name }}"
-                             class="mt-3 h-40 w-40 rounded-2xl object-cover">
-                    @endif
+            {{-- PET PHOTO AND DESCRIPTION --}}
+            <div class="rounded-2xl border border-orange-100 bg-white p-6 shadow-sm sm:p-8">
 
-                    <input type="file"
-                           id="photo"
-                           name="photo"
-                           accept="image/jpeg,image/png,image/webp"
-                           class="mt-4 w-full rounded-xl border border-gray-300 px-4 py-3">
+                <div class="border-b border-orange-100 pb-4">
 
-                    <p class="mt-2 text-sm text-gray-500">
-                        Leave blank to keep the current photo.
+                    <p class="text-xs font-semibold uppercase tracking-wider text-orange-500">
+                        Pet Profile
                     </p>
+
+                    <h2 class="mt-1 text-xl font-bold text-gray-900">
+                        Photo and Description
+                    </h2>
+
+                    <p class="mt-1 text-sm text-gray-500">
+                        Update the pet's photo and description for potential adopters.
+                    </p>
+
                 </div>
 
-                {{-- DESCRIPTION --}}
-                <div>
-                    <label for="description" class="font-semibold text-gray-700">
-                        Description
-                    </label>
+                <div class="mt-5 space-y-5">
 
-                    <textarea id="description"
-                              name="description"
-                              rows="5"
-                              class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3">{{ old('description', $pet->description) }}</textarea>
+                    {{-- CURRENT PET PHOTO --}}
+                    <div>
+
+                        <label for="photo" class="block text-sm font-semibold text-gray-700">
+                            Pet Photo
+                        </label>
+
+                        @if ($pet->photo)
+
+                            <div class="mt-3 flex flex-wrap items-center gap-4 rounded-xl border border-orange-100 bg-orange-50/50 p-4">
+
+                                <img
+                                    src="{{ asset('storage/' . $pet->photo) }}"
+                                    alt="{{ $pet->name }}"
+                                    class="h-28 w-28 rounded-xl object-cover"
+                                >
+
+                                <div>
+
+                                    <p class="text-sm font-semibold text-gray-800">
+                                        Current Photo
+                                    </p>
+
+                                    <p class="mt-1 text-xs text-gray-500">
+                                        Upload a new image below to replace this photo.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        @else
+
+                            <p class="mt-2 text-sm text-gray-500">
+                                No photo has been uploaded for this pet.
+                            </p>
+
+                        @endif
+
+                        <input
+                            type="file"
+                            id="photo"
+                            name="photo"
+                            accept="image/jpeg,image/png,image/webp"
+                            class="mt-4 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-600 file:mr-4 file:rounded-full file:border-0 file:bg-orange-100 file:px-4 file:py-2 file:font-semibold file:text-orange-700 hover:file:bg-orange-200"
+                        >
+
+                        <p class="mt-2 text-xs text-gray-500">
+                            Leave blank to keep the current photo. JPG, PNG, or WebP, maximum 5 MB.
+                        </p>
+
+                    </div>
+
+                    {{-- DESCRIPTION --}}
+                    <div>
+
+                        <label for="description" class="block text-sm font-semibold text-gray-700">
+                            Description
+                        </label>
+
+                        <textarea
+                            id="description"
+                            name="description"
+                            rows="4"
+                            placeholder="Describe the pet's personality, behavior, and other important information..."
+                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                        >{{ old('description', $pet->description) }}</textarea>
+
+                    </div>
+
                 </div>
 
-                {{-- COMPATIBILITY REQUIREMENTS --}}
-                <div class="border-t border-gray-200 pt-8">
+            </div>
 
-                    <h2 class="text-xl font-bold text-gray-900">
+            {{-- COMPATIBILITY REQUIREMENTS --}}
+            <div class="rounded-2xl border border-orange-100 bg-white p-6 shadow-sm sm:p-8">
+
+                <div class="border-b border-orange-100 pb-4">
+
+                    <p class="text-xs font-semibold uppercase tracking-wider text-orange-500">
+                        Matching Criteria
+                    </p>
+
+                    <h2 class="mt-1 text-xl font-bold text-gray-900">
                         Compatibility Requirements
                     </h2>
 
-                    <p class="mt-2 text-sm text-gray-500">
-                        Update the adopter and home requirements for this pet.
+                    <p class="mt-1 text-sm text-gray-500">
+                        Update the adopter and living environment requirements for this pet.
                     </p>
+
                 </div>
 
                 @php
@@ -334,44 +537,72 @@
                     ];
                 @endphp
 
-                <div class="grid gap-6 sm:grid-cols-2">
+                <div class="mt-5 grid gap-5 sm:grid-cols-2">
 
                     @foreach ($requirements as $field => $config)
 
                         <div>
-                            <label for="{{ $field }}" class="font-semibold text-gray-700">
-                                {{ $config[0] }}
+
+                            <label
+                                for="{{ $field }}"
+                                class="block text-sm font-semibold text-gray-700"
+                            >
+                                {{ $config[0] }} <span class="text-red-500">*</span>
                             </label>
 
-                            <select id="{{ $field }}"
-                                    name="{{ $field }}"
-                                    required
-                                    class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3">
+                            <select
+                                id="{{ $field }}"
+                                name="{{ $field }}"
+                                required
+                                class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                            >
 
                                 <option value="">Select option</option>
 
                                 @foreach ($config[1] as $option)
-                                    <option value="{{ $option }}"
-                                        @selected(old($field, $pet->$field) === $option)>
-                                        {{ $option }}
+
+                                    <option
+                                        value="{{ $option }}"
+                                        @selected(old($field, $pet->$field) === $option)
+                                    >
+                                        {{ $option === 'None' ? 'No experience required' : $option }}
                                     </option>
+
                                 @endforeach
 
                             </select>
+
                         </div>
 
                     @endforeach
 
                 </div>
 
-                <button type="submit"
-                        class="w-full rounded-full bg-orange-500 px-6 py-3 font-semibold text-white hover:bg-orange-600">
+            </div>
+
+            {{-- FORM ACTIONS --}}
+            <div class="flex flex-col-reverse gap-3 rounded-2xl border border-orange-100 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-end">
+
+                <a
+                    href="{{ route('admin.pets.manage') }}"
+                    class="rounded-full border border-orange-200 bg-white px-7 py-3 text-center text-sm font-semibold text-gray-600 transition hover:bg-orange-50"
+                >
+                    Cancel
+                </a>
+
+                <button
+                    type="submit"
+                    class="rounded-full bg-orange-500 px-8 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+                >
                     Save Changes
                 </button>
 
-            </form>
-        </div>
+            </div>
+
+        </form>
+
     </div>
+
 </section>
 
 @endsection
