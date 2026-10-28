@@ -11,7 +11,6 @@
         {{-- WELCOME SECTION --}}
         <div class="relative overflow-hidden rounded-3xl border border-orange-200 bg-gradient-to-r from-orange-500 to-orange-400 p-6 text-white shadow-sm sm:p-8">
 
-            {{-- Background decoration --}}
             <div class="pointer-events-none absolute -right-12 -top-16 h-48 w-48 rounded-full border-[25px] border-white/10"></div>
             <div class="pointer-events-none absolute -bottom-20 right-24 h-36 w-36 rounded-full bg-white/10"></div>
 
@@ -49,6 +48,7 @@
                 </div>
 
             </div>
+
         </div>
 
         {{-- APPLICATION OVERVIEW --}}
@@ -72,7 +72,7 @@
 
             <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
 
-                {{-- TOTAL APPLICATIONS --}}
+                {{-- TOTAL --}}
                 <div class="rounded-2xl border border-orange-100 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
 
                     <div class="mb-4 h-1 w-12 rounded-full bg-orange-400"></div>
@@ -137,10 +137,10 @@
         </div>
 
         {{-- LATEST APPLICATION AND ADOPTION JOURNEY --}}
-        <div class="grid gap-6 lg:grid-cols-3">
+        <div class="grid items-stretch gap-6 lg:grid-cols-3">
 
             {{-- LATEST APPLICATION --}}
-            <div class="rounded-2xl border border-orange-100 bg-white p-6 shadow-sm lg:col-span-2">
+            <div class="flex flex-col rounded-2xl border border-orange-100 bg-white p-6 shadow-sm lg:col-span-2">
 
                 <div class="flex flex-wrap items-center justify-between gap-3">
 
@@ -167,7 +167,8 @@
 
                 @if ($latestApplication)
 
-                    <div class="mt-6 flex flex-col gap-5 rounded-2xl border border-orange-100 bg-orange-50/50 p-4 sm:flex-row">
+                    {{-- BALANCED APPLICATION CARD --}}
+                    <div class="mt-5 flex flex-1 flex-col justify-center gap-5 rounded-2xl border border-orange-100 bg-orange-50/50 p-4 sm:flex-row sm:items-center">
 
                         {{-- PET PHOTO --}}
                         @if ($latestApplication->pet?->photo)
@@ -175,77 +176,84 @@
                             <img
                                 src="{{ asset('storage/' . $latestApplication->pet->photo) }}"
                                 alt="{{ $latestApplication->pet->name }}"
-                                class="h-40 w-full rounded-xl object-cover sm:w-40"
+                                class="h-44 w-full shrink-0 rounded-xl object-cover sm:w-44"
                             >
 
                         @else
 
-                            <div class="flex h-40 w-full items-center justify-center rounded-xl bg-orange-100 text-sm text-gray-500 sm:w-40">
+                            <div class="flex h-44 w-full shrink-0 items-center justify-center rounded-xl bg-orange-100 text-sm text-gray-500 sm:w-44">
                                 No photo available
                             </div>
 
                         @endif
 
-                        {{-- APPLICATION DETAILS --}}
-                        <div class="min-w-0 flex-1">
+                            {{-- APPLICATION DETAILS --}}
+                            <div class="flex min-w-0 flex-1 flex-col gap-5 md:flex-row md:items-center md:gap-28">
 
-                            <p class="text-xs font-semibold uppercase tracking-wide text-orange-500">
-                                Pet Applied For
-                            </p>
+                                {{-- PET INFORMATION --}}
+                                <div class="min-w-0">
 
-                            <h3 class="mt-2 text-2xl font-bold text-gray-900">
-                                {{ $latestApplication->pet?->name ?? 'Pet unavailable' }}
-                            </h3>
+                                    <p class="text-xs font-semibold uppercase tracking-wide text-orange-500">
+                                        Pet Applied For
+                                    </p>
 
-                            <p class="mt-2 text-sm text-gray-500">
-                                Submitted {{ $latestApplication->created_at->format('M d, Y') }}
-                            </p>
+                                    <h3 class="mt-2 text-2xl font-bold text-gray-900">
+                                        {{ $latestApplication->pet?->name ?? 'Pet unavailable' }}
+                                    </h3>
 
-                            <div class="mt-4">
+                                    <p class="mt-2 text-sm text-gray-500">
+                                        Submitted {{ $latestApplication->created_at->format('M d, Y') }}
+                                    </p>
 
-                                <span class="rounded-full border px-3 py-1 text-sm font-semibold
-                                    @if ($latestApplication->status === 'Approved')
-                                        border-green-200 bg-green-50 text-green-700
-                                    @elseif ($latestApplication->status === 'Rejected')
-                                        border-red-200 bg-red-50 text-red-700
-                                    @else
-                                        border-amber-200 bg-amber-50 text-amber-700
-                                    @endif"
-                                >
-                                    {{ $latestApplication->status }}
-                                </span>
+                                    <div class="mt-4">
 
-                            </div>
-
-                            @if ($latestApplication->compatibilityAssessment)
-
-                                <div class="mt-5 border-t border-orange-100 pt-4">
-
-                                    <p class="text-sm text-gray-600">
-                                        Compatibility Score:
-                                        <span class="font-bold text-gray-900">
-                                            {{ $latestApplication->compatibilityAssessment->total_score }}%
+                                        <span class="rounded-full border px-3 py-1 text-sm font-semibold
+                                            @if ($latestApplication->status === 'Approved')
+                                                border-green-200 bg-green-50 text-green-700
+                                            @elseif ($latestApplication->status === 'Rejected')
+                                                border-red-200 bg-red-50 text-red-700
+                                            @else
+                                                border-amber-200 bg-amber-50 text-amber-700
+                                            @endif"
+                                        >
+                                            {{ $latestApplication->status }}
                                         </span>
-                                    </p>
 
-                                    <p class="mt-1 text-sm text-gray-500">
-                                        {{ $latestApplication->compatibilityAssessment->classification }}
-                                    </p>
+                                    </div>
 
                                 </div>
 
-                            @else
+                                {{-- COMPATIBILITY INFORMATION --}}
+                                @if ($latestApplication->compatibilityAssessment)
 
-                                <a
-                                    href="{{ route('compatibility-assessments.create', $latestApplication) }}"
-                                    class="mt-5 inline-block text-sm font-semibold text-orange-600 transition hover:text-orange-700"
-                                >
-                                    Complete Compatibility Assessment →
-                                </a>
+                                    <div class="shrink-0 border-t border-orange-200 pt-4 md:ml-2 md:border-l md:border-t-0 md:py-3 md:pl-5">
 
-                            @endif
+                                        <p class="text-sm text-gray-500">
+                                            Compatibility Score
+                                        </p>
 
-                        </div>
+                                        <p class="mt-1 text-xl font-bold text-orange-600">
+                                            {{ $latestApplication->compatibilityAssessment->total_score }}%
+                                        </p>
+
+                                        <p class="mt-2 text-sm font-semibold text-green-700">
+                                            {{ $latestApplication->compatibilityAssessment->classification }}
+                                        </p>
+
+                                    </div>
+
+                                @else
+
+                                    <a
+                                        href="{{ route('compatibility-assessments.create', $latestApplication) }}"
+                                        class="text-sm font-semibold text-orange-600 transition hover:text-orange-700"
+                                    >
+                                        Complete Compatibility Assessment →
+                                    </a>
+
+                                @endif
+
+                            </div>
 
                     </div>
 
@@ -279,23 +287,27 @@
             </div>
 
             {{-- YOUR ADOPTION JOURNEY --}}
-            <div class="rounded-2xl border border-orange-100 bg-white p-6 shadow-sm">
+            <div class="flex h-full flex-col rounded-2xl border border-orange-100 bg-white p-6 shadow-sm">
 
-                <p class="text-xs font-semibold uppercase tracking-wider text-orange-500">
-                    Your Progress
-                </p>
+                <div>
 
-                <h2 class="mt-1 text-xl font-bold text-gray-900">
-                    Your Adoption Journey
-                </h2>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-orange-500">
+                        Your Progress
+                    </p>
 
-                <p class="mt-1 text-sm text-gray-500">
-                    Follow your latest application's progress.
-                </p>
+                    <h2 class="mt-1 text-xl font-bold text-gray-900">
+                        Your Adoption Journey
+                    </h2>
 
-                <div class="mt-6 space-y-5">
+                    <p class="mt-1 text-sm text-gray-500">
+                        Follow your latest application's progress.
+                    </p>
 
-                    {{-- STEP 1: APPLICATION SUBMITTED --}}
+                </div>
+
+                <div class="mt-4 flex flex-1 flex-col justify-around gap-3">
+
+                    {{-- STEP 1 --}}
                     <div class="flex items-start gap-3">
 
                         <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold
@@ -326,7 +338,7 @@
 
                     </div>
 
-                    {{-- STEP 2: COMPATIBILITY ASSESSMENT --}}
+                    {{-- STEP 2 --}}
                     <div class="flex items-start gap-3">
 
                         <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold
@@ -363,7 +375,7 @@
 
                     </div>
 
-                    {{-- STEP 3: APPLICATION REVIEW --}}
+                    {{-- STEP 3 --}}
                     <div class="flex items-start gap-3">
 
                         <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold
@@ -404,7 +416,7 @@
 
                     </div>
 
-                    {{-- STEP 4: ADOPTION DECISION --}}
+                    {{-- STEP 4 --}}
                     <div class="flex items-start gap-3">
 
                         <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold
@@ -451,9 +463,9 @@
 
                 </div>
 
-                <div class="mt-6 border-t border-orange-100 pt-4">
+                <div class="mt-4 border-t border-orange-100 pt-3">
 
-                    <p class="text-xs leading-6 text-gray-500">
+                    <p class="text-xs leading-5 text-gray-500">
                         Progress is based on your most recent adoption application.
                     </p>
 
@@ -493,7 +505,6 @@
                             class="group overflow-hidden rounded-2xl border border-orange-100 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg"
                         >
 
-                            {{-- PET PHOTO --}}
                             <div class="overflow-hidden bg-orange-50">
 
                                 @if ($recommendation->pet->photo)
@@ -514,7 +525,6 @@
 
                             </div>
 
-                            {{-- PET DETAILS --}}
                             <div class="p-5">
 
                                 <div class="flex items-start justify-between gap-3">
@@ -531,6 +541,7 @@
 
                                 @php
                                     $petAge = trim($recommendation->pet->age);
+
                                     $formattedAge = preg_replace_callback(
                                         '/^(\d+)\s+(year|month)s?$/i',
                                         function ($matches) {
@@ -620,7 +631,6 @@
                             class="group overflow-hidden rounded-2xl border border-orange-100 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg"
                         >
 
-                            {{-- PET PHOTO --}}
                             <div class="overflow-hidden bg-orange-50">
 
                                 @if ($pet->photo)
@@ -641,7 +651,6 @@
 
                             </div>
 
-                            {{-- PET DETAILS --}}
                             <div class="p-5">
 
                                 <div class="flex items-center justify-between gap-3">
@@ -658,6 +667,7 @@
 
                                 @php
                                     $petAge = trim($pet->age);
+
                                     $formattedAge = preg_replace_callback(
                                         '/^(\d+)\s+(year|month)s?$/i',
                                         function ($matches) {

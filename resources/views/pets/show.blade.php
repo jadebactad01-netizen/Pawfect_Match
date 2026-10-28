@@ -17,18 +17,32 @@
 
     $whatsappShare = 'https://wa.me/?text=' .
         urlencode($shareMessage);
+
+    $petAge = trim($pet->age);
+
+    $formattedAge = preg_replace_callback(
+        '/^(\d+)\s+(year|month)s?$/i',
+        function ($matches) {
+            return $matches[1] . ' ' .
+                strtolower($matches[2]) .
+                ($matches[1] == 1 ? '' : 's') .
+                ' old';
+        },
+        $petAge
+    );
 @endphp
 
-<section class="min-h-screen bg-orange-50 py-10">
+<section class="min-h-screen bg-orange-50/40 py-10">
 
     <div class="mx-auto max-w-7xl px-4 sm:px-6">
 
         {{-- BACK BUTTON --}}
         <a
             href="{{ route('pets.index') }}"
-            class="inline-flex items-center gap-2 font-semibold text-orange-500 hover:text-orange-600"
+            class="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-white px-4 py-2 text-sm font-semibold text-orange-600 transition duration-200 hover:border-orange-300 hover:bg-orange-50"
         >
-            ← Back to Available Pets
+            <span>←</span>
+            <span>Back to Available Pets</span>
         </a>
 
         {{-- NOTIFICATIONS --}}
@@ -44,88 +58,110 @@
             </div>
         @endif
 
-        <div class="mt-8 rounded-3xl bg-white p-4 shadow-sm sm:p-6">
+        {{-- MAIN PET PROFILE --}}
+        <div class="mt-6 rounded-3xl border border-orange-100 bg-white p-4 shadow-sm sm:p-6">
+
             <div class="grid gap-8 lg:grid-cols-2">
 
                 {{-- LEFT SIDE --}}
                 <div class="lg:pt-6">
 
                     {{-- PET IMAGE --}}
-                    <div class="overflow-hidden rounded-2xl bg-orange-100">
+                    <div class="overflow-hidden rounded-2xl border border-orange-100 bg-orange-100 shadow-sm">
 
                         @if ($pet->photo)
+
                             <img
                                 src="{{ asset('storage/' . $pet->photo) }}"
                                 alt="{{ $pet->name }}"
                                 class="h-[80px] w-full object-cover object-center sm:h-[380px] lg:h-[500px]"
                             >
+
                         @else
-                            <div class="flex h-[280px] items-center justify-center text-gray-400 sm:h-[380px] lg:h-[500px]">
+
+                            <div class="flex h-[280px] items-center justify-center text-sm text-gray-500 sm:h-[380px] lg:h-[500px]">
                                 No photo available
                             </div>
+
                         @endif
 
                     </div>
 
-                    {{-- SHARE BUTTONS --}}
-                    <div class="mt-5 flex flex-wrap items-center gap-4">
+                    {{-- SHARE PET PROFILE --}}
+                    <div class="mt-5 rounded-2xl border border-orange-100 bg-orange-50/60 p-4">
 
-                        <a
-                            href="{{ $facebookShare }}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-2xl font-bold text-white hover:bg-blue-700"
-                            title="Share on Facebook"
-                        >
-                            f
-                        </a>
+                        <p class="text-sm font-semibold text-gray-800">
+                            Share This Pet
+                        </p>
 
-                        <a
-                            href="{{ $whatsappShare }}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="flex h-14 w-14 items-center justify-center rounded-full bg-green-600 text-lg font-bold text-white hover:bg-green-700"
-                            title="Share on WhatsApp"
-                        >
-                            W
-                        </a>
+                        <p class="mt-1 text-xs text-gray-500">
+                            Share this pet's profile with friends and family.
+                        </p>
 
-                        <button
-                            type="button"
-                            onclick="copyPetLink()"
-                            class="flex h-14 w-14 items-center justify-center rounded-full border-4 border-black bg-white text-2xl hover:bg-gray-100"
-                            title="Copy Pet Link"
+                        <div class="mt-4 flex flex-wrap items-center gap-3">
+
+                            {{-- FACEBOOK --}}
+                            <a
+                                href="{{ $facebookShare }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="flex h-11 items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-semibold text-white transition duration-200 hover:bg-blue-700 hover:shadow-md"
+                                title="Share on Facebook"
+                            >
+                                Facebook
+                            </a>
+
+                            {{-- WHATSAPP --}}
+                            <a
+                                href="{{ $whatsappShare }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="flex h-11 items-center justify-center rounded-full bg-green-600 px-5 text-sm font-semibold text-white transition duration-200 hover:bg-green-700 hover:shadow-md"
+                                title="Share on WhatsApp"
+                            >
+                                WhatsApp
+                            </a>
+
+                            {{-- COPY LINK --}}
+                            <button
+                                type="button"
+                                onclick="copyPetLink()"
+                                class="flex h-11 items-center justify-center rounded-full border border-orange-300 bg-white px-5 text-sm font-semibold text-orange-600 transition duration-200 hover:bg-orange-100"
+                                title="Copy Pet Link"
+                            >
+                                Copy Link
+                            </button>
+
+                        </div>
+
+                        {{-- HIDDEN SHARE LINK --}}
+                        <input
+                            type="text"
+                            id="pet-share-url"
+                            value="{{ $petUrl }}"
+                            readonly
+                            class="sr-only"
                         >
-                            🔗
-                        </button>
+
+                        <p
+                            id="copy-message"
+                            class="mt-3 text-sm text-green-600"
+                            role="status"
+                        ></p>
 
                     </div>
-
-                    {{-- HIDDEN SHARE LINK --}}
-                    <input
-                        type="text"
-                        id="pet-share-url"
-                        value="{{ $petUrl }}"
-                        readonly
-                        class="sr-only"
-                    >
-
-                    <p
-                        id="copy-message"
-                        class="mt-3 text-sm text-green-600"
-                        role="status"
-                    ></p>
 
                 </div>
 
                 {{-- RIGHT SIDE --}}
                 <div>
 
-                    {{-- PET STATUS --}}
-                    <span class="inline-block rounded-full px-4 py-2 text-sm font-semibold
+                    {{-- STATUS --}}
+                    <span class="inline-block rounded-full border px-4 py-2 text-sm font-semibold
                         {{ in_array($pet->status, ['Available', 'Adopted'])
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-red-100 text-red-700' }}">
+                            ? 'border-green-200 bg-green-50 text-green-700'
+                            : 'border-red-200 bg-red-50 text-red-700' }}"
+                    >
                         {{ $pet->status }}
                     </span>
 
@@ -134,51 +170,74 @@
                         {{ $pet->name }}
                     </h1>
 
+                    {{-- SMALL ACCENT --}}
+                    <div class="mt-3 h-1 w-12 rounded-full bg-orange-400"></div>
+
                     {{-- DESCRIPTION --}}
-                    <p class="mt-2 text-lg text-gray-600">
+                    <p class="mt-4 text-lg leading-8 text-gray-600">
                         {{ $pet->description }}
                     </p>
 
-                    {{-- BASIC INFO --}}
+                    {{-- BASIC INFORMATION --}}
                     <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
 
-                        <div class="rounded-xl bg-orange-50 p-4">
-                            <p class="text-sm text-gray-500">Pet Type</p>
+                        <div class="rounded-xl border border-orange-100 bg-orange-50/70 p-4">
+
+                            <p class="text-sm text-gray-500">
+                                Pet Type
+                            </p>
+
                             <p class="mt-1 text-lg font-bold text-gray-900">
                                 {{ $pet->type }}
                             </p>
+
                         </div>
 
-                        <div class="rounded-xl bg-orange-50 p-4">
-                            <p class="text-sm text-gray-500">Sex</p>
+                        <div class="rounded-xl border border-orange-100 bg-orange-50/70 p-4">
+
+                            <p class="text-sm text-gray-500">
+                                Sex
+                            </p>
+
                             <p class="mt-1 text-lg font-bold text-gray-900">
                                 {{ $pet->sex }}
                             </p>
+
                         </div>
 
-                        <div class="rounded-xl bg-orange-50 p-4">
-                            <p class="text-sm text-gray-500">Age</p>
-                            <p class="mt-1 text-lg font-bold text-gray-900">
-                                {{ $pet->age }}
+                        <div class="rounded-xl border border-orange-100 bg-orange-50/70 p-4">
+
+                            <p class="text-sm text-gray-500">
+                                Age
                             </p>
+
+                            <p class="mt-1 text-lg font-bold text-gray-900">
+                                {{ $formattedAge }}
+                            </p>
+
                         </div>
 
                     </div>
 
                     {{-- PET INTAKE DETAILS --}}
-                    <div class="mt-8">
+                    <div class="mt-8 overflow-hidden rounded-2xl border border-orange-100 bg-white">
 
-                        <h2 class="text-2xl font-bold text-gray-900">
-                            Pet Intake Details
-                        </h2>
+                        <div class="border-b border-orange-100 bg-orange-50/70 px-5 py-4">
 
-                        <p class="mt-1 text-sm text-gray-500">
-                            Information about the pet's arrival at the shelter
-                        </p>
+                            <h2 class="text-xl font-bold text-gray-900">
+                                Pet Intake Details
+                            </h2>
 
-                        <div class="mt-4 space-y-4">
+                            <p class="mt-1 text-sm text-gray-500">
+                                Information about the pet's arrival at the shelter
+                            </p>
 
-                            <div class="flex items-center justify-between border-b border-gray-200 pb-3">
+                        </div>
+
+                        <div class="space-y-4 px-5 py-4">
+
+                            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-orange-100 pb-3">
+
                                 <p class="text-sm text-gray-500">
                                     Pet Origin
                                 </p>
@@ -186,9 +245,11 @@
                                 <p class="font-semibold text-gray-900">
                                     {{ $pet->intake_type ?: 'Not recorded' }}
                                 </p>
+
                             </div>
 
-                            <div class="flex items-center justify-between border-b border-gray-200 pb-3">
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+
                                 <p class="text-sm text-gray-500">
                                     Date Rescued / Surrendered
                                 </p>
@@ -196,25 +257,32 @@
                                 <p class="font-semibold text-gray-900">
                                     {{ $pet->intake_date?->format('M d, Y') ?? 'Not recorded' }}
                                 </p>
+
                             </div>
 
                         </div>
+
                     </div>
 
                     {{-- VACCINATION DETAILS --}}
-                    <div class="mt-8">
+                    <div class="mt-6 overflow-hidden rounded-2xl border border-orange-100 bg-white">
 
-                        <h2 class="text-2xl font-bold text-gray-900">
-                            Vaccination Details
-                        </h2>
+                        <div class="border-b border-orange-100 bg-orange-50/70 px-5 py-4">
 
-                        <p class="mt-1 text-sm text-gray-500">
-                            Available vaccination records for this pet
-                        </p>
+                            <h2 class="text-xl font-bold text-gray-900">
+                                Vaccination Details
+                            </h2>
 
-                        <div class="mt-4 space-y-4">
+                            <p class="mt-1 text-sm text-gray-500">
+                                Available vaccination records for this pet
+                            </p>
 
-                            <div class="flex items-center justify-between border-b border-gray-200 pb-3">
+                        </div>
+
+                        <div class="space-y-4 px-5 py-4">
+
+                            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-orange-100 pb-3">
+
                                 <p class="text-sm text-gray-500">
                                     Vaccination Type
                                 </p>
@@ -222,9 +290,11 @@
                                 <p class="font-semibold text-gray-900">
                                     {{ $pet->vaccination_type ?: 'Not recorded' }}
                                 </p>
+
                             </div>
 
-                            <div class="flex items-center justify-between border-b border-gray-200 pb-3">
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+
                                 <p class="text-sm text-gray-500">
                                     Vaccination Date
                                 </p>
@@ -232,13 +302,15 @@
                                 <p class="font-semibold text-gray-900">
                                     {{ $pet->vaccination_date?->format('M d, Y') ?? 'Not recorded' }}
                                 </p>
+
                             </div>
 
                         </div>
+
                     </div>
 
-                    {{-- ADOPTION STATUS AND ACTION --}}
-                    <div class="mt-8">
+                    {{-- ADOPTION ACTION --}}
+                    <div class="mt-8 border-t border-orange-100 pt-6">
 
                         @if ($pet->status === 'Available')
 
@@ -246,7 +318,7 @@
 
                                 <a
                                     href="{{ route('login', ['pet' => $pet->id]) }}"
-                                    class="inline-block rounded-full bg-orange-500 px-8 py-3 font-semibold text-white hover:bg-orange-600"
+                                    class="inline-block rounded-full bg-orange-500 px-8 py-3 font-semibold text-white shadow-sm transition duration-200 hover:bg-orange-600 hover:shadow-md"
                                 >
                                     Log In to Apply
                                 </a>
@@ -263,7 +335,7 @@
 
                                                 <a
                                                     href="{{ route('compatibility-assessments.create', $existingApplication) }}"
-                                                    class="inline-block rounded-full bg-orange-500 px-8 py-3 font-semibold text-white hover:bg-orange-600"
+                                                    class="inline-block rounded-full bg-orange-500 px-8 py-3 font-semibold text-white shadow-sm transition duration-200 hover:bg-orange-600 hover:shadow-md"
                                                 >
                                                     Continue Compatibility Assessment
                                                 </a>
@@ -272,13 +344,13 @@
 
                                                 <a
                                                     href="{{ route('adoption-applications.index') }}"
-                                                    class="inline-block rounded-full px-8 py-3 font-semibold
+                                                    class="inline-block rounded-full border px-8 py-3 font-semibold transition duration-200
                                                         @if ($existingApplication->status === 'Approved')
-                                                            bg-green-100 text-green-700 hover:bg-green-200
+                                                            border-green-200 bg-green-50 text-green-700 hover:bg-green-100
                                                         @elseif ($existingApplication->status === 'Rejected')
-                                                            bg-red-100 text-red-700 hover:bg-red-200
+                                                            border-red-200 bg-red-50 text-red-700 hover:bg-red-100
                                                         @else
-                                                            bg-yellow-100 text-yellow-700 hover:bg-yellow-200
+                                                            border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100
                                                         @endif"
                                                 >
                                                     Already Applied ({{ $existingApplication->status }})
@@ -290,7 +362,7 @@
 
                                             <a
                                                 href="{{ route('adoption-applications.create', $pet) }}"
-                                                class="inline-block rounded-full bg-orange-500 px-8 py-3 font-semibold text-white hover:bg-orange-600"
+                                                class="inline-block rounded-full bg-orange-500 px-8 py-3 font-semibold text-white shadow-sm transition duration-200 hover:bg-orange-600 hover:shadow-md"
                                             >
                                                 Apply for Adoption
                                             </a>
@@ -301,7 +373,7 @@
 
                                         <a
                                             href="{{ route('profile.edit') }}"
-                                            class="inline-block rounded-full bg-orange-500 px-8 py-3 font-semibold text-white hover:bg-orange-600"
+                                            class="inline-block rounded-full bg-orange-500 px-8 py-3 font-semibold text-white shadow-sm transition duration-200 hover:bg-orange-600 hover:shadow-md"
                                         >
                                             Complete Profile to Apply
                                         </a>
@@ -314,15 +386,13 @@
 
                         @elseif ($pet->status === 'Adopted')
 
-                            {{-- NEW: MESSAGE FOR ADOPTED PETS --}}
-                            <p class="inline-block rounded-xl bg-green-100 px-5 py-3 font-semibold text-green-700">
+                            <p class="inline-block rounded-xl border border-green-200 bg-green-50 px-5 py-3 font-semibold text-green-700">
                                 This pet has already been adopted.
                             </p>
 
                         @else
 
-                            {{-- EXISTING MESSAGE FOR UNAVAILABLE PETS --}}
-                            <p class="inline-block rounded-xl bg-gray-100 px-5 py-3 font-semibold text-gray-600">
+                            <p class="inline-block rounded-xl border border-gray-200 bg-gray-50 px-5 py-3 font-semibold text-gray-600">
                                 This pet is currently not available for adoption.
                             </p>
 
@@ -333,6 +403,7 @@
                 </div>
 
             </div>
+
         </div>
 
     </div>

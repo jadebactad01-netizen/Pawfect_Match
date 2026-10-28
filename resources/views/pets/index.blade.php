@@ -2,35 +2,31 @@
 
 @section('title', 'Available Pets - Pawfect Match')
 
-
 @section('content')
 
+{{-- PAGE HEADER --}}
+<section class="relative overflow-hidden border-b border-orange-100 bg-orange-50 py-16">
 
-<!-- =========================================
-     PAGE HEADER
-========================================== -->
+    <div class="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full border-[30px] border-orange-100/70"></div>
 
-<section class="bg-orange-50 py-16">
+    <div class="pointer-events-none absolute -bottom-20 -left-16 h-44 w-44 rounded-full bg-orange-100/60"></div>
 
-    <div class="mx-auto max-w-7xl px-6 text-center">
+    <div class="relative mx-auto max-w-7xl px-6 text-center">
 
-        <p class="font-semibold text-orange-500">
+        <p class="text-sm font-semibold uppercase tracking-wider text-orange-500">
             Find a Companion
         </p>
 
-        <h1 class="mt-2 text-4xl font-bold text-gray-900
-                   sm:text-5xl">
-
+        <h1 class="mt-2 text-4xl font-bold text-gray-900 sm:text-5xl">
             Available Pets
-
         </h1>
 
-        <p class="mx-auto mt-5 max-w-2xl leading-7 text-gray-600">
+        <div class="mx-auto mt-4 h-1 w-14 rounded-full bg-orange-400"></div>
 
+        <p class="mx-auto mt-5 max-w-2xl leading-7 text-gray-600">
             Meet the pets currently looking for their forever homes.
             Browse their profiles and find a companion that may be
             right for you.
-
         </p>
 
     </div>
@@ -38,68 +34,54 @@
 </section>
 
 
-
-<!-- =========================================
-     SIMPLE FILTER AREA
-========================================== -->
-
-<section class="border-b bg-white">
+{{-- PET FILTERS --}}
+<section class="border-b border-orange-100 bg-white">
 
     <div class="mx-auto max-w-7xl px-6 py-6">
 
         <div class="flex flex-wrap items-center justify-between gap-4">
 
-            <!-- Number of pets -->
-            <p class="text-gray-600">
-
+            <p class="text-sm text-gray-600">
                 Showing
-
-                <span class="font-bold text-gray-900">
+                <span class="font-bold text-orange-600">
                     {{ count($pets) }}
                 </span>
-
                 available pets
-
             </p>
 
             <div class="flex flex-wrap gap-2">
 
-                <!-- ALL PETS -->
-                <a href="{{ route('pets.index') }}"
-                class="rounded-full px-5 py-2
-                        text-sm font-semibold
+                {{-- ALL --}}
+                <a
+                    href="{{ route('pets.index') }}"
+                    class="rounded-full px-5 py-2 text-sm font-semibold transition duration-200
                         {{ !$type
-                                ? 'bg-orange-500 text-white'
-                                : 'border border-gray-300 text-gray-600 hover:border-orange-500 hover:text-orange-500' }}">
-
+                            ? 'bg-orange-500 text-white shadow-sm'
+                            : 'border border-orange-200 bg-white text-gray-600 hover:border-orange-400 hover:bg-orange-50 hover:text-orange-600' }}"
+                >
                     All
-
                 </a>
 
-
-                <!-- DOGS -->
-                <a href="{{ route('pets.index', ['type' => 'Dog']) }}"
-                class="rounded-full px-5 py-2
-                        text-sm font-semibold
+                {{-- DOGS --}}
+                <a
+                    href="{{ route('pets.index', ['type' => 'Dog']) }}"
+                    class="rounded-full px-5 py-2 text-sm font-semibold transition duration-200
                         {{ $type === 'Dog'
-                                ? 'bg-orange-500 text-white'
-                                : 'border border-gray-300 text-gray-600 hover:border-orange-500 hover:text-orange-500' }}">
-
+                            ? 'bg-orange-500 text-white shadow-sm'
+                            : 'border border-orange-200 bg-white text-gray-600 hover:border-orange-400 hover:bg-orange-50 hover:text-orange-600' }}"
+                >
                     Dogs
-
                 </a>
 
-
-                <!-- CATS -->
-                <a href="{{ route('pets.index', ['type' => 'Cat']) }}"
-                class="rounded-full px-5 py-2
-                        text-sm font-semibold
+                {{-- CATS --}}
+                <a
+                    href="{{ route('pets.index', ['type' => 'Cat']) }}"
+                    class="rounded-full px-5 py-2 text-sm font-semibold transition duration-200
                         {{ $type === 'Cat'
-                                ? 'bg-orange-500 text-white'
-                                : 'border border-gray-300 text-gray-600 hover:border-orange-500 hover:text-orange-500' }}">
-
+                            ? 'bg-orange-500 text-white shadow-sm'
+                            : 'border border-orange-200 bg-white text-gray-600 hover:border-orange-400 hover:bg-orange-50 hover:text-orange-600' }}"
+                >
                     Cats
-
                 </a>
 
             </div>
@@ -111,39 +93,19 @@
 </section>
 
 
-
-<!-- =========================================
-     PET LIST
-========================================== -->
-
-<section class="bg-white py-16">
+{{-- PET LIST --}}
+<section class="bg-orange-50/40 py-16">
 
     <div class="mx-auto max-w-7xl px-6">
 
-
-        <!--
-            Instead of writing six pet cards manually,
-            Blade will repeat ONE card for every pet
-            inside the $pets variable.
-        -->
-
         <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-
 
             @forelse ($pets as $pet)
 
+                {{-- PET CARD --}}
+                <div class="group overflow-hidden rounded-2xl border border-orange-100 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg">
 
-                <!-- PET CARD -->
-
-                <div class="overflow-hidden rounded-2xl
-                            border border-gray-100 bg-white
-                            shadow-sm transition
-                            hover:-translate-y-1
-                            hover:shadow-lg">
-
-
-                    <!-- Pet Image Placeholder -->
-
+                    {{-- PHOTO --}}
                     <div class="h-60 overflow-hidden bg-orange-100">
 
                         @if ($pet->photo)
@@ -151,13 +113,12 @@
                             <img
                                 src="{{ asset('storage/' . $pet->photo) }}"
                                 alt="{{ $pet->name }}"
-                                class="h-full w-full object-cover"
+                                class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                             >
 
                         @else
 
-                            <div class="flex h-full items-center
-                                        justify-center text-gray-400">
+                            <div class="flex h-full w-full items-center justify-center bg-orange-50 text-sm text-gray-500">
                                 No photo available
                             </div>
 
@@ -165,91 +126,70 @@
 
                     </div>
 
-                    
-                    <!-- Pet Information -->
-
+                    {{-- PET INFORMATION --}}
                     <div class="p-6">
 
+                        <div class="flex items-center justify-between gap-3">
 
-                        <!-- Name + Status -->
-
-                        <div class="flex items-center
-                                    justify-between gap-3">
-
-                            <h2 class="text-2xl font-bold
-                                       text-gray-900">
-
+                            <h2 class="text-2xl font-bold text-gray-900">
                                 {{ $pet->name }}
-
                             </h2>
 
-
-                            <span class="rounded-full bg-green-100
-                                         px-3 py-1 text-xs
-                                         font-semibold text-green-700">
-
+                            <span class="rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
                                 {{ $pet->status }}
-
                             </span>
 
                         </div>
 
+                        {{-- FORMAT AGE --}}
+                        @php
+                            $petAge = trim($pet->age);
 
-
-                        <!-- Basic Information -->
+                            $formattedAge = preg_replace_callback(
+                                '/^(\d+)\s+(year|month)s?$/i',
+                                function ($matches) {
+                                    return $matches[1] . ' ' .
+                                        strtolower($matches[2]) .
+                                        ($matches[1] == 1 ? '' : 's') .
+                                        ' old';
+                                },
+                                $petAge
+                            );
+                        @endphp
 
                         <p class="mt-2 text-sm text-gray-500">
-
                             {{ $pet->type }}
-                            •
-                            {{ $pet->sex }}
-                            •
-                            {{ $pet->age }}
-
+                            • {{ $pet->sex }}
+                            • {{ $formattedAge }}
                         </p>
-
-
-
-                        <!-- Description -->
 
                         <p class="mt-4 leading-7 text-gray-600">
-
                             {{ $pet->description }}
-
                         </p>
 
+                        <div class="mt-6 border-t border-orange-100 pt-5">
 
+                            <a
+                                href="{{ route('pets.show', $pet) }}"
+                                class="inline-block rounded-full bg-orange-500 px-6 py-2.5 font-semibold text-white shadow-sm transition duration-200 hover:bg-orange-600 hover:shadow-md"
+                            >
+                                View Profile
+                            </a>
 
-                        <!-- Button -->
-
-                        <a href="{{ route('pets.show', $pet) }}"
-                           class="mt-6 inline-block
-                                  rounded-full bg-orange-500
-                                  px-6 py-2.5 font-semibold
-                                  text-white
-                                  hover:bg-orange-600">
-
-                            View Profile
-
-                        </a>
-
+                        </div>
 
                     </div>
 
                 </div>
 
-
             @empty
 
-                <div class="sm:col-span-2 lg:col-span-3
-                            rounded-2xl bg-orange-50
-                            px-6 py-16 text-center">
+                {{-- EMPTY STATE --}}
+                <div class="rounded-2xl border border-orange-100 bg-white px-6 py-12 text-center shadow-sm sm:col-span-2 lg:col-span-3">
 
-                    <div class="text-5xl">
-                        🐾
-                    </div>
+                    <div class="mx-auto mb-5 h-1 w-14 rounded-full bg-orange-400"></div>
 
-                    <h2 class="mt-4 text-2xl font-bold text-gray-900">
+                    <h2 class="text-2xl font-bold text-gray-900">
                         No Pets Found
                     </h2>
 
@@ -258,70 +198,21 @@
                         matching this filter.
                     </p>
 
-                    <a href="{{ route('pets.index') }}"
-                    class="mt-6 inline-block rounded-full
-                            bg-orange-500 px-6 py-3
-                            font-semibold text-white
-                            hover:bg-orange-600">
-
+                    <a
+                        href="{{ route('pets.index') }}"
+                        class="mt-6 inline-block rounded-full bg-orange-500 px-6 py-3 font-semibold text-white transition duration-200 hover:bg-orange-600 hover:shadow-md"
+                    >
                         View All Pets
-
                     </a>
 
                 </div>
 
             @endforelse
 
-
         </div>
-
 
     </div>
 
 </section>
-
-
-
-<!-- =========================================
-     ADOPTION MESSAGE
-========================================== -->
-
-<section class="bg-orange-50 py-16">
-
-    <div class="mx-auto max-w-3xl px-6 text-center">
-
-        <div class="text-5xl">
-            🐾
-        </div>
-
-        <h2 class="mt-5 text-3xl font-bold text-gray-900">
-
-            Can't Decide Yet?
-
-        </h2>
-
-        <p class="mt-4 leading-7 text-gray-600">
-
-            Pawfect Match will help you compare your lifestyle
-            and preferences with the needs and characteristics
-            of available pets.
-
-        </p>
-
-        <a href="{{ route('home') }}#how-it-works"
-           class="mt-7 inline-block rounded-full
-                  border border-orange-500
-                  px-7 py-3 font-semibold
-                  text-orange-500
-                  hover:bg-orange-100">
-
-            Learn About Compatibility Matching
-
-        </a>
-
-    </div>
-
-</section>
-
 
 @endsection
