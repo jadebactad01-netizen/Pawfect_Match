@@ -7,6 +7,7 @@ use App\Models\AdopterProfile;
 use App\Models\Pet;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -103,57 +104,55 @@ class AdminController extends Controller
             ->latest('updated_at')
             ->get();
 
-        // Recent shelter activity from existing records
-        $recentActivities = collect();
+        // Actual recorded shelter activity
+        $recentActivities = DB::table('shelter_activities')
+            ->orderByDesc('id')
+            ->limit(4)
+            ->get()
+            ->map(function ($activity) {
 
-        // Newly registered pets
-        $recentPets = Pet::latest()->take(4)->get();
+                $link = match ($activity->activity_type) {
+                    'pet_added' =>
+                        route('pets.show', $activity->subject_id),
 
-        foreach ($recentPets as $pet) {
-            $recentActivities->push([
-                'title' => 'New Pet Added',
-                'description' => $pet->name . ' was added to the shelter.',
-                'date' => $pet->created_at,
-                'link' => route('pets.show', $pet),
-                'color' => 'orange',
-            ]);
-        }
+                    'application_submitted' =>
+                        route('admin.applications.index'),
 
-        // Submitted adoption applications
-        $recentApplications = AdoptionApplication::with(['user', 'pet'])
-            ->latest()
-            ->take(4)
-            ->get();
+                    'application_approved',
+                    'application_rejected' =>
+                        route('admin.adoption-records.show', $activity->subject_id),
 
-        foreach ($recentApplications as $application) {
-            $recentActivities->push([
-                'title' => 'Adoption Application Submitted',
-                'description' => ($application->user?->name ?? 'An adopter')
-                    . ' applied to adopt '
-                    . ($application->pet?->name ?? 'a pet') . '.',
-                'date' => $application->created_at,
-                'link' => route('admin.applications.show', $application),
-                'color' => 'green',
-            ]);
-        }
+                    'account_approved',
+                    'account_rejected',
+                    'edit_requested',
+                    'edit_approved',
+                    'edit_rejected' =>
+                        route('admin.adopters.show', $activity->subject_id),
 
-        // Currently pending requests to edit compatibility answers
-        foreach ($pendingEditRequests->take(4) as $profile) {
-            $recentActivities->push([
-                'title' => 'Compatibility Edit Request',
-                'description' => ($profile->user?->name ?? 'An adopter')
-                    . ' requested to edit their assessment.',
-                'date' => $profile->updated_at,
-                'link' => route('admin.adopters.show', $profile->user),
-                'color' => 'amber',
-            ]);
-        }
+                    default => route('admin.dashboard'),
+                };
 
-        // Show the four most recent entries
-        $recentActivities = $recentActivities
-            ->sortByDesc('date')
-            ->take(4)
-            ->values();
+                $color = match ($activity->activity_type) {
+                    'application_approved',
+                    'account_approved',
+                    'edit_approved' => 'green',
+
+                    'application_rejected',
+                    'account_rejected',
+                    'edit_rejected' => 'red',
+
+                    'edit_requested' => 'amber',
+
+                    default => 'orange',
+                };
+
+                return [
+                    'title' => $activity->title,
+                    'description' => $activity->description,
+                    'link' => $link,
+                    'color' => $color,
+                ];
+            });
 
         return view('admin.dashboard', compact(
             'pendingApplications',
