@@ -20,16 +20,26 @@ class AdminController extends Controller
         $dateFrom = $validated['date_from'] ?? '';
         $dateTo = $validated['date_to'] ?? '';
 
-        // Existing dashboard statistics.
+        // Shelter overview
         $pendingApplications = AdoptionApplication::whereHas('compatibilityAssessment')
-            ->where('status', 'Pending')->count();
+            ->where('status', 'Pending')
+            ->count();
 
-        $approvedApplications = AdoptionApplication::where('status', 'Approved')->count();
-        $rejectedApplications = AdoptionApplication::where('status', 'Rejected')->count();
+        $approvedApplications = AdoptionApplication::where('status', 'Approved')
+            ->count();
+
+        $rejectedApplications = AdoptionApplication::where('status', 'Rejected')
+            ->count();
+
         $availablePets = Pet::where('status', 'Available')->count();
+
         $totalAdopters = User::where('role', 'adopter')->count();
 
-        // Existing filtered status graph.
+        $pendingAccountApprovals = User::where('role', 'adopter')
+            ->where('approval_status', 'Pending')
+            ->count();
+
+        // Application status graph
         $chartQuery = AdoptionApplication::query();
 
         if ($dateFrom) {
@@ -46,12 +56,14 @@ class AdminController extends Controller
             ->count();
 
         $chartApproved = (clone $chartQuery)
-            ->where('status', 'Approved')->count();
+            ->where('status', 'Approved')
+            ->count();
 
         $chartRejected = (clone $chartQuery)
-            ->where('status', 'Rejected')->count();
+            ->where('status', 'Rejected')
+            ->count();
 
-        // NEW: Applications submitted during the last 12 months.
+        // Monthly adoption applications
         $monthlyStart = now()->startOfMonth()->subMonths(11);
 
         $monthlyCounts = AdoptionApplication::where(
@@ -76,7 +88,7 @@ class AdminController extends Controller
             ];
         }
 
-        // Existing applications needing review.
+        // Applications needing review
         $recentPendingApplications = AdoptionApplication::with(['user', 'pet'])
             ->whereHas('compatibilityAssessment')
             ->where('status', 'Pending')
@@ -84,12 +96,64 @@ class AdminController extends Controller
             ->take(5)
             ->get();
 
-        // Existing compatibility edit requests.
+        // Pending compatibility edit requests
         $pendingEditRequests = AdopterProfile::with('user')
             ->where('edit_request_status', 'Pending')
             ->whereHas('user', fn ($query) => $query->where('role', 'adopter'))
             ->latest('updated_at')
             ->get();
+
+        // Recent shelter activity from existing records
+        $recentActivities = collect();
+
+        // Newly registered pets
+        $recentPets = Pet::latest()->take(4)->get();
+
+        foreach ($recentPets as $pet) {
+            $recentActivities->push([
+                'title' => 'New Pet Added',
+                'description' => $pet->name . ' was added to the shelter.',
+                'date' => $pet->created_at,
+                'link' => route('pets.show', $pet),
+                'color' => 'orange',
+            ]);
+        }
+
+        // Submitted adoption applications
+        $recentApplications = AdoptionApplication::with(['user', 'pet'])
+            ->latest()
+            ->take(4)
+            ->get();
+
+        foreach ($recentApplications as $application) {
+            $recentActivities->push([
+                'title' => 'Adoption Application Submitted',
+                'description' => ($application->user?->name ?? 'An adopter')
+                    . ' applied to adopt '
+                    . ($application->pet?->name ?? 'a pet') . '.',
+                'date' => $application->created_at,
+                'link' => route('admin.applications.show', $application),
+                'color' => 'green',
+            ]);
+        }
+
+        // Currently pending requests to edit compatibility answers
+        foreach ($pendingEditRequests->take(4) as $profile) {
+            $recentActivities->push([
+                'title' => 'Compatibility Edit Request',
+                'description' => ($profile->user?->name ?? 'An adopter')
+                    . ' requested to edit their assessment.',
+                'date' => $profile->updated_at,
+                'link' => route('admin.adopters.show', $profile->user),
+                'color' => 'amber',
+            ]);
+        }
+
+        // Show the four most recent entries
+        $recentActivities = $recentActivities
+            ->sortByDesc('date')
+            ->take(4)
+            ->values();
 
         return view('admin.dashboard', compact(
             'pendingApplications',
@@ -97,8 +161,10 @@ class AdminController extends Controller
             'rejectedApplications',
             'availablePets',
             'totalAdopters',
+            'pendingAccountApprovals',
             'recentPendingApplications',
             'pendingEditRequests',
+            'recentActivities',
             'chartPending',
             'chartApproved',
             'chartRejected',
