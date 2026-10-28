@@ -7,10 +7,6 @@
 {{-- PAGE HEADER --}}
 <section class="relative overflow-hidden border-b border-orange-100 bg-orange-50 py-16">
 
-    <div class="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full border-[30px] border-orange-100/70"></div>
-
-    <div class="pointer-events-none absolute -bottom-20 -left-16 h-44 w-44 rounded-full bg-orange-100/60"></div>
-
     <div class="relative mx-auto max-w-7xl px-6 text-center">
 
         <p class="text-sm font-semibold uppercase tracking-wider text-orange-500">

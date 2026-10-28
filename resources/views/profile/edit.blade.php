@@ -11,8 +11,6 @@
         {{-- PAGE HEADER --}}
         <div class="relative overflow-hidden rounded-3xl border border-orange-200 bg-orange-100 p-6 sm:p-8">
 
-            <div class="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full border-[18px] border-orange-200/60"></div>
-
             <div class="relative">
 
                 <p class="text-xs font-semibold uppercase tracking-wider text-orange-600">

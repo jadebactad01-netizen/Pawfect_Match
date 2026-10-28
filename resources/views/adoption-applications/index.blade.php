@@ -11,9 +11,6 @@
         {{-- PAGE HEADER --}}
         <div class="relative overflow-hidden rounded-3xl border border-orange-200 bg-orange-100 p-6 sm:p-8">
 
-            {{-- Subtle decoration --}}
-            <div class="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full border-[22px] border-orange-200/50"></div>
-
             <div class="relative">
 
                 <p class="text-sm font-semibold uppercase tracking-wider text-orange-600">

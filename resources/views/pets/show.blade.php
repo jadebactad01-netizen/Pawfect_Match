@@ -170,9 +170,6 @@
                         {{ $pet->name }}
                     </h1>
 
-                    {{-- SMALL ACCENT --}}
-                    <div class="mt-3 h-1 w-12 rounded-full bg-orange-400"></div>
-
                     {{-- DESCRIPTION --}}
                     <p class="mt-4 text-lg leading-8 text-gray-600">
                         {{ $pet->description }}

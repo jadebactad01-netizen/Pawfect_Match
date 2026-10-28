@@ -20,9 +20,6 @@
         {{-- PAGE HEADER --}}
         <div class="relative mt-6 overflow-hidden rounded-3xl border border-orange-200 bg-orange-100 px-6 py-8 text-center sm:px-8">
 
-            {{-- Subtle decoration --}}
-            <div class="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full border-[18px] border-orange-100"></div>
-
             <div class="relative">
 
                 <p class="text-sm font-semibold uppercase tracking-wider text-orange-500">

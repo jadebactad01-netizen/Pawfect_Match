@@ -11,9 +11,6 @@
         {{-- WELCOME SECTION --}}
         <div class="relative overflow-hidden rounded-3xl border border-orange-200 bg-gradient-to-r from-orange-500 to-orange-400 p-6 text-white shadow-sm sm:p-8">
 
-            <div class="pointer-events-none absolute -right-12 -top-16 h-48 w-48 rounded-full border-[25px] border-white/10"></div>
-            <div class="pointer-events-none absolute -bottom-20 right-24 h-36 w-36 rounded-full bg-white/10"></div>
-
             <div class="relative">
 
                 <p class="text-sm font-semibold tracking-wide text-orange-100">
@@ -28,24 +25,6 @@
                     Find your pawfect companion, track your applications,
                     and discover pets that match your lifestyle.
                 </p>
-
-                <div class="mt-6 flex flex-wrap gap-3">
-
-                    <a
-                        href="{{ route('pets.index') }}"
-                        class="rounded-full bg-white px-5 py-3 text-sm font-bold text-orange-600 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-orange-50 hover:shadow-md"
-                    >
-                        Browse Available Pets
-                    </a>
-
-                    <a
-                        href="{{ route('adoption-applications.index') }}"
-                        class="rounded-full border border-white/80 bg-white/10 px-5 py-3 text-sm font-bold text-white transition duration-200 hover:bg-white/20"
-                    >
-                        My Applications
-                    </a>
-
-                </div>
 
             </div>
 
