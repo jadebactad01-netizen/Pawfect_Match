@@ -159,14 +159,20 @@ class CompatibilityAssessmentController extends Controller
             ]);
         }
 
+        // Choose a success message based on the AI result.
+        if (empty($aiErrors)) {
+            $successMessage =
+                'Your adoption application and compatibility assessment were submitted successfully.';
+        } else {
+            $successMessage =
+                'Your adoption application and compatibility assessment were submitted successfully. However, some AI explanations could not be generated. Your compatibility scores are still valid, and you can retry the explanations later.';
+        }
+
         $redirect = redirect()
             ->route('adoption-applications.index')
-            ->with(
-                'success',
-                'Your adoption application and compatibility assessment were submitted successfully.'
-            );
+            ->with('success', $successMessage);
 
-        // Show the detected error without storing it.
+        // Show the specific AI error without saving it.
         if (! empty($aiErrors)) {
             $redirect->with(
                 'error',
