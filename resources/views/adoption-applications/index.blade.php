@@ -32,28 +32,86 @@
 
         </div>
 
+        {{-- APPLICATION FILTERS --}}
+        <div class="mt-8 flex flex-wrap gap-2">
+
+            @foreach ([
+                'all' => 'All',
+                'pending' => 'Pending',
+                'approved' => 'Approved',
+                'rejected' => 'Rejected',
+                'incomplete' => 'Incomplete',
+            ] as $value => $label)
+
+                <a
+                    href="{{ route('adoption-applications.index', ['filter' => $value]) }}"
+                    class="rounded-full border px-5 py-2.5 text-sm font-semibold transition duration-200
+                        {{ ($filter ?? 'pending') === $value
+                            ? 'border-orange-500 bg-orange-500 text-white shadow-sm'
+                            : 'border-orange-200 bg-white text-gray-600 hover:border-orange-400 hover:text-orange-600' }}"
+                >
+                    {{ $label }}
+                </a>
+
+            @endforeach
+
+        </div>
+
         @if ($applications->isEmpty())
 
-            {{-- NO APPLICATIONS --}}
+            {{-- EMPTY FILTER RESULT --}}
             <div class="mt-8 rounded-3xl border border-orange-100 bg-white p-8 text-center shadow-sm sm:p-12">
 
                 <div class="mx-auto mb-5 h-1 w-14 rounded-full bg-orange-400"></div>
 
                 <h2 class="text-2xl font-bold text-gray-900">
-                    No Applications Yet
+                    @if (($filter ?? 'pending') === 'pending')
+                        No Pending Applications
+                    @elseif (($filter ?? 'pending') === 'approved')
+                        No Approved Applications
+                    @elseif (($filter ?? 'pending') === 'rejected')
+                        No Rejected Applications
+                    @elseif (($filter ?? 'pending') === 'incomplete')
+                        No Incomplete Applications
+                    @else
+                        No Applications Yet
+                    @endif
                 </h2>
 
                 <p class="mx-auto mt-3 max-w-lg leading-7 text-gray-600">
-                    You haven't submitted an adoption application yet.
-                    Browse the available pets and find your pawfect match.
+                    @if (($filter ?? 'pending') === 'pending')
+                        You don't have any applications waiting for shelter review.
+                    @elseif (($filter ?? 'pending') === 'approved')
+                        You don't have any approved applications yet.
+                    @elseif (($filter ?? 'pending') === 'rejected')
+                        You don't have any rejected applications.
+                    @elseif (($filter ?? 'pending') === 'incomplete')
+                        All your applications have completed compatibility assessments.
+                    @else
+                        You haven't submitted an adoption application yet.
+                        Browse the available pets and find your pawfect match.
+                    @endif
                 </p>
 
-                <a
-                    href="{{ route('pets.index') }}"
-                    class="mt-7 inline-block rounded-full bg-orange-500 px-8 py-3 font-semibold text-white shadow-sm transition duration-200 hover:bg-orange-600 hover:shadow-md"
-                >
-                    Browse Available Pets
-                </a>
+                @if (($filter ?? 'pending') === 'all')
+
+                    <a
+                        href="{{ route('pets.index') }}"
+                        class="mt-7 inline-block rounded-full bg-orange-500 px-8 py-3 font-semibold text-white shadow-sm transition duration-200 hover:bg-orange-600 hover:shadow-md"
+                    >
+                        Browse Available Pets
+                    </a>
+
+                @else
+
+                    <a
+                        href="{{ route('adoption-applications.index', ['filter' => 'all']) }}"
+                        class="mt-7 inline-block rounded-full bg-orange-500 px-8 py-3 font-semibold text-white shadow-sm transition duration-200 hover:bg-orange-600 hover:shadow-md"
+                    >
+                        View All Applications
+                    </a>
+
+                @endif
 
             </div>
 
@@ -83,7 +141,9 @@
 
                             {{-- APPLICATION STATUS --}}
                             <span class="rounded-full border px-4 py-2 text-sm font-semibold
-                                @if ($application->status === 'Approved')
+                                @if (! $application->compatibilityAssessment)
+                                    border-orange-200 bg-orange-50 text-orange-700
+                                @elseif ($application->status === 'Approved')
                                     border-green-200 bg-green-50 text-green-700
                                 @elseif ($application->status === 'Rejected')
                                     border-red-200 bg-red-50 text-red-700
@@ -91,7 +151,9 @@
                                     border-amber-200 bg-amber-50 text-amber-700
                                 @endif"
                             >
-                                {{ $application->status }}
+                                {{ ! $application->compatibilityAssessment
+                                    ? 'Incomplete'
+                                    : $application->status }}
                             </span>
 
                         </div>
@@ -194,7 +256,6 @@
 
                                     @else
 
-                                        {{-- UPDATED AI MESSAGE --}}
                                         <p class="mt-3 text-sm leading-7 text-gray-600">
                                             The AI explanation could not be generated.
                                             Your compatibility score is still valid.
@@ -345,7 +406,6 @@
 
                                                 @else
 
-                                                    {{-- UPDATED AI MESSAGE --}}
                                                     <p class="text-sm leading-6 text-gray-500">
                                                         The AI recommendation explanation could not be generated.
                                                         You can retry below. Any detected Gemini error will be displayed in an alert.
@@ -408,7 +468,9 @@
 
                         {{-- APPLICATION STATUS MESSAGE --}}
                         <div class="mt-6 rounded-xl border p-4
-                            @if ($application->status === 'Approved')
+                            @if (! $application->compatibilityAssessment)
+                                border-orange-200 bg-orange-50
+                            @elseif ($application->status === 'Approved')
                                 border-green-200 bg-green-50
                             @elseif ($application->status === 'Rejected')
                                 border-red-200 bg-red-50
@@ -417,7 +479,15 @@
                             @endif"
                         >
 
-                            @if ($application->status === 'Approved')
+                            @if (! $application->compatibilityAssessment)
+
+                                <p class="text-sm leading-6 text-orange-700">
+                                    Your application is incomplete.
+                                    Please complete the compatibility assessment
+                                    before it can proceed to shelter review.
+                                </p>
+
+                            @elseif ($application->status === 'Approved')
 
                                 <p class="text-sm leading-6 text-green-700">
                                     Your application has been approved.

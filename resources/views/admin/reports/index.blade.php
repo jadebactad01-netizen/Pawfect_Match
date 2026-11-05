@@ -275,10 +275,6 @@
                     {{ $reportTitle }}
                 </h2>
 
-                <p class="mt-2 text-sm text-gray-600">
-                    Pawfect Match — Pet Adoption Management System
-                </p>
-
                 <div class="mt-4 text-sm text-gray-600">
 
                     <p>

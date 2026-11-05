@@ -16,17 +16,47 @@ class AdoptionApplicationController extends Controller
             abort(403);
         }
 
-        $applications = $user->adoptionApplications()
+        // Show Pending by default.
+        $filter = $request->query('filter', 'pending');
+
+        $allowedFilters = [
+            'all',
+            'pending',
+            'approved',
+            'rejected',
+            'incomplete',
+        ];
+
+        if (! in_array($filter, $allowedFilters)) {
+            $filter = 'pending';
+        }
+
+        $query = $user->adoptionApplications()
             ->with([
                 'pet',
                 'compatibilityAssessment.petRecommendations.pet',
-            ])
+            ]);
+
+        // Filter applications.
+        if ($filter === 'pending') {
+            $query->where('status', 'Pending')
+                ->whereHas('compatibilityAssessment');
+        } elseif ($filter === 'approved') {
+            $query->where('status', 'Approved');
+        } elseif ($filter === 'rejected') {
+            $query->where('status', 'Rejected');
+        } elseif ($filter === 'incomplete') {
+            $query->whereDoesntHave('compatibilityAssessment');
+        }
+
+        $applications = $query
             ->latest()
-            ->paginate(4);
+            ->paginate(4)
+            ->withQueryString();
 
         return view(
             'adoption-applications.index',
-            compact('applications')
+            compact('applications', 'filter')
         );
     }
 
