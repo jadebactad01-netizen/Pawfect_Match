@@ -1,9 +1,18 @@
-
 @extends('layouts.app')
 
 @section('title', 'My Applications - Pawfect Match')
 
 @section('content')
+
+@php
+    // Number this adopter's applications from oldest to newest.
+    // Keep the numbers consistent across filters and pages.
+    $personalNumbers = auth()->user()
+        ->adoptionApplications()
+        ->orderBy('id')
+        ->pluck('id')
+        ->flip();
+@endphp
 
 <section class="min-h-screen bg-orange-50/40 py-10">
 
@@ -106,7 +115,7 @@
 
                     <a
                         href="{{ route('adoption-applications.index', ['filter' => 'all']) }}"
-                        class="mt-7 inline-block rounded-full bg-orange-500 px-8 py-3 font-semibold text-white shadow-sm transition duration-200 hover:bg-orange-600 hover:shadow-md"
+                        class="mt-7 inline-block rounded-full bg-orange-500 px-8 py-3 font-semibold text-white transition duration-200 hover:bg-orange-600 hover:shadow-md"
                     >
                         View All Applications
                     </a>
@@ -129,8 +138,9 @@
 
                             <div>
 
+                                {{-- PERSONAL APPLICATION NUMBER --}}
                                 <p class="text-xs font-semibold uppercase tracking-wider text-orange-500">
-                                    Application #{{ $application->id }}
+                                    Application #{{ $personalNumbers[$application->id] + 1 }}
                                 </p>
 
                                 <h2 class="mt-2 text-2xl font-bold text-gray-900">
