@@ -18,6 +18,7 @@ class CreateNewUser implements CreatesNewUsers
             'name' => [
                 'required',
                 'string',
+                'regex:/^[\pL\s.\'-]+$/u',
                 'max:255',
             ],
 

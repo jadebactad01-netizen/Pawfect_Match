@@ -119,7 +119,10 @@ class AdminPetController extends Controller
     {
         return [
             'name' => [
-                'required', 'string', 'max:255',
+                'required',
+                'string',
+                'regex:/^[\pL\s.\'-]+$/u',
+                'max:255',
             ],
 
             'type' => [

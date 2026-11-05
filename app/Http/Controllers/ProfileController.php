@@ -25,7 +25,12 @@ class ProfileController extends Controller
         $profile = $user->adopterProfile;
 
         $rules = [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => [
+                'required',
+                'string',
+                'regex:/^[\pL\s.\'-]+$/u',
+                'max:255',
+            ],
             'email' => [
                 'required',
                 'email',

@@ -199,6 +199,7 @@ class SuperAdminController extends Controller
             'name' => [
                 'required',
                 'string',
+                'regex:/^[\pL\s.\'-]+$/u',
                 'max:255',
             ],
             'email' => [
@@ -249,6 +250,7 @@ class SuperAdminController extends Controller
             'name' => [
                 'required',
                 'string',
+                'regex:/^[\pL\s.\'-]+$/u',
                 'max:255',
             ],
             'email' => [
