@@ -77,7 +77,7 @@ class CompatibilityAssessmentController extends Controller
                 );
         }
 
-        // These answers come from the saved adopter profile.
+        // Get saved answers from the adopter profile.
         $answers = [
             'care_ability' => $profile->care_ability,
             'available_time' => $profile->available_time,
@@ -87,7 +87,7 @@ class CompatibilityAssessmentController extends Controller
             'activity_level' => $profile->activity_level,
         ];
 
-        // Preserve one set of answers for this particular application.
+        // Save the compatibility assessment.
         $assessment = CompatibilityAssessment::create([
             'adoption_application_id' => $application->id,
             ...$answers,
@@ -95,7 +95,7 @@ class CompatibilityAssessmentController extends Controller
 
         $application->load('pet');
 
-        // Calculate the pet-specific compatibility score.
+        // Calculate the compatibility score.
         $result = $compatibilityService->calculate(
             $assessment,
             $application->pet
@@ -103,7 +103,10 @@ class CompatibilityAssessmentController extends Controller
 
         $assessment->update($result);
 
-        // Generate the AI explanation for the calculated result.
+        // Track AI errors temporarily.
+        $aiErrors = [];
+
+        // Generate the compatibility explanation.
         $explanation = $geminiService
             ->generateCompatibilityExplanation(
                 $assessment,
@@ -114,6 +117,9 @@ class CompatibilityAssessmentController extends Controller
             $assessment->update([
                 'gemini_explanation' => $explanation,
             ]);
+        } else {
+            $aiErrors[] = $geminiService->getLastError()
+                ?? 'The compatibility explanation could not be generated.';
         }
 
         // Get compatible alternative pets.
@@ -132,6 +138,12 @@ class CompatibilityAssessmentController extends Controller
                     $recommendedPet->compatibility_classification
                 );
 
+            // Collect the reason if Gemini fails.
+            if (! $recommendationExplanation) {
+                $aiErrors[] = $geminiService->getLastError()
+                    ?? 'An AI recommendation explanation could not be generated.';
+            }
+
             PetRecommendation::create([
                 'compatibility_assessment_id' => $assessment->id,
                 'pet_id' => $recommendedPet->id,
@@ -147,12 +159,22 @@ class CompatibilityAssessmentController extends Controller
             ]);
         }
 
-        return redirect()
+        $redirect = redirect()
             ->route('adoption-applications.index')
             ->with(
                 'success',
                 'Your adoption application and compatibility assessment were submitted successfully.'
             );
+
+        // Show the detected error without storing it.
+        if (! empty($aiErrors)) {
+            $redirect->with(
+                'error',
+                implode(' ', array_unique($aiErrors))
+            );
+        }
+
+        return $redirect;
     }
 
     public function retryExplanation(
@@ -189,6 +211,7 @@ class CompatibilityAssessmentController extends Controller
                 );
         }
 
+        // Retry the compatibility explanation.
         $explanation = $geminiService
             ->generateCompatibilityExplanation(
                 $assessment,
@@ -200,7 +223,8 @@ class CompatibilityAssessmentController extends Controller
                 ->route('adoption-applications.index')
                 ->with(
                     'error',
-                    'The AI model is temporarily unavailable. Please try again later.'
+                    $geminiService->getLastError()
+                        ?? 'The compatibility explanation could not be generated.'
                 );
         }
 
@@ -253,6 +277,9 @@ class CompatibilityAssessmentController extends Controller
                 );
         }
 
+        // Track errors from failed retry requests.
+        $aiErrors = [];
+
         foreach ($missingRecommendations as $recommendation) {
 
             $explanation = $geminiService
@@ -267,6 +294,9 @@ class CompatibilityAssessmentController extends Controller
                 $recommendation->update([
                     'gemini_explanation' => $explanation,
                 ]);
+            } else {
+                $aiErrors[] = $geminiService->getLastError()
+                    ?? 'An AI recommendation explanation could not be generated.';
             }
         }
 
@@ -279,7 +309,8 @@ class CompatibilityAssessmentController extends Controller
                 ->route('adoption-applications.index')
                 ->with(
                     'error',
-                    'Some AI recommendation explanations are still temporarily unavailable. Please try again later.'
+                    implode(' ', array_unique($aiErrors))
+                        ?: 'Some AI recommendation explanations could not be generated.'
                 );
         }
 

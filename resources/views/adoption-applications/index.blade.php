@@ -194,10 +194,12 @@
 
                                     @else
 
+                                        {{-- UPDATED AI MESSAGE --}}
                                         <p class="mt-3 text-sm leading-7 text-gray-600">
-                                            The AI model is temporarily unavailable.
+                                            The AI explanation could not be generated.
                                             Your compatibility score is still valid.
-                                            You can try generating the explanation again later.
+                                            Please try again using the button below.
+                                            If Gemini returns an error, its specific reason will be displayed in an alert.
                                         </p>
 
                                         <form
@@ -343,9 +345,10 @@
 
                                                 @else
 
-                                                    <p class="text-sm text-gray-500">
-                                                        AI recommendation explanation
-                                                        is temporarily unavailable.
+                                                    {{-- UPDATED AI MESSAGE --}}
+                                                    <p class="text-sm leading-6 text-gray-500">
+                                                        The AI recommendation explanation could not be generated.
+                                                        You can retry below. Any detected Gemini error will be displayed in an alert.
                                                     </p>
 
                                                 @endif
