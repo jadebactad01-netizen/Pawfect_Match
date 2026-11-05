@@ -201,7 +201,7 @@ class CompatibilityAssessmentController extends Controller
 
         if (! $assessment) {
             return redirect()
-                ->route('adoption-applications.index')
+                ->back()
                 ->with(
                     'error',
                     'Complete the compatibility assessment first.'
@@ -210,7 +210,7 @@ class CompatibilityAssessmentController extends Controller
 
         if ($assessment->gemini_explanation) {
             return redirect()
-                ->route('adoption-applications.index')
+                ->back()
                 ->with(
                     'success',
                     'The compatibility explanation is already available.'
@@ -226,7 +226,7 @@ class CompatibilityAssessmentController extends Controller
 
         if (! $explanation) {
             return redirect()
-                ->route('adoption-applications.index')
+                ->back()
                 ->with(
                     'error',
                     $geminiService->getLastError()
@@ -239,7 +239,7 @@ class CompatibilityAssessmentController extends Controller
         ]);
 
         return redirect()
-            ->route('adoption-applications.index')
+            ->back()
             ->with(
                 'success',
                 'Compatibility explanation generated successfully.'
@@ -263,7 +263,7 @@ class CompatibilityAssessmentController extends Controller
 
         if (! $assessment) {
             return redirect()
-                ->route('adoption-applications.index')
+                ->back()
                 ->with(
                     'error',
                     'Compatibility assessment not found.'
@@ -276,7 +276,7 @@ class CompatibilityAssessmentController extends Controller
 
         if ($missingRecommendations->isEmpty()) {
             return redirect()
-                ->route('adoption-applications.index')
+                ->back()
                 ->with(
                     'success',
                     'Recommendation explanations are already available.'
@@ -312,7 +312,7 @@ class CompatibilityAssessmentController extends Controller
 
         if ($stillMissing) {
             return redirect()
-                ->route('adoption-applications.index')
+                ->back()
                 ->with(
                     'error',
                     implode(' ', array_unique($aiErrors))
@@ -321,7 +321,7 @@ class CompatibilityAssessmentController extends Controller
         }
 
         return redirect()
-            ->route('adoption-applications.index')
+            ->back()
             ->with(
                 'success',
                 'AI recommendation explanations generated successfully.'
