@@ -2,237 +2,174 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdoptionApplication;
+use App\Models\AdopterProfile;
 use App\Models\Pet;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
-class AdminPetController extends Controller
+class AdminController extends Controller
 {
-    public function manage(Request $request)
+    public function dashboard(Request $request)
     {
-        $search = $request->query('search');
+        $validated = $request->validate([
+            'date_from' => ['nullable', 'date'],
+            'date_to' => ['nullable', 'date', 'after_or_equal:date_from'],
+        ]);
 
-        // Exclude adopted pets from Manage Pets.
-        $query = Pet::where('status', '!=', 'Adopted')
-            ->latest();
+        $dateFrom = $validated['date_from'] ?? '';
+        $dateTo = $validated['date_to'] ?? '';
 
-        if ($search) {
-            $query->where(
-                'name',
-                'like',
-                '%' . $search . '%'
-            );
+        // Shelter overview
+        $pendingApplications = AdoptionApplication::whereHas('compatibilityAssessment')
+            ->where('status', 'Pending')
+            ->count();
+
+        $approvedApplications = AdoptionApplication::where('status', 'Approved')
+            ->count();
+
+        $rejectedApplications = AdoptionApplication::where('status', 'Rejected')
+            ->count();
+
+        $availablePets = Pet::where('status', 'Available')->count();
+
+        $totalAdopters = User::where('role', 'adopter')->count();
+
+        $pendingAccountApprovals = User::where('role', 'adopter')
+            ->where('approval_status', 'Pending')
+            ->count();
+
+        // Application status graph
+        $chartQuery = AdoptionApplication::query();
+
+        if ($dateFrom) {
+            $chartQuery->whereDate('created_at', '>=', $dateFrom);
         }
 
-        $pets = $query->paginate(10)->withQueryString();
-
-        return view(
-            'admin.pets.manage',
-            compact('pets', 'search')
-        );
-    }
-
-    public function add()
-    {
-        return view('admin.pets.add');
-    }
-
-    public function store(Request $request)
-    {
-        $validated = $request->validate($this->petRules());
-
-        $validated = $this->preparePetData($validated);
-
-        if ($request->hasFile('photo')) {
-            $validated['photo'] = $request
-                ->file('photo')
-                ->store('pets', 'public');
+        if ($dateTo) {
+            $chartQuery->whereDate('created_at', '<=', $dateTo);
         }
 
-        Pet::create($validated);
+        $chartPending = (clone $chartQuery)
+            ->where('status', 'Pending')
+            ->whereHas('compatibilityAssessment')
+            ->count();
 
-        return redirect()
-            ->route('admin.pets.manage')
-            ->with('success', 'Pet added successfully.');
-    }
+        $chartApproved = (clone $chartQuery)
+            ->where('status', 'Approved')
+            ->count();
 
-    public function edit(Pet $pet)
-    {
-        // Prevent editing adopted pets.
-        if ($pet->status === 'Adopted') {
-            abort(403, 'Adopted pets cannot be edited.');
+        $chartRejected = (clone $chartQuery)
+            ->where('status', 'Rejected')
+            ->count();
+
+        // Monthly adoption applications
+        $monthlyStart = now()->startOfMonth()->subMonths(11);
+
+        $monthlyCounts = AdoptionApplication::where(
+            'created_at', '>=', $monthlyStart
+        )
+            ->where('created_at', '<', now()->startOfMonth()->addMonth())
+            ->get(['created_at'])
+            ->groupBy(fn ($application) => $application->created_at->format('Y-m'));
+
+        $monthlyApplications = [];
+
+        for ($i = 0; $i < 12; $i++) {
+            $month = $monthlyStart->copy()->addMonths($i);
+            $key = $month->format('Y-m');
+
+            $monthlyApplications[] = [
+                'label' => $month->format('M'),
+                'year' => $month->format('Y'),
+                'count' => $monthlyCounts->has($key)
+                    ? $monthlyCounts[$key]->count()
+                    : 0,
+            ];
         }
 
-        return view('admin.pets.edit', compact('pet'));
-    }
+        // Applications needing review
+        $recentPendingApplications = AdoptionApplication::with(['user', 'pet'])
+            ->whereHas('compatibilityAssessment')
+            ->where('status', 'Pending')
+            ->latest()
+            ->take(5)
+            ->get();
 
-    public function update(Request $request, Pet $pet)
-    {
-        // Prevent updating adopted pets.
-        if ($pet->status === 'Adopted') {
-            abort(403, 'Adopted pets cannot be updated.');
-        }
+        // Pending compatibility edit requests
+        $pendingEditRequests = AdopterProfile::with('user')
+            ->where('edit_request_status', 'Pending')
+            ->whereHas('user', fn ($query) => $query->where('role', 'adopter'))
+            ->latest('updated_at')
+            ->get();
 
-        $validated = $request->validate($this->petRules());
+        // Actual recorded shelter activity
+        $recentActivities = DB::table('shelter_activities')
+            ->orderByDesc('id')
+            ->limit(4)
+            ->get()
+            ->map(function ($activity) {
 
-        $validated = $this->preparePetData($validated);
+                $link = match ($activity->activity_type) {
+                    'pet_added' =>
+                        route('pets.show', $activity->subject_id),
 
-        if ($request->hasFile('photo')) {
+                    'application_submitted' =>
+                        route('admin.applications.index'),
 
-            $newPhoto = $request
-                ->file('photo')
-                ->store('pets', 'public');
+                    'application_approved',
+                    'application_rejected' =>
+                        route('admin.adoption-records.show', $activity->subject_id),
 
-            if ($pet->photo) {
-                Storage::disk('public')->delete($pet->photo);
-            }
+                    'account_approved',
+                    'account_rejected',
+                    'edit_requested',
+                    'edit_approved',
+                    'edit_rejected' =>
+                        route('admin.adopters.show', $activity->subject_id),
 
-            $validated['photo'] = $newPhoto;
-        }
+                    default => route('admin.dashboard'),
+                };
 
-        $pet->update($validated);
+                $color = match ($activity->activity_type) {
+                    'application_approved',
+                    'account_approved',
+                    'edit_approved' => 'green',
 
-        return redirect()
-            ->route('admin.pets.manage')
-            ->with('success', 'Pet updated successfully.');
-    }
+                    'application_rejected',
+                    'account_rejected',
+                    'edit_rejected' => 'red',
 
-    public function destroy(Pet $pet)
-    {
-        // Prevent deleting adopted pets.
-        if ($pet->status === 'Adopted') {
-            abort(403, 'Adopted pets cannot be deleted.');
-        }
+                    'edit_requested' => 'amber',
 
-        if ($pet->photo) {
-            Storage::disk('public')->delete($pet->photo);
-        }
+                    default => 'orange',
+                };
 
-        $pet->delete();
+                return [
+                    'title' => $activity->title,
+                    'description' => $activity->description,
+                    'link' => $link,
+                    'color' => $color,
+                ];
+            });
 
-        return redirect()
-            ->route('admin.pets.manage')
-            ->with('success', 'Pet deleted successfully.');
-    }
-
-    private function petRules(): array
-    {
-        return [
-            'name' => [
-                'required', 'string', 'max:255',
-            ],
-
-            'type' => [
-                'required', 'in:Dog,Cat',
-            ],
-
-            'sex' => [
-                'required', 'in:Male,Female',
-            ],
-
-            'age_number' => [
-                'required', 'integer', 'min:1',
-                function ($attribute, $value, $fail) {
-                    $unit = request('age_unit');
-
-                    if ($unit === 'Months' && $value > 11) {
-                        $fail('Age in months must be between 1 and 11.');
-                    }
-
-                    if ($unit === 'Years' && $value > 30) {
-                        $fail('Age in years must be between 1 and 30.');
-                    }
-                },
-            ],
-
-            'age_unit' => [
-                'required', 'in:Months,Years',
-            ],
-
-            'status' => [
-                'required', 'in:Available,Unavailable',
-            ],
-
-            'description' => [
-                'nullable', 'string',
-            ],
-
-            'photo' => [
-                'nullable',
-                'image',
-                'mimes:jpg,jpeg,png,webp',
-                'max:5120',
-            ],
-
-            // Pet intake information.
-            'intake_type' => [
-                'nullable',
-                'required_with:intake_date',
-                'in:Rescued,Surrendered',
-            ],
-
-            'intake_date' => [
-                'nullable',
-                'required_with:intake_type',
-                'date',
-                'before_or_equal:today',
-            ],
-
-            // Vaccination information.
-            'vaccination_type' => [
-                'nullable',
-                'required_with:vaccination_date',
-                'string',
-                'max:255',
-            ],
-
-            'vaccination_date' => [
-                'nullable',
-                'required_with:vaccination_type',
-                'date',
-                'before_or_equal:today',
-            ],
-
-            'care_requirement' => [
-                'required', 'in:Low,Moderate,High',
-            ],
-
-            'time_requirement' => [
-                'required', 'in:Low,Moderate,High',
-            ],
-
-            'household_compatibility' => [
-                'required',
-                'in:Living alone,Adults only,Family with children,Any',
-            ],
-
-            'living_environment' => [
-                'required',
-                'in:House,Apartment,Other,Any',
-            ],
-
-            'experience_requirement' => [
-                'required', 'in:None,Some,Experienced',
-            ],
-
-            'activity_level' => [
-                'required', 'in:Low,Moderate,High',
-            ],
-        ];
-    }
-
-    private function preparePetData(array $validated): array
-    {
-        $validated['age'] =
-            $validated['age_number']
-            . ' '
-            . $validated['age_unit'];
-
-        unset(
-            $validated['age_number'],
-            $validated['age_unit']
-        );
-
-        return $validated;
+        return view('admin.dashboard', compact(
+            'pendingApplications',
+            'approvedApplications',
+            'rejectedApplications',
+            'availablePets',
+            'totalAdopters',
+            'pendingAccountApprovals',
+            'recentPendingApplications',
+            'pendingEditRequests',
+            'recentActivities',
+            'chartPending',
+            'chartApproved',
+            'chartRejected',
+            'dateFrom',
+            'dateTo',
+            'monthlyApplications'
+        ));
     }
 }
