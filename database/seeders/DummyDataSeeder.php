@@ -11,7 +11,7 @@ class DummyDataSeeder extends Seeder
     public function run(): void
     {
         /*
-         * Create 60 dummy adopters.
+         * Create 50 dummy adopters.
          */
         User::factory()
             ->count(50)
@@ -136,7 +136,7 @@ class DummyDataSeeder extends Seeder
             });
 
         /*
-         * Create 45 dummy pets.
+         * Create 65 dummy pets.
          * Photos will be added manually.
          */
         Pet::factory()
