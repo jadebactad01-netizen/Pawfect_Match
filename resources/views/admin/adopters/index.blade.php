@@ -165,7 +165,7 @@
                                     @else
 
                                         <a
-                                            href="{{ route('admin.account-approvals.index') }}"
+                                            href="{{ route('admin.account-approvals.index', ['user' => $adopter->id]) }}"
                                             class="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-orange-300 bg-white px-4 py-2 text-xs font-semibold text-orange-600 transition hover:bg-orange-50"
                                         >
                                             Review Account

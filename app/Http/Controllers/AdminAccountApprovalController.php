@@ -9,19 +9,27 @@ use Illuminate\Validation\Rule;
 
 class AdminAccountApprovalController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::where('role', 'adopter')
+        $selectedUser = $request->query('user');
+
+        $query = User::where('role', 'adopter')
             ->whereIn('approval_status', [
                 'Pending',
                 'Rejected',
             ])
-            ->latest()
-            ->paginate(10);
+            ->latest();
+
+        // Show only the selected adopter when reviewing from Adopters.
+        if ($selectedUser) {
+            $query->where('id', $selectedUser);
+        }
+
+        $users = $query->paginate(10)->withQueryString();
 
         return view(
             'admin.adopters.approvals',
-            compact('users')
+            compact('users', 'selectedUser')
         );
     }
 
