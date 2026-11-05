@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('title', 'Adoption Applications - Pawfect Match')
@@ -48,8 +49,8 @@
                 </div>
 
                 <span class="rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-700">
-                    {{ $applications->count() }}
-                    {{ $applications->count() === 1 ? 'Application' : 'Applications' }}
+                    {{ $applications->total() }}
+                    {{ $applications->total() === 1 ? 'Application' : 'Applications' }}
                 </span>
 
             </div>
@@ -119,7 +120,6 @@
                         <div class="grid min-w-0 flex-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 
                             <div>
-
                                 <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
                                     Application
                                 </p>
@@ -127,11 +127,9 @@
                                 <p class="mt-1 text-sm font-bold text-gray-900">
                                     #{{ $application->id }}
                                 </p>
-
                             </div>
 
                             <div>
-
                                 <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
                                     Applicant
                                 </p>
@@ -139,11 +137,9 @@
                                 <p class="mt-1 break-words text-sm font-semibold text-gray-900">
                                     {{ $application->user?->name ?? 'Unavailable' }}
                                 </p>
-
                             </div>
 
                             <div>
-
                                 <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
                                     Pet
                                 </p>
@@ -151,11 +147,9 @@
                                 <p class="mt-1 break-words text-sm font-semibold text-gray-900">
                                     {{ $application->pet?->name ?? 'Unavailable' }}
                                 </p>
-
                             </div>
 
                             <div>
-
                                 <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
                                     Submitted
                                 </p>
@@ -163,7 +157,6 @@
                                 <p class="mt-1 whitespace-nowrap text-sm font-semibold text-gray-900">
                                     {{ $application->created_at->format('M d, Y') }}
                                 </p>
-
                             </div>
 
                         </div>
@@ -219,6 +212,9 @@
                 </div>
 
             @endforelse
+
+            {{-- PAGINATION --}}
+            <x-pagination :paginator="$applications" />
 
         </div>
 

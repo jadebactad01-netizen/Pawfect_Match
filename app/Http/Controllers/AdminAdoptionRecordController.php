@@ -69,7 +69,8 @@ class AdminAdoptionRecordController extends Controller
 
         $records = $query
             ->latest()
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         return view(
             'admin.adoption-records.index',

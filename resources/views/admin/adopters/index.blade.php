@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('title', 'Registered Adopters - Pawfect Match')
@@ -32,7 +33,6 @@
             <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
 
                 <div>
-
                     <p class="text-xs font-semibold uppercase tracking-wider text-orange-500">
                         Adopter Records
                     </p>
@@ -44,12 +44,11 @@
                     <p class="mt-1 text-sm text-gray-500">
                         Review registered adopters and their adoption activity.
                     </p>
-
                 </div>
 
                 <span class="rounded-full border border-orange-200 bg-orange-50 px-4 py-2 text-sm font-semibold text-orange-600">
-                    {{ $adopters->count() }}
-                    {{ $adopters->count() === 1 ? 'Adopter' : 'Adopters' }}
+                    {{ $adopters->total() }}
+                    {{ $adopters->total() === 1 ? 'Adopter' : 'Adopters' }}
                 </span>
 
             </div>
@@ -60,7 +59,6 @@
                 method="GET"
                 class="mb-5 flex w-full flex-wrap items-center gap-3 sm:flex-nowrap"
             >
-
                 <input
                     type="text"
                     name="search"
@@ -78,16 +76,13 @@
                 </button>
 
                 @if ($search)
-
                     <a
                         href="{{ route('admin.adopters.index') }}"
                         class="rounded-full border border-orange-200 bg-white px-5 py-3 text-sm font-semibold text-gray-600 transition hover:bg-orange-50"
                     >
                         Clear
                     </a>
-
                 @endif
-
             </form>
 
             {{-- ADOPTERS TABLE --}}
@@ -96,9 +91,7 @@
                 <table class="min-w-full bg-white text-left text-sm">
 
                     <thead class="border-b border-orange-100 bg-orange-50/70 text-gray-700">
-
                         <tr>
-
                             <th class="whitespace-nowrap px-5 py-4 font-semibold">
                                 Name
                             </th>
@@ -118,9 +111,7 @@
                             <th class="whitespace-nowrap px-5 py-4 text-right font-semibold">
                                 Action
                             </th>
-
                         </tr>
-
                     </thead>
 
                     <tbody class="divide-y divide-orange-100">
@@ -146,9 +137,7 @@
 
                                 {{-- ACCOUNT STATUS --}}
                                 <td class="px-5 py-4">
-
-                                    <span
-                                        class="inline-block whitespace-nowrap rounded-full border px-3 py-1 text-xs font-semibold
+                                    <span class="inline-block whitespace-nowrap rounded-full border px-3 py-1 text-xs font-semibold
                                         @if ($adopter->approval_status === 'Approved')
                                             border-green-200 bg-green-50 text-green-700
                                         @elseif ($adopter->approval_status === 'Rejected')
@@ -159,7 +148,6 @@
                                     >
                                         {{ $adopter->approval_status ?? 'Pending' }}
                                     </span>
-
                                 </td>
 
                                 {{-- ACTION --}}
@@ -192,7 +180,6 @@
                         @empty
 
                             <tr>
-
                                 <td colspan="5" class="px-6 py-12 text-center">
 
                                     <p class="font-semibold text-gray-700">
@@ -200,28 +187,23 @@
                                     </p>
 
                                     <p class="mt-2 text-sm text-gray-500">
-
                                         @if ($search)
                                             No adopters match your search. Try another name.
                                         @else
                                             There are no registered adopters yet.
                                         @endif
-
                                     </p>
 
                                     @if ($search)
-
                                         <a
                                             href="{{ route('admin.adopters.index') }}"
                                             class="mt-4 inline-block text-sm font-semibold text-orange-600 hover:text-orange-700"
                                         >
                                             Clear Search
                                         </a>
-
                                     @endif
 
                                 </td>
-
                             </tr>
 
                         @endforelse
@@ -231,6 +213,9 @@
                 </table>
 
             </div>
+
+            {{-- PAGINATION --}}
+            <x-pagination :paginator="$adopters" />
 
         </div>
 

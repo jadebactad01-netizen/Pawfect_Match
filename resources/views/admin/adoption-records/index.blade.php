@@ -211,6 +211,9 @@
 
             @endforelse
 
+            {{-- PAGINATION --}}
+            <x-pagination :paginator="$records" />
+
         </div>
 
     </div>

@@ -24,7 +24,7 @@ class AdminPetController extends Controller
             );
         }
 
-        $pets = $query->get();
+        $pets = $query->paginate(10)->withQueryString();
 
         return view(
             'admin.pets.manage',

@@ -180,7 +180,7 @@ class SuperAdminController extends Controller
     {
         $administrators = User::where('role', 'admin')
             ->latest()
-            ->get();
+            ->paginate(10);
 
         return view(
             'super-admin.administrators.index',

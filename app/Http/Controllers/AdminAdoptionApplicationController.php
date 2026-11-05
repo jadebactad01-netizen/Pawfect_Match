@@ -54,7 +54,7 @@ class AdminAdoptionApplicationController extends Controller
             );
         }
 
-        $applications = $query->get();
+        $applications = $query->paginate(10)->withQueryString();
 
         return view(
             'admin.applications.index',

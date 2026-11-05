@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('title', 'My Applications - Pawfect Match')
@@ -457,10 +458,13 @@
 
             </div>
 
+            {{-- PAGINATION --}}
+            <x-pagination :paginator="$applications" />
+
         @endif
 
     </div>
 
 </section>
 
-@endsection 
+@endsection

@@ -167,6 +167,9 @@
 
             </div>
 
+            {{-- PAGINATION --}}
+            <x-pagination :paginator="$administrators" />
+
         </div>
 
     </div>

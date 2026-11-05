@@ -22,7 +22,7 @@ class AdoptionApplicationController extends Controller
                 'compatibilityAssessment.petRecommendations.pet',
             ])
             ->latest()
-            ->get();
+            ->paginate(4);
 
         return view(
             'adoption-applications.index',

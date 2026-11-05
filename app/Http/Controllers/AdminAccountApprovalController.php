@@ -17,7 +17,7 @@ class AdminAccountApprovalController extends Controller
                 'Rejected',
             ])
             ->latest()
-            ->get();
+            ->paginate(10);
 
         return view(
             'admin.adopters.approvals',

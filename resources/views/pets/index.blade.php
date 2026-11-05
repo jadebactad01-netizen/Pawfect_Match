@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('title', 'Available Pets - Pawfect Match')
@@ -29,7 +30,6 @@
 
 </section>
 
-
 {{-- PET FILTERS --}}
 <section class="border-b border-orange-100 bg-white">
 
@@ -40,7 +40,7 @@
             <p class="text-sm text-gray-600">
                 Showing
                 <span class="font-bold text-orange-600">
-                    {{ count($pets) }}
+                    {{ $pets->total() }}
                 </span>
                 available pets
             </p>
@@ -87,7 +87,6 @@
     </div>
 
 </section>
-
 
 {{-- PET LIST --}}
 <section class="bg-orange-50/40 py-16">
@@ -206,6 +205,9 @@
             @endforelse
 
         </div>
+
+        {{-- PAGINATION --}}
+        <x-pagination :paginator="$pets" />
 
     </div>
 

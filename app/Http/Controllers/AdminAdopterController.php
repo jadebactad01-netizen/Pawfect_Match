@@ -24,7 +24,7 @@ class AdminAdopterController extends Controller
             );
         }
 
-        $adopters = $query->get();
+        $adopters = $query->paginate(10)->withQueryString();
 
         return view(
             'admin.adopters.index',

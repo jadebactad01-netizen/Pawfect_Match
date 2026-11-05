@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('title', 'Account Approvals - Pawfect Match')
@@ -76,8 +77,8 @@
                 </div>
 
                 <span class="rounded-full border border-orange-200 bg-orange-50 px-4 py-2 text-sm font-semibold text-orange-600">
-                    {{ $users->count() }}
-                    {{ $users->count() === 1 ? 'Account' : 'Accounts' }}
+                    {{ $users->total() }}
+                    {{ $users->total() === 1 ? 'Account' : 'Accounts' }}
                 </span>
 
             </div>
@@ -298,6 +299,9 @@
                 </div>
 
             @endif
+
+            {{-- PAGINATION --}}
+            <x-pagination :paginator="$users" />
 
         </div>
 

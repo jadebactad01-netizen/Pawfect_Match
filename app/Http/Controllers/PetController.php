@@ -1,3 +1,4 @@
+
 <?php
 
 namespace App\Http\Controllers;
@@ -17,7 +18,6 @@ class PetController extends Controller
         */
         $query = Pet::where('status', 'Available');
 
-
         /*
         * Get the pet type from the URL.
         *
@@ -27,7 +27,6 @@ class PetController extends Controller
         */
         $type = $request->query('type');
 
-
         /*
         * Only allow Dog or Cat as filters.
         */
@@ -35,16 +34,15 @@ class PetController extends Controller
             $query->where('type', $type);
         }
 
-
         /*
-        * Run the query and get the pets.
+        * Show 9 pets per page.
+        * Keep the selected filter when changing pages.
         */
-        $pets = $query->get();
+        $pets = $query
+            ->latest()
+            ->paginate(9)
+            ->withQueryString();
 
-
-        /*
-        * Send both variables to the page.
-        */
         return view('pets.index', compact('pets', 'type'));
     }
 
