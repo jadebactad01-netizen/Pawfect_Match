@@ -106,6 +106,9 @@ class CompatibilityAssessmentController extends Controller
         // Track AI errors temporarily.
         $aiErrors = [];
 
+        // Stop further AI requests after HTTP 429 or 503.
+        $stopAiRequests = false;
+
         // Generate the compatibility explanation.
         $explanation = $geminiService
             ->generateCompatibilityExplanation(
@@ -120,6 +123,10 @@ class CompatibilityAssessmentController extends Controller
         } else {
             $aiErrors[] = $geminiService->getLastError()
                 ?? 'The compatibility explanation could not be generated.';
+
+            if (in_array($geminiService->getLastStatus(), [429, 503])) {
+                $stopAiRequests = true;
+            }
         }
 
         // Get compatible alternative pets.
@@ -130,20 +137,32 @@ class CompatibilityAssessmentController extends Controller
 
         foreach ($recommendedPets as $recommendedPet) {
 
-            $recommendationExplanation = $geminiService
-                ->generateRecommendationExplanation(
-                    $assessment,
-                    $recommendedPet,
-                    $recommendedPet->compatibility_score,
-                    $recommendedPet->compatibility_classification
-                );
+            $recommendationExplanation = null;
 
-            // Collect the reason if Gemini fails.
-            if (! $recommendationExplanation) {
-                $aiErrors[] = $geminiService->getLastError()
-                    ?? 'An AI recommendation explanation could not be generated.';
+            // Only contact Gemini if no blocking error occurred.
+            if (! $stopAiRequests) {
+
+                $recommendationExplanation = $geminiService
+                    ->generateRecommendationExplanation(
+                        $assessment,
+                        $recommendedPet,
+                        $recommendedPet->compatibility_score,
+                        $recommendedPet->compatibility_classification
+                    );
+
+                if (! $recommendationExplanation) {
+                    $aiErrors[] = $geminiService->getLastError()
+                        ?? 'An AI recommendation explanation could not be generated.';
+
+                    // Stop further requests on quota or availability errors.
+                    if (in_array($geminiService->getLastStatus(), [429, 503])) {
+                        $stopAiRequests = true;
+                    }
+                }
             }
 
+            // Always save the recommendation and its calculated score.
+            // The explanation can be generated later.
             PetRecommendation::create([
                 'compatibility_assessment_id' => $assessment->id,
                 'pet_id' => $recommendedPet->id,
@@ -217,7 +236,7 @@ class CompatibilityAssessmentController extends Controller
                 );
         }
 
-        // Retry the compatibility explanation.
+        // Retry only the missing compatibility explanation.
         $explanation = $geminiService
             ->generateCompatibilityExplanation(
                 $assessment,
@@ -270,6 +289,7 @@ class CompatibilityAssessmentController extends Controller
                 );
         }
 
+        // Get only recommendations without AI explanations.
         $missingRecommendations =
             $assessment->petRecommendations
                 ->whereNull('gemini_explanation');
@@ -283,7 +303,7 @@ class CompatibilityAssessmentController extends Controller
                 );
         }
 
-        // Track errors from failed retry requests.
+        // Track errors from failed requests.
         $aiErrors = [];
 
         foreach ($missingRecommendations as $recommendation) {
@@ -303,6 +323,11 @@ class CompatibilityAssessmentController extends Controller
             } else {
                 $aiErrors[] = $geminiService->getLastError()
                     ?? 'An AI recommendation explanation could not be generated.';
+
+                // Stop retrying remaining pets if Gemini is limited.
+                if (in_array($geminiService->getLastStatus(), [429, 503])) {
+                    break;
+                }
             }
         }
 

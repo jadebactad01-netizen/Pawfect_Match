@@ -5,19 +5,23 @@ namespace App\Services;
 use App\Models\CompatibilityAssessment;
 use App\Models\Pet;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class GeminiService
 {
     private ?string $lastError = null;
+    private ?int $lastStatus = null;
 
     public function getLastError(): ?string
     {
         return $this->lastError;
     }
 
-    /**
-     * Generate a compatibility explanation.
-     */
+    public function getLastStatus(): ?int
+    {
+        return $this->lastStatus;
+    }
+
     public function generateCompatibilityExplanation(
         CompatibilityAssessment $assessment,
         Pet $pet
@@ -27,9 +31,6 @@ class GeminiService
         );
     }
 
-    /**
-     * Generate an explanation for a recommended pet.
-     */
     public function generateRecommendationExplanation(
         CompatibilityAssessment $assessment,
         Pet $pet,
@@ -47,11 +48,12 @@ class GeminiService
     }
 
     /**
-     * Send request to Gemini and detect errors.
+     * Send only one request to Gemini.
      */
     private function requestGemini(string $prompt): ?string
     {
         $this->lastError = null;
+        $this->lastStatus = null;
 
         $apiKey = config('services.gemini.api_key');
         $model = config('services.gemini.model');
@@ -64,8 +66,8 @@ class GeminiService
         }
 
         try {
+            // No automatic retries.
             $response = Http::timeout(20)
-                ->retry(2, 1000, throw: false)
                 ->withHeaders([
                     'x-goog-api-key' => $apiKey,
                 ])
@@ -82,6 +84,27 @@ class GeminiService
                     ]
                 );
 
+            $this->lastStatus = $response->status();
+
+            // Record request status and actual token usage.
+            // Google may omit token counts on failed requests.
+            Log::info('Gemini API request', [
+                'model' => $model,
+                'status' => $response->status(),
+                'input_tokens' => $response->json(
+                    'usageMetadata.promptTokenCount'
+                ),
+                'output_tokens' => $response->json(
+                    'usageMetadata.candidatesTokenCount'
+                ),
+                'thinking_tokens' => $response->json(
+                    'usageMetadata.thoughtsTokenCount'
+                ),
+                'total_tokens' => $response->json(
+                    'usageMetadata.totalTokenCount'
+                ),
+            ]);
+
             if ($response->failed()) {
                 $this->lastError = $this->explainError(
                     $response->status(),
@@ -96,7 +119,9 @@ class GeminiService
                 'candidates.0.content.parts.0.text'
             );
 
-            if (! is_string($explanation) || trim($explanation) === '') {
+            if (! is_string($explanation) ||
+                trim($explanation) === '') {
+
                 $this->lastError =
                     'Gemini returned no explanation. Please try again.';
 
@@ -106,6 +131,12 @@ class GeminiService
             return $explanation;
 
         } catch (\Throwable $exception) {
+
+            Log::warning('Gemini connection failed', [
+                'model' => $model,
+                'exception_type' => get_class($exception),
+            ]);
+
             $this->lastError =
                 'Unable to connect to Gemini. The request may have timed out or encountered a network problem.';
 
@@ -114,7 +145,7 @@ class GeminiService
     }
 
     /**
-     * Identify the Gemini API error.
+     * Explain Gemini API errors.
      */
     private function explainError(
         int $code,
@@ -131,19 +162,18 @@ class GeminiService
 
         if ($code === 429) {
 
-            // Daily quota reached.
             if (
                 str_contains($information, 'perday') ||
                 str_contains($information, 'per_day') ||
                 str_contains($information, 'per day') ||
                 str_contains($information, 'daily') ||
                 str_contains($information, 'rpd') ||
-                str_contains($information, 'tpd')
+                str_contains($information, 'tpd') ||
+                str_contains($information, 'quota_exceeded')
             ) {
                 return 'The Gemini daily quota has been reached (HTTP 429). Please wait for the quota to reset.';
             }
 
-            // Spending limit reached.
             if (
                 str_contains($information, 'spend cap') ||
                 str_contains($information, 'spending limit') ||
@@ -152,13 +182,14 @@ class GeminiService
                 return 'The Gemini API spending limit has been reached (HTTP 429). Please contact the administrator.';
             }
 
-            // Temporary rate limit.
             if (
                 str_contains($information, 'perminute') ||
                 str_contains($information, 'per_minute') ||
                 str_contains($information, 'per minute') ||
                 str_contains($information, 'rpm') ||
-                str_contains($information, 'tpm')
+                str_contains($information, 'tpm') ||
+                str_contains($information, 'rate_limit_exceeded') ||
+                str_contains($information, 'too_many_requests')
             ) {
                 return 'Too many Gemini requests were made in a short period (HTTP 429). Please wait before retrying.';
             }
@@ -194,7 +225,7 @@ class GeminiService
     }
 
     /**
-     * Build the compatibility explanation prompt.
+     * Build compatibility explanation prompt.
      */
     private function buildCompatibilityPrompt(
         CompatibilityAssessment $assessment,
@@ -246,7 +277,7 @@ class GeminiService
     }
 
     /**
-     * Build the recommendation explanation prompt.
+     * Build recommendation explanation prompt.
      */
     private function buildRecommendationPrompt(
         CompatibilityAssessment $assessment,
@@ -298,7 +329,6 @@ class GeminiService
         - Do not change or calculate the compatibility score.
         - Do not approve or guarantee the adoption.
         - Keep the explanation to 1 or 2 short sentences.
-        - Do not repeat every assessment factor.
         PROMPT;
     }
 }
