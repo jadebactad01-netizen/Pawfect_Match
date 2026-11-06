@@ -328,6 +328,7 @@ class GeminiService
         - Do not change or calculate the compatibility score.
         - Do not approve or guarantee the adoption.
         - Keep the explanation to 1 or 2 short sentences.
+        - Do not repeat every assessment factor.
         PROMPT;
     }
 }
