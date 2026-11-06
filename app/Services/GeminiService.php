@@ -168,8 +168,7 @@ class GeminiService
                 str_contains($information, 'per day') ||
                 str_contains($information, 'daily') ||
                 str_contains($information, 'rpd') ||
-                str_contains($information, 'tpd') ||
-                str_contains($information, 'quota_exceeded')
+                str_contains($information, 'tpd')
             ) {
                 return 'The Gemini daily quota has been reached (HTTP 429). Please wait for the quota to reset.';
             }
