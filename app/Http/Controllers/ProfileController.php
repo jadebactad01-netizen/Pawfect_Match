@@ -103,7 +103,8 @@ class ProfileController extends Controller
                 ];
 
                 $rules['living_environment'] = [
-                    'required', 'in:House,Apartment,Other',
+                    'required',
+                    'in:House,Apartment,Condominium,Townhouse,Boarding House / Shared Housing',
                 ];
 
                 $rules['pet_care_experience'] = [

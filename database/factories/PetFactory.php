@@ -77,7 +77,9 @@ class PetFactory extends Factory
             'living_environment' => fake()->randomElement([
                 'House',
                 'Apartment',
-                'Other',
+                'Condominium',
+                'Townhouse',
+                'Boarding House / Shared Housing',
                 'Any',
             ]),
 

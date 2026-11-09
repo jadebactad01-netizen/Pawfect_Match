@@ -76,7 +76,13 @@
                 'living_environment' => [
                     'Living Environment',
                     'What type of home do you currently live in?',
-                    ['House', 'Apartment', 'Other'],
+                    [
+                        'House',
+                        'Apartment',
+                        'Condominium',
+                        'Townhouse',
+                        'Boarding House / Shared Housing',
+                    ],
                 ],
                 'pet_care_experience' => [
                     'Pet-care Experience',

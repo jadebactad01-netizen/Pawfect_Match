@@ -483,7 +483,14 @@
                         ],
                         'living_environment' => [
                             'Living Environment',
-                            ['House', 'Apartment', 'Other', 'Any'],
+                            [
+                                'House',
+                                'Apartment',
+                                'Condominium',
+                                'Townhouse',
+                                'Boarding House / Shared Housing',
+                                'Any',
+                            ],
                         ],
                         'experience_requirement' => [
                             'Pet Care Experience Required',

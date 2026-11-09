@@ -110,7 +110,9 @@ class DummyDataSeeder extends Seeder
                     'living_environment' => fake()->randomElement([
                         'House',
                         'Apartment',
-                        'Other',
+                        'Condominium',
+                        'Townhouse',
+                        'Boarding House / Shared Housing',
                     ]),
 
                     'pet_care_experience' => fake()->randomElement([
@@ -202,7 +204,9 @@ class DummyDataSeeder extends Seeder
                     'living_environment' => fake()->randomElement([
                         'House',
                         'Apartment',
-                        'Other',
+                        'Condominium',
+                        'Townhouse',
+                        'Boarding House / Shared Housing',
                         'Any',
                     ]),
 

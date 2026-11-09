@@ -211,7 +211,7 @@ class AdminPetController extends Controller
 
             'living_environment' => [
                 'required',
-                'in:House,Apartment,Other,Any',
+                'in:House,Apartment,Condominium,Townhouse,Boarding House / Shared Housing,Any',
             ],
 
             'experience_requirement' => [
