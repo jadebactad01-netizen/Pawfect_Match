@@ -48,7 +48,7 @@ class GeminiService
     }
 
     /**
-     * Send only one request to Gemini.
+     * Send one request to Gemini.
      */
     private function requestGemini(string $prompt): ?string
     {
@@ -66,7 +66,7 @@ class GeminiService
         }
 
         try {
-            // No automatic retries.
+            // Send only one Gemini request.
             $response = Http::timeout(20)
                 ->withHeaders([
                     'x-goog-api-key' => $apiKey,
@@ -81,16 +81,27 @@ class GeminiService
                                 ],
                             ],
                         ],
+
+                        // Allow enough tokens for complete explanations.
+                        'generationConfig' => [
+                            'maxOutputTokens' => 2048,
+                            'temperature' => 0.5,
+                        ],
                     ]
                 );
 
             $this->lastStatus = $response->status();
 
-            // Record request status and actual token usage.
-            // Google may omit token counts on failed requests.
+            // Check how Gemini finished generating.
+            $finishReason = $response->json(
+                'candidates.0.finishReason'
+            );
+
+            // Record API status and token usage.
             Log::info('Gemini API request', [
                 'model' => $model,
                 'status' => $response->status(),
+                'finish_reason' => $finishReason,
                 'input_tokens' => $response->json(
                     'usageMetadata.promptTokenCount'
                 ),
@@ -105,6 +116,7 @@ class GeminiService
                 ),
             ]);
 
+            // Handle Gemini API errors.
             if ($response->failed()) {
                 $this->lastError = $this->explainError(
                     $response->status(),
@@ -115,15 +127,51 @@ class GeminiService
                 return null;
             }
 
-            $explanation = $response->json(
-                'candidates.0.content.parts.0.text'
+            // Reject responses cut off by the token limit.
+            if ($finishReason === 'MAX_TOKENS') {
+                $this->lastError =
+                    'Gemini could not finish the AI explanation. Please retry later.';
+
+                return null;
+            }
+
+            // Only accept normally completed responses.
+            if ($finishReason !== 'STOP') {
+                $this->lastError =
+                    'Gemini did not complete the AI explanation normally. Please try again later.';
+
+                return null;
+            }
+
+            // Combine any text parts returned by Gemini.
+            $parts = $response->json(
+                'candidates.0.content.parts',
+                []
             );
 
-            if (! is_string($explanation) ||
-                trim($explanation) === '') {
+            $explanation = '';
 
+            foreach ($parts as $part) {
+                if (isset($part['text'])) {
+                    $explanation .= $part['text'];
+                }
+            }
+
+            $explanation = trim($explanation);
+
+            if ($explanation === '') {
                 $this->lastError =
                     'Gemini returned no explanation. Please try again.';
+
+                return null;
+            }
+
+            // Make sure the explanation ends as a complete sentence.
+            $ending = rtrim($explanation, " \t\n\r\"'");
+
+            if (! preg_match('/[.!?]$/u', $ending)) {
+                $this->lastError =
+                    'Gemini returned an incomplete explanation. Please retry later.';
 
                 return null;
             }
@@ -261,17 +309,23 @@ class GeminiService
     Compatibility score: {$assessment->total_score}%
     Classification: {$assessment->classification}
 
-    Explain this compatibility result to the adopter.
+    Explain why this pet may be compatible with the adopter.
 
-    Requirements:
-    - Use friendly and simple language.
-    - Explain the strongest matching factors.
-    - Mention important mismatches or considerations honestly.
-    - Do not change the compatibility score.
-    - Do not claim that adoption is guaranteed.
-    - Do not approve or reject the adoption application.
-    - Keep the explanation brief, around 2 to 3 sentences.
+    Writing style:
+    - Start naturally with the pet's name.
+    - Explain why the pet may be a good match for the adopter.
+    - Use a warm, friendly, and conversational tone.
+    - Focus on the strongest compatibility factors.
+    - Honestly mention important mismatches or considerations.
+    - Include the system-calculated score naturally.
+    - Explain that final adoption approval depends on shelter review.
+    - Do not start with "Congratulations" or similar greetings.
+    - Do not use headings, lists, or introductory greetings.
     - Do not repeat every assessment factor.
+    - Do not change or recalculate the compatibility score.
+    - Do not guarantee adoption or approve the application.
+    - Write one complete paragraph of 3 to 4 sentences.
+    - Finish the final sentence completely.
     PROMPT;
     }
 
@@ -318,17 +372,22 @@ class GeminiService
         Compatibility score: {$score}%
         Classification: {$classification}
 
-        Briefly explain why this pet may be a suitable
-        alternative for the adopter.
+        Explain why this pet may be a suitable alternative
+        for the adopter.
 
-        Requirements:
-        - Use friendly and simple language.
+        Writing style:
+        - Start naturally with the recommended pet's name.
+        - Use friendly, simple, and conversational language.
         - Focus on the strongest matching factors.
-        - Mention an important consideration if necessary.
-        - Do not change or calculate the compatibility score.
-        - Do not approve or guarantee the adoption.
-        - Keep the explanation to 1 or 2 short sentences.
+        - Mention important considerations when necessary.
+        - Include the compatibility score naturally if helpful.
+        - Do not start with "Congratulations".
+        - Do not use headings, lists, or greetings.
         - Do not repeat every assessment factor.
+        - Do not calculate or change the compatibility score.
+        - Do not approve or guarantee the adoption.
+        - Write one complete paragraph of 2 to 3 sentences.
+        - Finish the final sentence completely.
         PROMPT;
     }
 }
