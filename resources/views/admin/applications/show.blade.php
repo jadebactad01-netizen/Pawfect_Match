@@ -272,38 +272,88 @@
                 </h2>
             </div>
 
-            <div class="mt-5 flex flex-col gap-5 rounded-xl border border-orange-100 bg-orange-50/50 p-4 sm:flex-row sm:items-start sm:p-5">
+            <div class="mt-5 grid gap-5 rounded-xl border border-orange-100 bg-orange-50/50 p-4 sm:grid-cols-2 sm:items-center">
 
-                @if ($application->pet?->photo)
-                    <img
-                        src="{{ asset('storage/' . $application->pet->photo) }}"
-                        alt="{{ $application->pet->name }}"
-                        class="h-32 w-full rounded-xl object-cover sm:h-28 sm:w-28"
-                    >
-                @endif
+                {{-- PET INFORMATION --}}
+                <div class="flex min-w-0 items-start gap-4">
 
-                <div class="min-w-0 flex-1">
-
-                    <h3 class="text-xl font-bold text-gray-900">
-                        {{ $application->pet?->name ?? 'Pet unavailable' }}
-                    </h3>
-
-                    @if ($application->pet)
-                        <p class="mt-1 text-sm text-gray-500">
-                            {{ $application->pet->type }} · {{ $application->pet->sex }} · {{ $application->pet->age }}
-                        </p>
-
-                        <p class="mt-3 whitespace-pre-line break-words text-sm leading-6 text-gray-600">{{ $application->pet->description ?: 'No description provided.' }}</p>
-
-                        <a
-                            href="{{ route('pets.show', $application->pet) }}"
-                            class="mt-3 inline-block text-sm font-semibold text-orange-600 hover:text-orange-700"
+                    @if ($application->pet?->photo)
+                        <img
+                            src="{{ asset('storage/' . $application->pet->photo) }}"
+                            alt="{{ $application->pet->name }}"
+                            class="h-24 w-24 shrink-0 rounded-xl object-cover"
                         >
-                            View Pet →
-                        </a>
                     @endif
 
+                    <div class="min-w-0 flex-1">
+
+                        <h3 class="text-lg font-bold text-gray-900">
+                            {{ $application->pet?->name ?? 'Pet unavailable' }}
+                        </h3>
+
+                        @if ($application->pet)
+
+                            <p class="mt-1 text-sm text-gray-500">
+                                {{ $application->pet->type }} · {{ $application->pet->sex }} · {{ $application->pet->age }}
+                            </p>
+
+                            <p class="mt-2 break-words text-sm leading-6 text-gray-500">
+                                {{ $application->pet->description ?: 'No description provided.' }}
+                            </p>
+
+                            <a
+                                href="{{ route('pets.show', $application->pet) }}"
+                                class="mt-2 inline-block text-sm font-semibold text-orange-600 hover:text-orange-700"
+                            >
+                                View Pet →
+                            </a>
+
+                        @endif
+
+                    </div>
+
                 </div>
+
+                {{-- COMPATIBILITY RESULT --}}
+                @if ($application->compatibilityAssessment)
+
+                    <div class="min-w-0">
+
+                        <p class="text-xs font-semibold uppercase tracking-wider text-orange-500">
+                            Compatibility Assessment
+                        </p>
+
+                        <h3 class="mt-1 text-sm font-bold text-gray-900">
+                            Compatibility Result
+                        </h3>
+
+                        <div class="mt-3 flex flex-wrap items-start gap-x-6 gap-y-3">
+
+                            <div>
+                                <p class="text-xs font-medium text-gray-500">
+                                    Compatibility Score
+                                </p>
+
+                                <p class="mt-1 text-2xl font-bold text-orange-600">
+                                    {{ $application->compatibilityAssessment->total_score }}%
+                                </p>
+                            </div>
+
+                            <div>
+                                <p class="text-xs font-medium text-gray-500">
+                                    Classification
+                                </p>
+
+                                <p class="mt-1 text-sm font-bold text-gray-900">
+                                    {{ $application->compatibilityAssessment->classification }}
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                @endif
 
             </div>
 
