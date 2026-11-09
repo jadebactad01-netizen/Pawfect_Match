@@ -28,24 +28,6 @@
                 home environment, and pet care preferences.
             </p>
 
-            <div class="mt-8 flex flex-wrap gap-3">
-
-                <a
-                    href="{{ route('pets.index') }}"
-                    class="inline-flex items-center justify-center rounded-full bg-orange-500 px-7 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
-                >
-                    Browse Available Pets
-                </a>
-
-                <a
-                    href="#how-it-works"
-                    class="inline-flex items-center justify-center rounded-full border border-orange-200 bg-white px-7 py-3 text-sm font-semibold text-orange-600 transition hover:bg-orange-50"
-                >
-                    How It Works
-                </a>
-
-            </div>
-
         </div>
 
         {{-- HERO IMAGE --}}
