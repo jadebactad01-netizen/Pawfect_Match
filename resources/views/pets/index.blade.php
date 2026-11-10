@@ -191,7 +191,7 @@
 
                             <option value="">All Sizes</option>
 
-                            @foreach (['Small', 'Medium', 'Large'] as $option)
+                            @foreach ($sizes as $option)
 
                                 <option
                                     value="{{ $option }}"

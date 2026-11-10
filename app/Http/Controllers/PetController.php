@@ -36,6 +36,7 @@ class PetController extends Controller
         // Default filter options.
         $breeds = collect();
         $colors = collect();
+        $sizes = collect();
 
         if ($type) {
 
@@ -59,6 +60,15 @@ class PetController extends Controller
                 ->distinct()
                 ->orderBy('color')
                 ->pluck('color');
+            
+            // Get sizes for selected pet type.
+            $sizes = Pet::where('status', 'Available')
+                ->where('type', $type)
+                ->whereNotNull('size')
+                ->where('size', '!=', '')
+                ->distinct()
+                ->orderBy('size')
+                ->pluck('size');
 
             // Apply selected breed.
             if ($breed) {
@@ -98,7 +108,8 @@ class PetController extends Controller
             'color',
             'size',
             'breeds',
-            'colors'
+            'colors',
+            'sizes'
         ));
     }
 
