@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 
 @section('title', 'Available Pets - Pawfect Match')
@@ -35,6 +34,7 @@
 
     <div class="mx-auto max-w-7xl px-6 py-6">
 
+        {{-- MAIN FILTER ROW --}}
         <div class="flex flex-wrap items-center justify-between gap-4">
 
             <p class="text-sm text-gray-600">
@@ -83,6 +83,153 @@
             </div>
 
         </div>
+
+        {{-- ADDITIONAL FILTERS FOR DOGS OR CATS --}}
+        @if ($type === 'Dog' || $type === 'Cat')
+
+            <div class="mt-6 border-t border-orange-100 pt-6">
+
+                <p class="mb-4 text-sm font-semibold text-gray-700">
+                    Filter {{ $type === 'Dog' ? 'Dogs' : 'Cats' }}
+                    by Characteristics
+                </p>
+
+                <form
+                    action="{{ route('pets.index') }}"
+                    method="GET"
+                    class="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 lg:grid-cols-3"
+                >
+
+                    {{-- KEEP SELECTED PET TYPE --}}
+                    <input
+                        type="hidden"
+                        name="type"
+                        value="{{ $type }}"
+                    >
+
+                    {{-- BREED --}}
+                    <div>
+
+                        <label
+                            for="breed"
+                            class="block text-sm font-semibold text-gray-700"
+                        >
+                            Breed
+                        </label>
+
+                        <select
+                            id="breed"
+                            name="breed"
+                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                        >
+
+                            <option value="">All Breeds</option>
+
+                            @foreach ($breeds as $option)
+
+                                <option
+                                    value="{{ $option }}"
+                                    @selected($breed === $option)
+                                >
+                                    {{ $option }}
+                                </option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+                    {{-- COLOR --}}
+                    <div>
+
+                        <label
+                            for="color"
+                            class="block text-sm font-semibold text-gray-700"
+                        >
+                            Color
+                        </label>
+
+                        <select
+                            id="color"
+                            name="color"
+                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                        >
+
+                            <option value="">All Colors</option>
+
+                            @foreach ($colors as $option)
+
+                                <option
+                                    value="{{ $option }}"
+                                    @selected($color === $option)
+                                >
+                                    {{ $option }}
+                                </option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+                    {{-- SIZE --}}
+                    <div>
+
+                        <label
+                            for="size"
+                            class="block text-sm font-semibold text-gray-700"
+                        >
+                            Size
+                        </label>
+
+                        <select
+                            id="size"
+                            name="size"
+                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                        >
+
+                            <option value="">All Sizes</option>
+
+                            @foreach (['Small', 'Medium', 'Large'] as $option)
+
+                                <option
+                                    value="{{ $option }}"
+                                    @selected($size === $option)
+                                >
+                                    {{ $option }}
+                                </option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+                    {{-- FILTER BUTTONS --}}
+                    <div class="flex flex-wrap items-center gap-3 sm:col-span-2 lg:col-span-3">
+
+                        <button
+                            type="submit"
+                            class="rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-sm transition duration-200 hover:bg-orange-600"
+                        >
+                            Apply Filters
+                        </button>
+
+                        <a
+                            href="{{ route('pets.index', ['type' => $type]) }}"
+                            class="rounded-full border border-orange-200 bg-white px-6 py-3 text-sm font-semibold text-gray-600 transition duration-200 hover:border-orange-400 hover:bg-orange-50 hover:text-orange-600"
+                        >
+                            Clear Filters
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        @endif
 
     </div>
 
@@ -195,7 +342,7 @@
 
                     <a
                         href="{{ route('pets.index') }}"
-                        class="mt-6 inline-block rounded-full bg-orange-500 px-6 py-3 font-semibold text-white transition duration-200 hover:bg-orange-600 hover:shadow-md"
+                        class="mt-6 inline-block rounded-full bg-orange-500 px-6 py-3 font-semibold transition duration-200 text-white hover:bg-orange-600 hover:shadow-md"
                     >
                         View All Pets
                     </a>

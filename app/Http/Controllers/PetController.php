@@ -12,37 +12,94 @@ class PetController extends Controller
      */
     public function index(Request $request)
     {
-        /*
-        * Start by getting pets that are available for adoption.
-        */
+        // Show available pets only.
         $query = Pet::where('status', 'Available');
 
-        /*
-        * Get the pet type from the URL.
-        *
-        * Examples:
-        * /pets?type=Dog
-        * /pets?type=Cat
-        */
+        // Get selected pet type.
         $type = $request->query('type');
 
-        /*
-        * Only allow Dog or Cat as filters.
-        */
-        if (in_array($type, ['Dog', 'Cat'])) {
-            $query->where('type', $type);
+        // Only accept Dogs or Cats.
+        if (!in_array($type, ['Dog', 'Cat'], true)) {
+            $type = null;
         }
 
-        /*
-        * Show 9 pets per page.
-        * Keep the selected filter when changing pages.
-        */
+        // Get additional filters.
+        $breed = $request->query('breed');
+        $color = $request->query('color');
+        $size = $request->query('size');
+
+        // Allow text values only.
+        $breed = is_string($breed) ? $breed : null;
+        $color = is_string($color) ? $color : null;
+        $size = is_string($size) ? $size : null;
+
+        // Default filter options.
+        $breeds = collect();
+        $colors = collect();
+
+        if ($type) {
+
+            // Filter by Dog or Cat.
+            $query->where('type', $type);
+
+            // Get breeds for selected pet type.
+            $breeds = Pet::where('status', 'Available')
+                ->where('type', $type)
+                ->whereNotNull('breed')
+                ->where('breed', '!=', '')
+                ->distinct()
+                ->orderBy('breed')
+                ->pluck('breed');
+
+            // Get colors for selected pet type.
+            $colors = Pet::where('status', 'Available')
+                ->where('type', $type)
+                ->whereNotNull('color')
+                ->where('color', '!=', '')
+                ->distinct()
+                ->orderBy('color')
+                ->pluck('color');
+
+            // Apply selected breed.
+            if ($breed) {
+                $query->where('breed', $breed);
+            }
+
+            // Apply selected color.
+            if ($color) {
+                $query->where('color', $color);
+            }
+
+            // Apply selected size.
+            if (in_array($size, ['Small', 'Medium', 'Large'], true)) {
+                $query->where('size', $size);
+            } else {
+                $size = null;
+            }
+
+        } else {
+
+            // Clear extra filters when viewing All.
+            $breed = null;
+            $color = null;
+            $size = null;
+        }
+
+        // Show 9 pets per page.
         $pets = $query
             ->latest()
             ->paginate(9)
             ->withQueryString();
 
-        return view('pets.index', compact('pets', 'type'));
+        return view('pets.index', compact(
+            'pets',
+            'type',
+            'breed',
+            'color',
+            'size',
+            'breeds',
+            'colors'
+        ));
     }
 
     /**
