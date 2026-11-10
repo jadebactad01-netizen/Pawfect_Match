@@ -152,9 +152,21 @@ class AdminPetController extends Controller
                 'required', 'in:Months,Years',
             ],
 
-            // Optional date of birth.
             'date_of_birth' => [
                 'nullable', 'date', 'before_or_equal:today',
+            ],
+
+            // Additional pet characteristics.
+            'breed' => [
+                'nullable', 'string', 'max:255',
+            ],
+
+            'color' => [
+                'nullable', 'string', 'max:255',
+            ],
+
+            'size' => [
+                'nullable', 'in:Small,Medium,Large',
             ],
 
             'status' => [

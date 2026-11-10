@@ -178,6 +178,7 @@
                     {{-- BASIC INFORMATION --}}
                     <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
 
+                        {{-- PET TYPE --}}
                         <div class="rounded-xl border border-orange-100 bg-orange-50/70 p-4">
 
                             <p class="text-sm text-gray-500">
@@ -190,6 +191,7 @@
 
                         </div>
 
+                        {{-- SEX --}}
                         <div class="rounded-xl border border-orange-100 bg-orange-50/70 p-4">
 
                             <p class="text-sm text-gray-500">
@@ -202,6 +204,7 @@
 
                         </div>
 
+                        {{-- AGE --}}
                         <div class="rounded-xl border border-orange-100 bg-orange-50/70 p-4">
 
                             <p class="text-sm text-gray-500">
@@ -214,6 +217,7 @@
 
                         </div>
 
+                        {{-- DATE OF BIRTH --}}
                         <div class="rounded-xl border border-orange-100 bg-orange-50/70 p-4">
 
                             <p class="text-sm text-gray-500">
@@ -223,6 +227,50 @@
                             <p class="mt-1 text-lg font-bold text-gray-900">
                                 {{ $pet->date_of_birth?->format('M d, Y') ?? 'Unknown' }}
                             </p>
+
+                        </div>
+
+                        {{-- BREED, COLOR, AND SIZE --}}
+                        <div class="grid grid-cols-1 gap-4 sm:col-span-2 sm:grid-cols-3">
+
+                            {{-- BREED --}}
+                            <div class="rounded-xl border border-orange-100 bg-orange-50/70 p-4">
+
+                                <p class="text-sm text-gray-500">
+                                    Breed
+                                </p>
+
+                                <p class="mt-1 break-words text-lg font-bold text-gray-900">
+                                    {{ $pet->breed ?: 'Not specified' }}
+                                </p>
+
+                            </div>
+
+                            {{-- COLOR --}}
+                            <div class="rounded-xl border border-orange-100 bg-orange-50/70 p-4">
+
+                                <p class="text-sm text-gray-500">
+                                    Color
+                                </p>
+
+                                <p class="mt-1 break-words text-lg font-bold text-gray-900">
+                                    {{ $pet->color ?: 'Not specified' }}
+                                </p>
+
+                            </div>
+
+                            {{-- SIZE --}}
+                            <div class="rounded-xl border border-orange-100 bg-orange-50/70 p-4">
+
+                                <p class="text-sm text-gray-500">
+                                    Size
+                                </p>
+
+                                <p class="mt-1 text-lg font-bold text-gray-900">
+                                    {{ $pet->size ?: 'Not specified' }}
+                                </p>
+
+                            </div>
 
                         </div>
 

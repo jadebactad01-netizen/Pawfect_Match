@@ -235,6 +235,74 @@
 
                     </div>
 
+                    {{-- BREED --}}
+                    <div>
+
+                        <label for="breed" class="block text-sm font-semibold text-gray-700">
+                            Breed (Optional)
+                        </label>
+
+                        <input
+                            type="text"
+                            id="breed"
+                            name="breed"
+                            value="{{ old('breed') }}"
+                            maxlength="255"
+                            placeholder="e.g., Aspin, Labrador, Puspin, Persian"
+                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                        >
+
+                    </div>
+
+                    {{-- COLOR --}}
+                    <div>
+
+                        <label for="color" class="block text-sm font-semibold text-gray-700">
+                            Color (Optional)
+                        </label>
+
+                        <input
+                            type="text"
+                            id="color"
+                            name="color"
+                            value="{{ old('color') }}"
+                            maxlength="255"
+                            placeholder="e.g., Black, White, Brown and White"
+                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                        >
+
+                    </div>
+
+                    {{-- SIZE --}}
+                    <div>
+
+                        <label for="size" class="block text-sm font-semibold text-gray-700">
+                            Size (Optional)
+                        </label>
+
+                        <select
+                            id="size"
+                            name="size"
+                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                        >
+
+                            <option value="">Select size</option>
+
+                            @foreach (['Small', 'Medium', 'Large'] as $option)
+
+                                <option
+                                    value="{{ $option }}"
+                                    @selected(old('size') === $option)
+                                >
+                                    {{ $option }}
+                                </option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
                     {{-- ADOPTION STATUS --}}
                     <div>
 
