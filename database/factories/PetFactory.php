@@ -28,7 +28,49 @@ class PetFactory extends Factory
             ? fake()->numberBetween(1, 11)
             : fake()->numberBetween(1, 15);
 
+        // Match the date of birth to the generated age.
+        // Some pets have an unknown date of birth.
+        $dateOfBirth = null;
+
+        if (fake()->boolean(75)) {
+            $dateOfBirth = $ageUnit === 'Months'
+                ? now()->subMonths($ageNumber)->toDateString()
+                : now()->subYears($ageNumber)->toDateString();
+        }
+
+        // Use appropriate breeds for dogs and cats.
+        $breeds = $type === 'Dog'
+            ? [
+                'Aspin',
+                'Labrador Retriever',
+                'Shih Tzu',
+                'Golden Retriever',
+                'Beagle',
+                'Mixed Breed',
+            ]
+            : [
+                'Puspin',
+                'Persian',
+                'Siamese',
+                'British Shorthair',
+                'Mixed Breed',
+            ];
+
+        $colors = [
+            'Black',
+            'White',
+            'Brown',
+            'Gray',
+            'Black and White',
+            'Brown and White',
+            'Orange',
+        ];
+
+        // Some pets have no recorded vaccination.
+        $isVaccinated = fake()->boolean(70);
+
         return [
+            // Basic information.
             'name' => fake()->firstName(),
 
             'type' => $type,
@@ -39,6 +81,19 @@ class PetFactory extends Factory
             ]),
 
             'age' => $ageNumber . ' ' . $ageUnit,
+
+            'date_of_birth' => $dateOfBirth,
+
+            // New pet characteristics.
+            'breed' => fake()->randomElement($breeds),
+
+            'color' => fake()->randomElement($colors),
+
+            'size' => fake()->randomElement([
+                'Small',
+                'Medium',
+                'Large',
+            ]),
 
             'status' => 'Available',
 
@@ -55,6 +110,28 @@ class PetFactory extends Factory
 
             'photo' => null,
 
+            // Shelter intake records.
+            'intake_type' => fake()->randomElement([
+                'Rescued',
+                'Surrendered',
+            ]),
+
+            'intake_date' => now()
+                ->subDays(fake()->numberBetween(1, 90))
+                ->toDateString(),
+
+            // Vaccination information.
+            'vaccination_type' => $isVaccinated
+                ? 'Anti-Rabies'
+                : null,
+
+            'vaccination_date' => $isVaccinated
+                ? now()
+                    ->subDays(fake()->numberBetween(1, 90))
+                    ->toDateString()
+                : null,
+
+            // Compatibility requirements.
             'care_requirement' => fake()->randomElement([
                 'Low',
                 'Moderate',
