@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
     'type',
     'sex',
     'age',
+    'date_of_birth',
     'status',
     'description',
     'photo',
@@ -35,6 +36,7 @@ class Pet extends Model
     protected function casts(): array
     {
         return [
+            'date_of_birth' => 'date',
             'intake_date' => 'date',
             'vaccination_date' => 'date',
         ];

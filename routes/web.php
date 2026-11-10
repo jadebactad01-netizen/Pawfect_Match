@@ -70,7 +70,7 @@ Route::get('/pets/{pet}', [PetController::class, 'show'])
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('guard')->group(function () {
+Route::middleware('auth')->group(function () {
 
     Route::get('/account-pending', function () {
 

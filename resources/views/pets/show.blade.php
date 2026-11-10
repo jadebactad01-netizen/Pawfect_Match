@@ -176,7 +176,7 @@
                     </p>
 
                     {{-- BASIC INFORMATION --}}
-                    <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
 
                         <div class="rounded-xl border border-orange-100 bg-orange-50/70 p-4">
 
@@ -210,6 +210,18 @@
 
                             <p class="mt-1 text-lg font-bold text-gray-900">
                                 {{ $formattedAge }}
+                            </p>
+
+                        </div>
+
+                        <div class="rounded-xl border border-orange-100 bg-orange-50/70 p-4">
+
+                            <p class="text-sm text-gray-500">
+                                Date of Birth
+                            </p>
+
+                            <p class="mt-1 text-lg font-bold text-gray-900">
+                                {{ $pet->date_of_birth?->format('M d, Y') ?? 'Unknown' }}
                             </p>
 
                         </div>

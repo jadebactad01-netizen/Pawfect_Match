@@ -213,6 +213,28 @@
 
                     </div>
 
+                    {{-- DATE OF BIRTH --}}
+                    <div>
+
+                        <label for="date_of_birth" class="block text-sm font-semibold text-gray-700">
+                            Date of Birth (Optional)
+                        </label>
+
+                        <input
+                            type="date"
+                            id="date_of_birth"
+                            name="date_of_birth"
+                            max="{{ now()->toDateString() }}"
+                            value="{{ old('date_of_birth') }}"
+                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                        >
+
+                        <p class="mt-2 text-xs text-gray-500">
+                            Leave blank if the exact birth date is unknown.
+                        </p>
+
+                    </div>
+
                     {{-- ADOPTION STATUS --}}
                     <div>
 
