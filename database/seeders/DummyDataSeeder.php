@@ -14,7 +14,7 @@ class DummyDataSeeder extends Seeder
          * Create 50 dummy adopters.
          */
         User::factory()
-            ->count(50)
+            ->count(100)
             ->create([
                 'role' => 'adopter',
                 'approval_status' => 'Approved',
@@ -142,7 +142,7 @@ class DummyDataSeeder extends Seeder
          * Photos will be added manually.
          */
         Pet::factory()
-            ->count(65)
+            ->count(125)
             ->state(function () {
 
                 // Generate an intake date in the past.
