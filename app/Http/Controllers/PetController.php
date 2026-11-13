@@ -15,6 +15,23 @@ class PetController extends Controller
         // Show available pets only.
         $query = Pet::where('status', 'Available');
 
+        // Hide previously rejected pets from the same adopter.
+        if (
+            $request->user()
+            && $request->user()->role === 'adopter'
+        ) {
+            $userId = $request->user()->id;
+
+            $query->whereDoesntHave(
+                'adoptionApplications',
+                function ($applicationQuery) use ($userId) {
+                    $applicationQuery
+                        ->where('user_id', $userId)
+                        ->where('status', 'Rejected');
+                }
+            );
+        }
+
         // Get selected pet type.
         $type = $request->query('type');
 
@@ -47,25 +64,50 @@ class PetController extends Controller
             $breeds = Pet::where('status', 'Available')
                 ->where('type', $type)
                 ->whereNotNull('breed')
-                ->where('breed', '!=', '')
-                ->distinct()
-                ->orderBy('breed')
-                ->pluck('breed');
+                ->where('breed', '!=', '');
 
             // Get colors for selected pet type.
             $colors = Pet::where('status', 'Available')
                 ->where('type', $type)
                 ->whereNotNull('color')
-                ->where('color', '!=', '')
-                ->distinct()
-                ->orderBy('color')
-                ->pluck('color');
-            
+                ->where('color', '!=', '');
+
             // Get sizes for selected pet type.
             $sizes = Pet::where('status', 'Available')
                 ->where('type', $type)
                 ->whereNotNull('size')
-                ->where('size', '!=', '')
+                ->where('size', '!=', '');
+
+            // Apply the same rejection filter to dropdown options.
+            if (
+                $request->user()
+                && $request->user()->role === 'adopter'
+            ) {
+                $userId = $request->user()->id;
+
+                foreach ([$breeds, $colors, $sizes] as $optionQuery) {
+                    $optionQuery->whereDoesntHave(
+                        'adoptionApplications',
+                        function ($applicationQuery) use ($userId) {
+                            $applicationQuery
+                                ->where('user_id', $userId)
+                                ->where('status', 'Rejected');
+                        }
+                    );
+                }
+            }
+
+            $breeds = $breeds
+                ->distinct()
+                ->orderBy('breed')
+                ->pluck('breed');
+
+            $colors = $colors
+                ->distinct()
+                ->orderBy('color')
+                ->pluck('color');
+
+            $sizes = $sizes
                 ->distinct()
                 ->orderBy('size')
                 ->pluck('size');

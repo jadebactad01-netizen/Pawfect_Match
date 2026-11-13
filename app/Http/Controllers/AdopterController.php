@@ -40,6 +40,11 @@ class AdopterController extends Controller
 
         $latestApplication = $applications->first();
 
+        // Get pet IDs that rejected this adopter's application.
+        $rejectedPetIds = $applications
+            ->where('status', 'Rejected')
+            ->pluck('pet_id');
+
         $recommendedPets = collect();
 
         if (
@@ -53,12 +58,17 @@ class AdopterController extends Controller
                     fn ($recommendation) =>
                         $recommendation->pet
                         && $recommendation->pet->status === 'Available'
+                        && !$rejectedPetIds->contains(
+                            $recommendation->pet_id
+                        )
                 )
                 ->sortByDesc('compatibility_score')
                 ->take(3);
         }
 
+        // Show available pets except previously rejected ones.
         $availablePets = Pet::where('status', 'Available')
+            ->whereNotIn('id', $rejectedPetIds)
             ->latest()
             ->take(3)
             ->get();

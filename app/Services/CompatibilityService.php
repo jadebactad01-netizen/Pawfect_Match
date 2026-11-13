@@ -51,7 +51,6 @@ class CompatibilityService
             10
         );
 
-
         $totalScore =
             $careScore +
             $timeScore +
@@ -60,7 +59,6 @@ class CompatibilityService
             $experienceScore +
             $activityScore;
 
-
         if ($totalScore >= 80) {
             $classification = 'Highly Compatible';
         } elseif ($totalScore >= 60) {
@@ -68,7 +66,6 @@ class CompatibilityService
         } else {
             $classification = 'Low Compatibility';
         }
-
 
         return [
             'care_score' => $careScore,
@@ -91,8 +88,25 @@ class CompatibilityService
         Pet $selectedPet,
         int $limit = 3
     ): Collection {
+
+        // Identify the adopter who owns this assessment.
+        $userId = $assessment
+            ->adoptionApplication
+            ->user_id;
+
         return Pet::where('status', 'Available')
             ->where('id', '!=', $selectedPet->id)
+
+            // Do not recommend pets previously rejected
+            // for this same adopter.
+            ->whereDoesntHave(
+                'adoptionApplications',
+                function ($query) use ($userId) {
+                    $query->where('user_id', $userId)
+                        ->where('status', 'Rejected');
+                }
+            )
+
             ->get()
             ->map(function ($pet) use ($assessment) {
 
@@ -113,7 +127,6 @@ class CompatibilityService
             ->take($limit)
             ->values();
     }
-
 
     /**
      * Score Low / Moderate / High values.
