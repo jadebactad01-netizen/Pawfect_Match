@@ -324,6 +324,7 @@ Route::middleware('admin')->group(function () {
 
     Route::get('/admin/reports', function (Request $request) {
 
+        // Validate report filters.
         $validated = $request->validate([
             'type' => [
                 'nullable',
@@ -334,7 +335,11 @@ Route::middleware('admin')->group(function () {
                 'in:Available,Unavailable,Adopted,Pending,Approved,Rejected',
             ],
             'date_from' => ['nullable', 'date'],
-            'date_to' => ['nullable', 'date', 'after_or_equal:date_from'],
+            'date_to' => [
+                'nullable',
+                'date',
+                'after_or_equal:date_from',
+            ],
         ]);
 
         $type = $validated['type'] ?? 'pets';
@@ -342,7 +347,12 @@ Route::middleware('admin')->group(function () {
         $dateFrom = $validated['date_from'] ?? '';
         $dateTo = $validated['date_to'] ?? '';
 
+        // Check whether the user wants to print.
+        $printing = $request->boolean('print');
+
+        // Choose which records to retrieve.
         $query = match ($type) {
+
             'pets' => Pet::query(),
 
             'adopters' => User::where('role', 'adopter')
@@ -361,38 +371,71 @@ Route::middleware('admin')->group(function () {
             ])->whereIn('status', ['Approved', 'Rejected']),
         };
 
+        // Apply status filter for pets.
         if (
             $status
             && $type === 'pets'
-            && in_array($status, ['Available', 'Unavailable', 'Adopted'])
+            && in_array($status, [
+                'Available',
+                'Unavailable',
+                'Adopted',
+            ])
         ) {
             $query->where('status', $status);
         }
 
+        // Apply status filter for applications and records.
         if (
             $status
             && in_array($type, ['applications', 'records'])
-            && in_array($status, ['Pending', 'Approved', 'Rejected'])
+            && in_array($status, [
+                'Pending',
+                'Approved',
+                'Rejected',
+            ])
         ) {
             $query->where('status', $status);
         }
 
+        // Filter by starting date.
         if ($dateFrom) {
             $query->whereDate('created_at', '>=', $dateFrom);
         }
 
+        // Filter by ending date.
         if ($dateTo) {
             $query->whereDate('created_at', '<=', $dateTo);
         }
 
-        $rows = $query->latest()->get();
+        // Sort newest records first.
+        $query->latest();
+
+        if ($printing) {
+
+            // Include every matching record when printing.
+            $rows = $query->get();
+
+            $totalRecords = $rows->count();
+
+        } else {
+
+            // Display only 20 records per page.
+            $rows = $query
+                ->paginate(20)
+                ->withQueryString();
+
+            // Count all matching records, not just this page.
+            $totalRecords = $rows->total();
+        }
 
         return view('admin.reports.index', compact(
             'rows',
             'type',
             'status',
             'dateFrom',
-            'dateTo'
+            'dateTo',
+            'printing',
+            'totalRecords'
         ));
 
     })->name('admin.reports.index');

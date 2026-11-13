@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 
 @section('title', 'Printable Reports - Pawfect Match')
@@ -59,14 +58,11 @@
 
         .report-table thead {
             background: #eee !important;
+            display: table-header-group;
         }
 
         .report-table tr {
             break-inside: avoid;
-        }
-
-        .report-table thead {
-            display: table-header-group;
         }
 
         .report-heading {
@@ -150,12 +146,14 @@
                         class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
                     >
                         @foreach ($titles as $key => $title)
+
                             <option
                                 value="{{ $key }}"
                                 @selected($type === $key)
                             >
                                 {{ $title }}
                             </option>
+
                         @endforeach
                     </select>
 
@@ -178,13 +176,22 @@
                     >
                         <option value="">All statuses</option>
 
-                        @foreach (['Available', 'Unavailable', 'Adopted', 'Pending', 'Approved', 'Rejected'] as $option)
+                        @foreach ([
+                            'Available',
+                            'Unavailable',
+                            'Adopted',
+                            'Pending',
+                            'Approved',
+                            'Rejected'
+                        ] as $option)
+
                             <option
                                 value="{{ $option }}"
                                 @selected($status === $option)
                             >
                                 {{ $option }}
                             </option>
+
                         @endforeach
                     </select>
 
@@ -232,7 +239,7 @@
 
             </div>
 
-            {{-- EXISTING REPORT ACTIONS --}}
+            {{-- REPORT ACTIONS --}}
             <div class="mt-5 flex flex-wrap items-center gap-3">
 
                 <button
@@ -249,13 +256,15 @@
                     Clear Filters
                 </a>
 
-                <button
-                    type="button"
-                    onclick="window.print()"
+                {{-- PRINT ALL MATCHING RECORDS --}}
+                <a
+                    href="{{ route('admin.reports.index', array_merge(request()->except('page'), ['print' => 1])) }}"
+                    target="_blank"
+                    rel="noopener"
                     class="rounded-full bg-gray-800 px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-900"
                 >
                     Print / Save as PDF
-                </button>
+                </a>
 
             </div>
 
@@ -264,7 +273,7 @@
         {{-- REPORT CONTENT --}}
         <div class="report-data overflow-x-auto rounded-2xl border border-orange-100 bg-white p-5 shadow-sm sm:p-6">
 
-            {{-- PRINTED REPORT HEADER --}}
+            {{-- REPORT HEADER --}}
             <div class="report-heading mb-6 text-center">
 
                 <p class="text-sm font-semibold uppercase tracking-wide text-gray-600">
@@ -300,9 +309,21 @@
 
                     @endif
 
+                    {{-- TOTAL RECORD COUNT --}}
                     <p class="mt-2 font-semibold text-orange-600">
-                        Total Records: {{ $rows->count() }}
+                        Total Records: {{ $totalRecords }}
                     </p>
+
+                    {{-- CURRENT PAGE COUNT --}}
+                    @if (!$printing && $totalRecords > 0)
+
+                        <p class="no-print mt-1 text-xs text-gray-500">
+                            Showing {{ $rows->firstItem() }}
+                            to {{ $rows->lastItem() }}
+                            of {{ $totalRecords }} records
+                        </p>
+
+                    @endif
 
                 </div>
 
@@ -476,6 +497,17 @@
 
         </div>
 
+        {{-- PAGINATION --}}
+        @if (!$printing)
+
+            <div class="no-print">
+
+                <x-pagination :paginator="$rows" />
+
+            </div>
+
+        @endif
+
         {{-- PRINT FOOTER --}}
         <div class="mt-10 hidden justify-between border-t border-gray-300 pt-4 text-xs text-gray-600 print:flex">
             <span>Bayambang Animal Shelter — Pawfect Match</span>
@@ -517,7 +549,17 @@
         status.disabled = type === 'adopters';
     }
 
+    // Update dropdown options when the page loads.
     updateReportStatus();
+
+    // Automatically open the print dialog in print mode.
+    const url = new URLSearchParams(window.location.search);
+
+    if (url.get('print') === '1') {
+        window.addEventListener('load', function () {
+            window.print();
+        });
+    }
 </script>
 
 @endsection
