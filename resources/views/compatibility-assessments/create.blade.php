@@ -8,8 +8,17 @@
 
     <div class="mx-auto max-w-3xl">
 
+        {{-- BACK BUTTON --}}
+        <a
+            href="{{ route('adoption-applications.create', $application->pet) }}"
+            class="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-white px-4 py-2 text-sm font-semibold text-orange-600 transition duration-200 hover:border-orange-300 hover:bg-orange-50"
+        >
+            <span>←</span>
+            <span>Back to Adoption Application</span>
+        </a>
+
         {{-- PAGE HEADER --}}
-        <div class="relative overflow-hidden rounded-3xl border border-orange-200 bg-orange-100 px-6 py-8 text-center sm:px-8">
+        <div class="relative mt-6 overflow-hidden rounded-3xl border border-orange-200 bg-orange-100 px-6 py-8 text-center sm:px-8">
 
             <div class="relative">
 

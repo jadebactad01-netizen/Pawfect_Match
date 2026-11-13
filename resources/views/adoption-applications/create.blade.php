@@ -67,9 +67,11 @@
                 </p>
 
                 <ul class="mt-3 list-inside list-disc space-y-1 text-sm">
+
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
+
                 </ul>
 
             </div>
@@ -78,6 +80,12 @@
 
         @php
             $profile = auth()->user()->adopterProfile;
+
+            // Get the saved shelter source when editing.
+            $selectedSource = old(
+                'shelter_source',
+                $application?->shelter_source
+            );
         @endphp
 
         {{-- APPLICATION FORM --}}
@@ -116,7 +124,7 @@
                         </p>
 
                         <p class="mt-2 font-semibold text-gray-900">
-                            {{ now()->format('F d, Y') }}
+                            {{ $application?->created_at?->format('F d, Y') ?? now()->format('F d, Y') }}
                         </p>
 
                     </div>
@@ -223,7 +231,7 @@
                             id="reference_name"
                             name="reference_name"
                             required
-                            value="{{ old('reference_name') }}"
+                            value="{{ old('reference_name', $application?->reference_name) }}"
                             oninput="this.value = this.value.replace(/[^\p{L}\s.'-]/gu, '')"
                             class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-700 outline-none transition duration-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
                         >
@@ -245,7 +253,7 @@
                             id="reference_relationship"
                             name="reference_relationship"
                             required
-                            value="{{ old('reference_relationship') }}"
+                            value="{{ old('reference_relationship', $application?->reference_relationship) }}"
                             oninput="this.value = this.value.replace(/[^\p{L}\s.'-]/gu, '')"
                             class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-700 outline-none transition duration-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
                         >
@@ -269,7 +277,7 @@
                             inputmode="numeric"
                             maxlength="11"
                             required
-                            value="{{ old('reference_phone') }}"
+                            value="{{ old('reference_phone', $application?->reference_phone) }}"
                             oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                             class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-700 outline-none transition duration-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
                         >
@@ -313,7 +321,7 @@
 
                         <option
                             value="{{ $source }}"
-                            @selected(old('shelter_source') === $source)
+                            @selected($selectedSource === $source)
                         >
                             {{ $source }}
                         </option>
@@ -335,8 +343,8 @@
                         type="text"
                         id="shelter_source_other"
                         name="shelter_source_other"
-                        value="{{ old('shelter_source_other') }}"
-                        @disabled(old('shelter_source') !== 'Other')
+                        value="{{ old('shelter_source_other', $application?->shelter_source_other) }}"
+                        @disabled($selectedSource !== 'Other')
                         oninput="this.value = this.value.replace(/[^\p{L}\s.'-]/gu, '')"
                         class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-700 outline-none transition duration-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-400"
                     >

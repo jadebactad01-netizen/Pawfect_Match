@@ -27,7 +27,7 @@ class AdoptionApplicationController extends Controller
             'incomplete',
         ];
 
-        if (! in_array($filter, $allowedFilters)) {
+        if (!in_array($filter, $allowedFilters)) {
             $filter = 'pending';
         }
 
@@ -37,14 +37,16 @@ class AdoptionApplicationController extends Controller
                 'compatibilityAssessment.petRecommendations.pet',
             ]);
 
-        // Filter applications.
         if ($filter === 'pending') {
             $query->where('status', 'Pending')
                 ->whereHas('compatibilityAssessment');
+
         } elseif ($filter === 'approved') {
             $query->where('status', 'Approved');
+
         } elseif ($filter === 'rejected') {
             $query->where('status', 'Rejected');
+
         } elseif ($filter === 'incomplete') {
             $query->whereDoesntHave('compatibilityAssessment');
         }
@@ -68,21 +70,15 @@ class AdoptionApplicationController extends Controller
             abort(403);
         }
 
-        if ($pet->status !== 'Available') {
-            return redirect()
-                ->route('pets.show', $pet)
-                ->with('error', 'This pet is currently unavailable for adoption.');
-        }
-
         $profile = $user->adopterProfile;
 
         if (
-            ! $profile
-            || ! $profile->age
-            || ! $profile->phone_number
-            || ! $profile->address
-            || ! $profile->animal_preference
-            || ! $profile->assessment_locked_at
+            !$profile
+            || !$profile->age
+            || !$profile->phone_number
+            || !$profile->address
+            || !$profile->animal_preference
+            || !$profile->assessment_locked_at
         ) {
             return redirect()
                 ->route('profile.edit')
@@ -92,22 +88,49 @@ class AdoptionApplicationController extends Controller
                 );
         }
 
-        $existingApplication = $user->adoptionApplications()
+        // Check whether this adopter has already applied.
+        $application = $user->adoptionApplications()
             ->where('pet_id', $pet->id)
             ->first();
 
-        if ($existingApplication) {
-            if (! $existingApplication->compatibilityAssessment) {
-                return redirect()
-                    ->route('compatibility-assessments.create', $existingApplication);
+        if ($application) {
+
+            // Allow editing only while the application is incomplete.
+            if (
+                $application->status === 'Pending'
+                && !$application->compatibilityAssessment
+            ) {
+                return view(
+                    'adoption-applications.create',
+                    compact('pet', 'application')
+                );
             }
 
             return redirect()
                 ->route('adoption-applications.index')
-                ->with('error', 'You have already applied for this pet.');
+                ->with(
+                    'error',
+                    'You have already applied for this pet.'
+                );
         }
 
-        return view('adoption-applications.create', compact('pet'));
+        // Only new applications require an available pet.
+        if ($pet->status !== 'Available') {
+            return redirect()
+                ->route('pets.show', $pet)
+                ->with(
+                    'error',
+                    'This pet is currently unavailable for adoption.'
+                );
+        }
+
+        // No existing application: display a blank form.
+        $application = null;
+
+        return view(
+            'adoption-applications.create',
+            compact('pet', 'application')
+        );
     }
 
     public function store(Request $request, Pet $pet)
@@ -118,21 +141,15 @@ class AdoptionApplicationController extends Controller
             abort(403);
         }
 
-        if ($pet->status !== 'Available') {
-            return redirect()
-                ->route('pets.show', $pet)
-                ->with('error', 'This pet is currently unavailable for adoption.');
-        }
-
         $profile = $user->adopterProfile;
 
         if (
-            ! $profile
-            || ! $profile->age
-            || ! $profile->phone_number
-            || ! $profile->address
-            || ! $profile->animal_preference
-            || ! $profile->assessment_locked_at
+            !$profile
+            || !$profile->age
+            || !$profile->phone_number
+            || !$profile->address
+            || !$profile->animal_preference
+            || !$profile->assessment_locked_at
         ) {
             return redirect()
                 ->route('profile.edit')
@@ -142,22 +159,38 @@ class AdoptionApplicationController extends Controller
                 );
         }
 
-        $existingApplication = $user->adoptionApplications()
+        // Find this adopter's existing application.
+        $application = $user->adoptionApplications()
             ->where('pet_id', $pet->id)
             ->first();
 
-        if ($existingApplication) {
-            if (! $existingApplication->compatibilityAssessment) {
+        if ($application) {
+
+            // Completed or reviewed applications cannot be edited.
+            if (
+                $application->status !== 'Pending'
+                || $application->compatibilityAssessment
+            ) {
                 return redirect()
-                    ->route('compatibility-assessments.create', $existingApplication);
+                    ->route('adoption-applications.index')
+                    ->with(
+                        'error',
+                        'You have already applied for this pet.'
+                    );
             }
 
+        } elseif ($pet->status !== 'Available') {
+
+            // New applications require an available pet.
             return redirect()
                 ->route('pets.show', $pet)
-                ->with('error', 'You have already applied for this pet.');
+                ->with(
+                    'error',
+                    'This pet is currently unavailable for adoption.'
+                );
         }
 
-        // Only validate the fields the adopter can actually edit.
+        // Validate only the fields the adopter can edit.
         $validated = $request->validate([
             'reference_name' => [
                 'required',
@@ -172,7 +205,8 @@ class AdoptionApplicationController extends Controller
             ],
 
             'reference_phone' => [
-                'required', 'digits:11',
+                'required',
+                'digits:11',
             ],
 
             'shelter_source' => [
@@ -192,12 +226,8 @@ class AdoptionApplicationController extends Controller
             $validated['shelter_source_other'] = null;
         }
 
-        // Copy protected information directly from the adopter profile.
-        $application = AdoptionApplication::create([
-            'user_id' => $user->id,
-            'pet_id' => $pet->id,
-            'status' => 'Pending',
-
+        // Get information directly from the adopter profile.
+        $data = [
             'age' => $profile->age,
             'mobile_number' => $profile->phone_number,
 
@@ -208,13 +238,35 @@ class AdoptionApplicationController extends Controller
             'preferred_age' => $profile->preferred_age,
 
             ...$validated,
-        ]);
+        ];
 
-        $pet->update([
-            'status' => 'Unavailable',
-        ]);
+        if ($application) {
 
+            // Reuse the existing incomplete application.
+            $application->update($data);
+
+        } else {
+
+            // Create the application only the first time.
+            $application = AdoptionApplication::create([
+                'user_id' => $user->id,
+                'pet_id' => $pet->id,
+                'status' => 'Pending',
+
+                ...$data,
+            ]);
+
+            // Reserve the pet for this application.
+            $pet->update([
+                'status' => 'Unavailable',
+            ]);
+        }
+
+        // Continue to Step 2 using the same application.
         return redirect()
-            ->route('compatibility-assessments.create', $application);
+            ->route(
+                'compatibility-assessments.create',
+                $application
+            );
     }
 }
